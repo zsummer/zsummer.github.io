@@ -1,7 +1,7 @@
 ---
-　　layout: default
-　　title: blog
-　　---
+layout: default
+title: blog
+---
 　　<h2>{{ page.title }}</h2>
 　　<p>最新文章</p>
 　　<ul>
