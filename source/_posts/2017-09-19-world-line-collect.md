@@ -8,10 +8,9 @@ prolog beginning ..
 prolog saved one moment .. 
 prolog crash ..  
 back stack failed .. 
-garbage collection ..  
+garbage collect ..  
 undo this worldline ..  
 thrown into the unknown ...    
-bye bye ..  
 
 
 
