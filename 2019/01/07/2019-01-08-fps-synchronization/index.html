@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="在一个采用C/S架构的游戏中，客户端和服务端的游戏状态有差异是不可避免的。客户端和服务端各自都维护了一份游戏状态。这两份游戏状态依赖网络包通信保持同步。但由于各客户端到服务端的时延具有不确定性，游戏状态同步变得非常困难。通常服务端在游戏拓扑中承载的是状态仲裁者的角色，客户端玩家看到的“经验证”的有效游戏状态总是延后于服务端的游戏状态。   网络时延是必然存在的，所以游戏状态的不同步也是必然存在的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FPS游戏同步术语">
+<meta property="og:url" content="https://zsummer.github.io/2019/01/07/2019-01-08-fps-synchronization/index.html">
+<meta property="og:site_name" content="关于夏天的一切">
+<meta property="og:description" content="在一个采用C/S架构的游戏中，客户端和服务端的游戏状态有差异是不可避免的。客户端和服务端各自都维护了一份游戏状态。这两份游戏状态依赖网络包通信保持同步。但由于各客户端到服务端的时延具有不确定性，游戏状态同步变得非常困难。通常服务端在游戏拓扑中承载的是状态仲裁者的角色，客户端玩家看到的“经验证”的有效游戏状态总是延后于服务端的游戏状态。   网络时延是必然存在的，所以游戏状态的不同步也是必然存在的。">
+<meta property="og:updated_time" content="2019-01-08T09:18:35.426Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="FPS游戏同步术语">
+<meta name="twitter:description" content="在一个采用C/S架构的游戏中，客户端和服务端的游戏状态有差异是不可避免的。客户端和服务端各自都维护了一份游戏状态。这两份游戏状态依赖网络包通信保持同步。但由于各客户端到服务端的时延具有不确定性，游戏状态同步变得非常困难。通常服务端在游戏拓扑中承载的是状态仲裁者的角色，客户端玩家看到的“经验证”的有效游戏状态总是延后于服务端的游戏状态。   网络时延是必然存在的，所以游戏状态的不同步也是必然存在的。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zsummer.github.io/2019/01/07/2019-01-08-fps-synchronization/"/>
+
+
+
+
+
+  <title>FPS游戏同步术语 | 关于夏天的一切</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">关于夏天的一切</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我总觉得对你的爱很美</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/01/07/2019-01-08-fps-synchronization/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">FPS游戏同步术语</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-07T03:21:00+08:00">
+                2019-01-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在一个采用C/S架构的游戏中，客户端和服务端的游戏状态有差异是不可避免的。客户端和服务端各自都维护了一份游戏状态。这两份游戏状态依赖网络包通信保持同步。但由于各客户端到服务端的时延具有不确定性，游戏状态同步变得非常困难。通常服务端在游戏拓扑中承载的是状态仲裁者的角色，客户端玩家看到的“经验证”的有效游戏状态总是延后于服务端的游戏状态。  </p>
+<p>网络时延是必然存在的，所以游戏状态的不同步也是必然存在的。但我们可以通过技术手段尽量减轻不同步问题对用户体验带来的影响。<br>  <a id="more"></a>  </p>
+<p>1）<strong>Latency</strong>：Latency指的是数据包从客户端发送到服务端再收到服务端回包所用的时间，通常被称为RTT。虽然单程的数据包传输时间并不总是等于RTT/2，但是简单起见我们可以认为两者是相等的。下文说到Latency都是说一个RTT时间，单程Latency则是指RTT/2。</p>
+<p>80年代有个工具叫ping使用ICMP echo测试延迟，所以人们常把RTT和ping联系起来。ping这个指令现在还在用。</p>
+<p>2）<strong>Hit Box</strong>：角色的3D模型代表了哪些区域是参与到“命中”计算的。你看不到hit box，你只能看到模型。hit box可能比模型大，也可能比模型小，也有可能很不精确，这都取决于具体的实现。我们知道，tick rate会影响命中判定，但是hit box不精确可能对玩家在是否命中方面的感受影响更大。</p>
+<p>3）<strong>Tick Rate</strong>：Tick Rate指游戏服务端更新游戏状态的频率。单位是hertz。如果服务器的Tick Rate是64，这就意味着服务端每秒钟最多向客户端发送64次数据包。这些同步数据包包括了游戏状态更新，比如player和场景对象位置等。一次tick的长度就是其持续时间，单位为ms。</p>
+<p>比如，64 rate时tick长度是15.6ms，20 rate时是50ms，10 rate时是100ms</p>
+<p>4）<strong>Client Update Rate</strong>：这是客户端接收服务端更新的频率。比如说，如果client update rate是20，而服务器tick rate是64，那么从体验上来说，这个客户端实际是在和一个tick rate为20的服务器联机。通常这个是配在客户端本地的，也有可能是写死的。</p>
+<p>5）<strong>Framerate</strong>：这个是指客户端每秒最多可以渲染多少帧，通常被称为FPS</p>
+<p>6）<strong>Refresh Rate</strong>：显示设备每秒钟刷新多少次。单位为hertz。如果framerate是30，一个显示频率为60的设备将把每个画面显示两次。反过来，如果framerate是120，但是显示频率为60，那么显示设备只能显示每秒60帧。显示设备的频率比framerate大，提升framerate才有意义。大多数显示设备频率是60或120。</p>
+<p>7）<strong>Interpolation</strong>：这是一种平滑场景对象移动的技术。实际上内插值所做的就是在场景对象的两个位置之间做插值，以让运动过程平滑。插值延迟通常是2tick，也不尽然。举个内插值的例子，如果一个玩家沿着一条直线移动，在tick1的时候位置在0.5m，在tick2的时候位置在1m，内插值的作用就是让客户端看起来是平滑的从0.5m移到1m。但是服务器实际看到的是离散的位置，要么在0.5m或1m，不可能在中间的某个位置。如果没有插值，游戏的抖动将非常明显，特别是在从服务端更新了一个运动对象的位置后。内插值只在客户端做，实际上减慢了将整个游戏状态绘制到屏幕上的速率。</p>
+<p>8）<strong>Extrapolation</strong>：这是客户端补偿延迟的另一种技术。客户端将场景对象的位置做外插值，这样就不会导致绘制的时候没有更新到新数据。通常优先使用内插值，特别是FPS游戏，因为玩家的移动是不可预期的，外插值的结果可能通常是错的。</p>
+<p>9）<strong>Lag Compensation</strong>：延迟补偿是服务端减小客户端延迟影响的一种方法。如果没有延迟补偿，或者延迟补偿做的不好，由于客户端看到的是经过延迟后的游戏状态，玩家要命中目标就必须使用一些预判技巧。实际上，延迟补偿所做的，就是当服务器从客户端收到操作（比如开枪）后，将操作发生时间往回调一个单向时延的时间。服务端游戏状态和客户端游戏状态的时间差异（也被称为”Client Delay”）可用下式给出：</p>
+<p>ClientDelay = (1/2 * Latency) + InterpolationDelay</p>
+<p>延迟补偿的实际操作步骤：</p>
+<ol>
+<li>Player A看到Player B向一个角落跑去</li>
+<li>Player A开枪，其客户端把这个操作发送给服务器</li>
+<li>假定A的延迟的一半是Xms，那么Xms后服务器将收到Player A的操作</li>
+<li>服务器从记录的历史信息中找到A开枪时B所在的位置。一般情况下，服务器应该往回看 (Xms + Player A’s interpolation delay) 来回滚到A开枪时的游戏状态。但是这个时间是可以调的，取决于开发者希望延迟补偿算法如何工作。</li>
+<li>服务器判定这次的开枪是否命中。如果子弹的轨迹和目标模型的hit box相交，就认为是命中了。在这个例子中，我们假定命中了。在Player B看来，他觉得自己已经躲到墙后面了。但是Player B看到的游戏状态所处的时间和Server认定的开枪时间是有差异的，可以表示为：<br>(1/2 <em> PlayerALatency + 1/2 </em> PlayerBLatency + TimeSinceLastTick)</li>
+<li>在下一次tick中，服务器使用计算结果更新所有客户端：Player A看到自己命中了目标，Player B看到自己掉血或挂掉了。</li>
+</ol>
+<p>需要注意的是，如果两个玩家对射，而且都命中了，游戏如何处理就取决于实现了。比如说在CS:GO中，如果先收到的射击操作命中了目标玩家，那么后续收到的那个玩家的射击就会被丢弃。这样就避免了两个玩家的射击请求在同一帧，然后都命中，都挂掉。在Overwatch中，这种情况是可能的。这里是有取舍的。</p>
+<p>按照CS:GO的做法，网络较好的玩家是有很大优势的。经常会有“我在挂掉前打中了目标，但是他没死”的情况。你甚至在挂掉前能听到你的枪响和命中的声音，却没对目标造成伤害。</p>
+<p>若是在Overwatch中，玩家反应时间的差异对结果影响较小。比如说，如果服务器tick rate是64，若Player A比Player B早15ms射击，那么双方的射击都是在同一个15.6ms tick之内，所以最终结果是双方都命中，都死掉了。</p>
+<p>如果延迟补偿过度，就会出现“我朝目标早前的位置开枪，却还是命中他了”。<br>若延迟补偿不足，则会出现“我必须对目标的移动做预判，这样才能命中”。<br>服务器做延迟补偿所记录的历史数据应该是有限的，不然高延迟的玩家会明显拖累其他玩家的游戏体验。</p>
+<p>在Overwatch中，服务端延迟补偿也被称为Favoring the shooter，也就是说，如果你在自己屏幕上瞄准了目标并射击，那么很大概率将命中目标。也有例外情况。比如，若你射击目标的那一刻，目标跳跃躲开了，这时服务器认为目标做了一个完美的闪避，可能会被判断未命中。所以计算命中时并不总是使用射击那一刻的信息。这是为了玩家体验打的补丁。</p>
+<p>如果你是要设计一套同步方案，根据设计目的不同可能有不同的方案。公平性、即时反馈、网络流量等都可能是重要的设计目标。可以参考以下因素：</p>
+<p>1）网络链接。延迟越低越好。选择一个延迟最低的服务器开始游戏是很重要的。网络上的拥塞程度也会导致网络延迟。延迟补偿可以帮助解决“射击和命中”的问题，但是如果你的网络不好，更多的情况下，你可能会体验到“已经跑到墙后面还是被打中”或者“我先射击但还是死掉了”的情况。</p>
+<p>2）如果你的客户端frame rate很低（只要低于显示设备刷新频率或跟他差不多），会导致感受延迟变大，通常比tick rate带来的问题更严重。</p>
+<p>3）尽量使用内插值。大多数游戏使用的内插值间隔是tick间隔的两倍，主要考虑到如果一个数据包丢掉了，玩家的移动中断也不会在屏幕上表现出来。如果网络状况很好，没有丢包，把插值间隔设置为tick间隔是没有问题的。但是如果有丢包，就会导致抖动。比如在CS:GO中，这对体验的影响比把服务端tick rate从20调高到64带来的体验影响更明显。如果这个值设的太低，会导致极大的抖动。</p>
+<p>4）如果有可能，你应该增加游戏的client update rate来优化体验。其代价是CPU和带宽消耗。对于客户端来说，除非你家的网络带宽非常低，增加CPU和带宽消耗是可以接受的。</p>
+<p>5）如果你的显示设备刷新率是60hz，那么很有可能你根本感受不到tick rate在64和128会有什么差异，因为由于tick rate差异导致的改变根本无法通过你的显示设备体现出来。</p>
+<p>6）通常来说，服务端tick rate越高，用户交互就越流畅，也更准确。当然网络同步量也越大。如果我们对比tick rate64（CS:GO比赛）和20（Overwatch Beta服务器宣传的帧率），两者因为帧率差异导致的最大可感受延迟是35ms.平均情况下是17.5ms.大多数人是察觉不到其中的差异的，但是有经验的玩家通常是能感受到的。高的tick rate并不会影响到延迟补偿的工作。所以有时候，你还是会有明明自己已经跑到墙后面了可是还是死了的体验。把tick rate提高到64并不能解决这个问题。</p>
+<p>7）Responsiveness: 当你按下按键的时候，需要能立刻看到反馈。这对动作游戏和FPS游戏都是非常重要的。有多个因素会影响即时反馈。首先，客户端发送玩家的输入应该是即时的。其次，客户端不等服务端回应就根据玩家的输入做状态预测和插值。在Overwatch中，客户端会维护一个历史纪录用于验证客户端预测的准确性。最后，服务端tick rate也会影响反馈。投射物的模拟也应和玩家做类似处理，并加上飞行时间，让玩家对反馈产生的时间有预期。</p>
+<p>8）处理丢包。在Overwatch中，丢包是通过在客户端加速“命令帧”和在服务端设置命令缓存来解决的. 首先，系统采用确定性模拟技术，将时间量化为“命令帧”。每个命令帧都固定为16毫秒（比赛时是7毫秒）。服务端和客户端模拟都运行在保持同步的时钟和这个量化值之上，保持固定的更新频率。当客户端意识到丢包时，会比约定频率更快的模拟，而服务端则将命令缓冲区增大。客户端发送指令的频率加快，而服务端缓冲变大以容忍更多的丢包。客户端的指令数据包包含了未经服务端确认过的所有指令，这样服务端就有机会在实际模拟并发送确认包前更新缓冲区。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/07/2019-01-07-elite/" rel="next" title="ELITE">
+                <i class="fa fa-chevron-left"></i> ELITE
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="夏天" />
+          <p class="site-author-name" itemprop="name">夏天</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">categories</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">tags</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">夏天</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Gemini
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
