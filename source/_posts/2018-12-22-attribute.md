@@ -1,6 +1,7 @@
 ---
 title: MMO属性中英文对照  
 date: 2018-12-22 17:21:00
+author: yawei.zhang 
 ---
 
 [wwowwiki属性说明](http://wowwiki.wikia.com/wiki/Attribute)  

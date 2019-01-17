@@ -2,6 +2,7 @@
 title: AT&T 和 INTEL 汇编格式区别  
 date: 2019-01-11 17:21:00
 categories: develop 
+author: yawei.zhang 
 ---
 
 ### 一、AT&T 格式Linux 汇编语法格式
