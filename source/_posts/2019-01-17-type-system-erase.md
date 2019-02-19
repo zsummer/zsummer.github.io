@@ -15,7 +15,7 @@ author: yawei.zhang
 * 模板 (可以在C++模板中应用鸭子风格)   
 * 容器 any/tuploe     
 
-
+  <!-- more --> 
 ### 扩展 JAVA的泛型实现方式 类型擦除  
 ```
 List<String> l1 = new ArrayList<String>();
