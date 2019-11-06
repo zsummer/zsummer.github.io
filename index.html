@@ -249,6 +249,448 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/05/2019-11-05-fast-check-linux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/11/05/2019-11-05-fast-check-linux/" itemprop="url">linux快速排查问题的命令</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-05T00:00:00+08:00">
+                2019-11-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="全局分析和统计"><a href="#全局分析和统计" class="headerlink" title="全局分析和统计"></a>全局分析和统计</h3><ul>
+<li><p>top命令   </p>
+<ul>
+<li>free 查看内存使用信息  </li>
+<li>vmstate [delay时间]  按照delay时间打印内存使用 io读写 CPU用量等信息  </li>
+<li>iostat -m -x [时间] [次数]   io读写详细信息</li>
+</ul>
+</li>
+<li><p>sar 系统活动情况报告 追溯统计数据 从最近的0点0分开始显示数据   </p>
+<ul>
+<li>sar -A 所有  </li>
+<li>sar -u CPU  </li>
+<li>sar -q 负载</li>
+<li>sar -r 内存</li>
+<li>CPU存在瓶颈，可用 sar -u 和 sar -q 等来查看</li>
+<li>内存存在瓶颈，可用sar -B、sar -r 和 sar -W 等来查看</li>
+<li>I/O存在瓶颈，可用 sar -b、sar -u 和 sar -d 等来查看</li>
+</ul>
+</li>
+<li><p>df 查看当前硬盘存储</p>
+<ul>
+<li>du -h  –max-depth=1 [./]   统计当前目录树下的文件大小  </li>
+</ul>
+</li>
+<li><p>IPC资源查询   </p>
+<ul>
+<li>ipcs -m 查看共享内存资源  </li>
+<li>ipcsrm -M [shmkey]  删除共享内存资源  </li>
+<li>ipcsrm -m [shmid]    删除shmid标识的共享内存资源  </li>
+</ul>
+</li>
+<li><p>lsof [文件/路径]  查看占用该文件/该目录下文件的进程  </p>
+</li>
+<li><p>lsof -i  查看当前活动的网络连接 包括TCP / UDP</p>
+</li>
+<li><p>lsof -p [pid] 查看当前进程所有打开的文件/设备</p>
+</li>
+<li><p>ulimit -s 栈大小  </p>
+</li>
+</ul>
+<h3 id="进程分析和统计"><a href="#进程分析和统计" class="headerlink" title="进程分析和统计"></a>进程分析和统计</h3><ul>
+<li><p>pstack [pid]  查看进程栈  </p>
+</li>
+<li><p>gstack [pid]  同pstack 可打印出每个线程的堆栈    </p>
+</li>
+<li><p>gcore [pid1 pid2 …]  dump core而不杀死进程   </p>
+</li>
+<li><p>strace -T -r -c -p [pid] 查看或统计系统调用  -c统计.   </p>
+</li>
+<li><p>strace [exe_file]  调试运行程序  统计或查看该程序所有系统调用    </p>
+</li>
+</ul>
+<ul>
+<li><p>lsof [文件/路径]  查看占用该文件/该目录下文件的进程  </p>
+</li>
+<li><p>lsof -i  查看当前活动的网络连接 包括TCP / UDP</p>
+</li>
+<li><p>lsof -p [pid] 查看当前进程所有打开的文件/设备</p>
+</li>
+</ul>
+<h3 id="系统"><a href="#系统" class="headerlink" title="系统"></a>系统</h3><p>uname -a  系统版本<br>cat /proc/version  内核版本  </p>
+<h3 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h3><ul>
+<li><p>readelf  </p>
+<ul>
+<li>可重定位的对象文件(Relocatable file) .o文件   </li>
+<li>可执行的对象文件(Executable file)  </li>
+<li>可被共享的对象文件(Shared object file)  </li>
+<li>readelf -a  [elf_file] 查看所有信息  </li>
+<li>readelf -h  [elf_file] 查看概要信息</li>
+<li>readelf -S  [elf_file] 查看所有段信息(比如-g编译会有debug段)  </li>
+</ul>
+</li>
+<li><p>objdump  和readelf类似 但是可以反汇编elf文件  </p>
+<ul>
+<li>objdump -S [file]  反汇编所有目标代码  </li>
+</ul>
+</li>
+<li><p>size [file] 查看程序被映射到内存中映像的大小信息  </p>
+</li>
+</ul>
+<h3 id="其他手册-详细手册"><a href="#其他手册-详细手册" class="headerlink" title="其他手册/详细手册"></a>其他手册/详细手册</h3><h6 id="ldd-查看程序运行时库"><a href="#ldd-查看程序运行时库" class="headerlink" title="ldd   查看程序运行时库"></a>ldd   查看程序运行时库</h6><p>显示 依赖的库名,  实际记载到的库, 库加载后的开始地址 </p>
+<h6 id="strace"><a href="#strace" class="headerlink" title="strace"></a>strace</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div></pre></td><td class="code"><pre><div class="line">-c 统计每一系统调用的所执行的时间,次数和出错的次数等. </div><div class="line">-d 输出strace关于标准错误的调试信息. </div><div class="line">-f 跟踪由fork调用所产生的子进程. </div><div class="line">-ff 如果提供-o filename,则所有进程的跟踪结果输出到相应的filename.pid中,pid是各进程的进程号. </div><div class="line">-F 尝试跟踪vfork调用.在-f时,vfork不被跟踪. </div><div class="line">-h 输出简要的帮助信息. </div><div class="line">-i 输出系统调用的入口指针. </div><div class="line">-q 禁止输出关于脱离的消息. </div><div class="line">-r 打印出相对时间关于,,每一个系统调用. </div><div class="line">-t 在输出中的每一行前加上时间信息. </div><div class="line">-tt 在输出中的每一行前加上时间信息,微秒级. </div><div class="line">-ttt 微秒级输出,以秒了表示时间. </div><div class="line">-T 显示每一调用所耗的时间. </div><div class="line">-v 输出所有的系统调用.一些调用关于环境变量,状态,输入输出等调用由于使用频繁,默认不输出. </div><div class="line">-V 输出strace的版本信息. </div><div class="line">-x 以十六进制形式输出非标准字符串 </div><div class="line">-xx 所有字符串以十六进制形式输出. </div><div class="line">-a column </div><div class="line">设置返回值的输出位置.默认 为40. </div><div class="line">-e expr </div><div class="line">指定一个表达式,用来控制如何跟踪.格式如下: </div><div class="line">[qualifier=][!]value1[,value2]... </div><div class="line">qualifier只能是 trace,abbrev,verbose,raw,signal,read,write其中之一.value是用来限定的符号或数字.默认的 qualifier是 trace.感叹号是否定符号.例如: </div><div class="line">-eopen等价于 -e trace=open,表示只跟踪open调用.而-etrace!=open表示跟踪除了open以外的其他调用.有两个特殊的符号 all 和 none. </div><div class="line">注意有些shell使用!来执行历史记录里的命令,所以要使用\\. </div><div class="line">-e trace=set </div><div class="line">只跟踪指定的系统 调用.例如:-e trace=open,close,rean,write表示只跟踪这四个系统调用.默认的为set=all. </div><div class="line">-e trace=file </div><div class="line">只跟踪有关文件操作的系统调用. </div><div class="line">-e trace=process </div><div class="line">只跟踪有关进程控制的系统调用. </div><div class="line">-e trace=network </div><div class="line">跟踪与网络有关的所有系统调用. </div><div class="line">-e strace=signal </div><div class="line">跟踪所有与系统信号有关的 系统调用 </div><div class="line">-e trace=ipc </div><div class="line">跟踪所有与进程通讯有关的系统调用 </div><div class="line">-e abbrev=set </div><div class="line">设定 strace输出的系统调用的结果集.-v 等与 abbrev=none.默认为abbrev=all. </div><div class="line">-e raw=set </div><div class="line">将指 定的系统调用的参数以十六进制显示. </div><div class="line">-e signal=set </div><div class="line">指定跟踪的系统信号.默认为all.如 signal=!SIGIO(或者signal=!io),表示不跟踪SIGIO信号. </div><div class="line">-e read=set </div><div class="line">输出从指定文件中读出 的数据.例如: </div><div class="line">-e read=3,5 </div><div class="line">-e write=set </div><div class="line">输出写入到指定文件中的数据. </div><div class="line">-o filename </div><div class="line">将strace的输出写入文件filename </div><div class="line">-p pid </div><div class="line">跟踪指定的进程pid. </div><div class="line">-s strsize </div><div class="line">指定输出的字符串的最大长度.默认为32.文件名一直全部输出. </div><div class="line">-u username </div><div class="line">以username 的UID和GID执行被跟踪的命令</div></pre></td></tr></table></figure>
+<h6 id="vmstat"><a href="#vmstat" class="headerlink" title="vmstat"></a>vmstat</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">Procs（进程）:</div><div class="line">  r: 运行队列中进程数量</div><div class="line">  b: 等待IO的进程数量</div><div class="line">Memory（内存）:</div><div class="line">  swpd: 使用虚拟内存大小</div><div class="line">  free: 可用内存大小</div><div class="line">  buff: 用作缓冲的内存大小</div><div class="line">  cache: 用作缓存的内存大小</div><div class="line">Swap:</div><div class="line">  si: 每秒从交换区写到内存的大小</div><div class="line">  so: 每秒写入交换区的内存大小</div><div class="line">  IO：（现在的Linux版本块的大小为1024bytes）</div><div class="line">  bi: 每秒读取的块数</div><div class="line">  bo: 每秒写入的块数</div><div class="line">system：</div><div class="line">  in: 每秒中断数，包括时钟中断</div><div class="line">  cs: 每秒上下文切换数</div><div class="line">  CPU（以百分比表示）</div><div class="line">  us: 用户进程执行时间(user time)</div><div class="line">  sy: 系统进程执行时间(system time)</div><div class="line">  id: 空闲时间(包括IO等待时间)</div><div class="line">  wa: 等待IO时间</div></pre></td></tr></table></figure>
+<h6 id="sar"><a href="#sar" class="headerlink" title="sar"></a>sar</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">-A 汇总所有的报告</div><div class="line">-a 报告文件读写使用情况</div><div class="line">-B 报告附加的缓存的使用情况</div><div class="line">-b 报告缓存的使用情况</div><div class="line">-c 报告系统调用的使用情况</div><div class="line">-d 报告磁盘的使用情况</div><div class="line">-g 报告串口的使用情况</div><div class="line">-h 报告关于buffer使用的统计数据</div><div class="line">-m 报告IPC消息队列和信号量的使用情况</div><div class="line">-n 报告命名cache的使用情况</div><div class="line">-p 报告调页活动的使用情况</div><div class="line">-q 报告运行队列和交换队列的平均长度</div><div class="line">-R 报告进程的活动情况</div><div class="line">-r 报告没有使用的内存页面和硬盘块</div><div class="line">-u 报告CPU的利用率</div><div class="line">-v 报告进程、i节点、文件和锁表状态</div><div class="line">-w 报告系统交换活动状况</div><div class="line">-y 报告TTY设备活动状况</div></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/04/2019-11-04-aslr/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/11/04/2019-11-04-aslr/" itemprop="url">linux内存布局和ASLR</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-04T00:00:00+08:00">
+                2019-11-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="内存布局"><a href="#内存布局" class="headerlink" title="内存布局"></a>内存布局</h3><h6 id="基本布局"><a href="#基本布局" class="headerlink" title="基本布局"></a>基本布局</h6><p>内核地址空间范围  [0XFFFF 0000 0000 0000, 0XFFFF FFFF FFFF FFFF]<br>不规范地址空间    (0XFFFF 0000 0000 0000, 0X0000 FFFF FFFF FFFF)<br>用户地址空间      [0X0000 FFFF FFFF FFFF, 0X0000 0000 0000 0000]</p>
+<p>备注: 用户空间范围对应为0~TASK_SIZE = 2^VA_BITS</p>
+<ol>
+<li>用户地址空间默认最大宽度是48 如上  </li>
+<li>内核地址空间和用户地址空间宽度相同  </li>
+<li>不同的页长默认有不同的宽度, 例如4KB页长默认是39位   16:47, 64:42等, 可直接选择48位.  </li>
+<li>开启LVA支持并且页长64可以支持到最大宽度52   </li>
+</ol>
+<h6 id="内核布局"><a href="#内核布局" class="headerlink" title="内核布局"></a>内核布局</h6><h6 id="用户空间布局"><a href="#用户空间布局" class="headerlink" title="用户空间布局"></a>用户空间布局</h6><ul>
+<li>TASK_SIZE</li>
+<li><p>栈空间,  向下增长  具体位置为(STACK_TOP - 随机值), STACK_TOP对应TASK_SIZE  </p>
+<ul>
+<li>栈的位置不能超过STACK_TOP的5/6,并且保证128M的栈空间  对齐到页.   </li>
+</ul>
+</li>
+<li><p>内存映射区域(mmap) 老版本 TASK_UNMAAPPED_BASE+随机值 向上增长   </p>
+</li>
+<li>内存映射区域(mmap) 新版本 STACK_TOP - 栈最大长度 - 间隙 - 随机值  向下增长  x86 2.6.7版本后   <ul>
+<li>新老版本的差别在于 新版本 堆和内存映射区域向同一个空间增长, 栈有最大长度限制 在32位下通过压缩栈的空间大小可以让堆和内存映射区域获得最大的使用空间.   </li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>堆空间(Heap)  brk/sbrk分配</p>
+</li>
+<li><p>BSS段(Block Started by Symbol) 未初始化数据段或者初始化为0 的全局变量和静态局部变量    * loader加载程序时, 会将BSS段分配的内存清零, 在目标文件中并不占用空间(目标没有BSS段 只有记录名称和大小).  </p>
+</li>
+<li><p>数据段(Data)  已初始化并且非0的全局变量和静态局部变量 </p>
+<ul>
+<li>例如int a[10000] = {1,2,3, …}; 与 int a[10000];</li>
+<li>前者在程序中有完整的数据存储, 而后者指标记了使用的大小, 对于目标文件来说会节省非常多的存储空间.   </li>
+</ul>
+</li>
+<li><p>代码段(Text)  存放机器指令  只读  </p>
+<ul>
+<li>存放</li>
+</ul>
+</li>
+<li>保留区</li>
+<li>0</li>
+</ul>
+<h6 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h6><p>非主线程的栈是mmap出来的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">mem = mmap (NULL, size, prot,</div><div class="line">            MAP_PRIVATE | MAP_ANONYMOUS | MAP_STACK, -1, 0);</div></pre></td></tr></table></figure></p>
+<h3 id="ELF文件装载过程"><a href="#ELF文件装载过程" class="headerlink" title="ELF文件装载过程"></a>ELF文件装载过程</h3><h3 id="Address-space-layout-randomization-地址空间布局随机化"><a href="#Address-space-layout-randomization-地址空间布局随机化" class="headerlink" title="Address space layout randomization 地址空间布局随机化"></a>Address space layout randomization 地址空间布局随机化</h3><p>  可以防范return-to-libc 这种攻击</p>
+<h5 id="ASLR在linux中的三个等级以及配置和禁用方法"><a href="#ASLR在linux中的三个等级以及配置和禁用方法" class="headerlink" title="ASLR在linux中的三个等级以及配置和禁用方法"></a>ASLR在linux中的三个等级以及配置和禁用方法</h5><ul>
+<li>系统全局配置<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">/proc/sys/kernel/randomize_va_space</div><div class="line">0 = Disabled</div><div class="line">1 = Conservative Randomization</div><div class="line">2 = Full Randomization</div><div class="line">```  </div><div class="line"></div><div class="line">1. 关闭  </div><div class="line">2. 保守随机化: 共享库 栈 mmap  vdso随机化   </div><div class="line">3. 完全随机化:  包括brk分配的内存   </div><div class="line">    2.1 代码段和数据段的随机化需要PIE位置无关可执行程序的支持  编译链接时添加 -fpie -pie   </div><div class="line"></div><div class="line">&gt; brk和mmap的分配由glibc确定 默认规则是小于M_MMAP_THRESHOLD宏走brk  但是新系统的算法可能会让大于这个参数的临时分配也走brk   </div><div class="line"></div><div class="line">* 修改/关闭系统配置</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="sysctl-w-kernel-randomize-va-space-0"><a href="#sysctl-w-kernel-randomize-va-space-0" class="headerlink" title="sysctl -w kernel.randomize_va_space=0"></a>sysctl -w kernel.randomize_va_space=0</h1><h1 id="echo-0-gt-proc-sys-kernel-randomize-va-space"><a href="#echo-0-gt-proc-sys-kernel-randomize-va-space" class="headerlink" title="echo 0 &gt; /proc/sys/kernel/randomize_va_space"></a>echo 0 &gt; /proc/sys/kernel/randomize_va_space</h1><p>```</p>
+<ul>
+<li>进程个性化设置: 进程描述符的成员personality设置 ADDR_NO_RANDOMIZE     <ul>
+<li>setarch $(uname -m) -R [–addr-no-randomize] [target exe]</li>
+<li>例如 ldd ./benchmark_fast 在aslr环境下会看到每次so的内存位置都在变化   <ul>
+<li>setarch $(uname -m) -R ldd ./benchmark_fast 这样去查看则是固定不变的  </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>ldd命令  </p>
+<p>代码段/数据段的随机化<br>gcc 编译时</p>
+<p>PIE 位置无关可执行程序<br>PIC </p>
+<p>KASLR  内核地址空间布局随机化  </p>
+<h3 id="SDM框架对系统发展生命周期的过程描述"><a href="#SDM框架对系统发展生命周期的过程描述" class="headerlink" title="SDM框架对系统发展生命周期的过程描述"></a>SDM框架对系统发展生命周期的过程描述</h3><p>SDM(软件开发方法)框架是在SDLC在软件开发早起</p>
+<ul>
+<li>(SDM框架)软件开发过程有以下基本的核心活动内容<ul>
+<li>需求分析 (Requirements analysis)  </li>
+<li>领域设计 (Software design)  </li>
+<li>系统设计 (Software engineering)  </li>
+<li>编码开发 (Software construction)  </li>
+<li>功能验证 (Software testing)  </li>
+<li>错误修正 (Debugging)    </li>
+<li>部署交付 (Software deployment)  </li>
+<li>维护 (Software maintenance)
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/11/04/2019-11-04-aslr/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/10/01/2019-10-01-sdm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -341,8 +783,7 @@
 
       
         
-          
-            <h3 id="SDM框架对系统发展生命周期的过程描述"><a href="#SDM框架对系统发展生命周期的过程描述" class="headerlink" title="SDM框架对系统发展生命周期的过程描述"></a>SDM框架对系统发展生命周期的过程描述</h3><p>SDM(软件开发方法)框架是在SDLC在软件开发早起</p>
+          <h3 id="SDM框架对系统发展生命周期的过程描述"><a href="#SDM框架对系统发展生命周期的过程描述" class="headerlink" title="SDM框架对系统发展生命周期的过程描述"></a>SDM框架对系统发展生命周期的过程描述</h3><p>SDM(软件开发方法)框架是在SDLC在软件开发早起</p>
 <ul>
 <li>(SDM框架)软件开发过程有以下基本的核心活动内容<ul>
 <li>需求分析 (Requirements analysis)  </li>
@@ -352,20 +793,14 @@
 <li>功能验证 (Software testing)  </li>
 <li>错误修正 (Debugging)    </li>
 <li>部署交付 (Software deployment)  </li>
-<li>维护 (Software maintenance)   </li>
-</ul>
-</li>
-</ul>
-<p>根据所面临的现实问题以及所在环境的不同, 这些核心活动内容会在结构关系以及流程顺序上有相应的调整或者取舍 形成不同的规范/模型/框架等.   </p>
-<p>例如:  </p>
-<ul>
-<li>线性过程的瀑布式开发模型 SDLC:专注于完整正确的计划   </li>
-<li>快速迭代的敏捷开发   : 持续交付来响应频繁变更的计划(快速试错) </li>
-<li>加强发布协调的DevOps   </li>
-</ul>
-<p>同设计模式一样, 这些模型提炼自对现实问题的具体解决过程, 在实际应用中并不需要一定去拘泥某个规范.<br>实际上, 在一个具备一定规模的项目中, 往往同时存在多种不同的开发方式共同组成适合该项目的开发过程,  这种方式也称之为’混合模型’,  在混合模型中,  允许一个项目沿着最有效的路径去组织属于自己的活动内容,  合适现实问题解决模型才是最恰当的.  </p>
-
-          
+<li>维护 (Software maintenance)
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/01/2019-10-01-sdm/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -504,8 +939,7 @@
 
       
         
-          
-            <p>在认知心理学中, 问题解决的思维过程被描述为: 在问题空间下, 经过思考与推理, 达到目的的心理历程.<br>该过程分为四个阶段  </p>
+          <p>在认知心理学中, 问题解决的思维过程被描述为: 在问题空间下, 经过思考与推理, 达到目的的心理历程.<br>该过程分为四个阶段  </p>
 <ul>
 <li>发现问题</li>
 <li>分析（明确）问题</li>
@@ -523,249 +957,13 @@
 <li><strong>问题的解决</strong>  </li>
 </ul>
 <p>在这个过程中, 每个过程的推进都可能会伴随对其前向的阶段所做的处理发起修正, 在此过程中我们会不断的逼近’真正的问题’的问题定义, 以及’真正的问题解决’的结果, 从而采用形式化的方法寻找到最优的解决路径   </p>
-<h3 id="问题的存在"><a href="#问题的存在" class="headerlink" title="问题的存在"></a>问题的存在</h3><p>问题以不同的形式存在于不同的领域, 其核心是期望和现状的差异, 在不同的领域问题的描述方法和提出形式带有不同的领域特征, 例如:  </p>
-<ul>
-<li>数学领域 问题是关于数学对象和结构的疑问, 比如很具体的’求X^2-1=0的解’ 或者很一般的’为什么这些数在不同情况（领域）里面出现？请给出假说并证明之。’.     </li>
-<li>商业领域 问题是现状和期望的差别 例如”某项目上线后各项数据低于预期”  (Root-Cause-Analyze来分析问题)</li>
-<li>社会领域 问题是某类困境.  </li>
-</ul>
-<p>更具体一些, 差异主要分为两种情况:</p>
-<ul>
-<li>主体对上下文的理解和目标状态的理解程度的差异  </li>
-<li>客体和目标状态的差异    </li>
-</ul>
-<p>‘期望’表明了问题属于认知领域, 必须要有抱有期望的主体存在才会认识或者感知问题, 问题不是独立存在的, 但是对于第二种差异则有时候可以解释为 “问题是独立于问题解决的主体存在的客观世界的一种表达方式”, 只是被主体感知和表达出来, 因此 问题是否是独立存在的则有一定的争议,  但无论如何, 问题的提出必然依赖主体的认识和感知, 也就引入了解决问题的一个核心特征:   </p>
-<p><strong>主体对问题的认识会存在一定程度的偏差, 人在解决问题的过程中会’不断的更准确的定义重新定义问题的描述, 使得主体对问题的认识偏差不断的缩小(认识偏差可无限趋近但无法绝对消除)’, 从而更有利于发现符合逻辑的解释方法和解决方法.</strong>       </p>
-<ul>
-<li>问题<br>问题是期望和现状的差异, 是客观存在的, 是提问的基础.   </li>
-<li>提问<br>提问是把问题用合适的方法描述出来, 是解决问题的一个步骤.   </li>
-<li>目标<br>目标是达成’解决问题’的某个具体状态  </li>
-</ul>
-<h3 id="对问题的思考"><a href="#对问题的思考" class="headerlink" title="对问题的思考"></a>对问题的思考</h3><ul>
-<li><p>基本的问题特征  </p>
-<ul>
-<li><p>定义明确的问题和定义不明确的问题  </p>
-<ul>
-<li>定义明确的问题具有特定的最终目标 并且有明确的预期解决方案 而定义不明确的问题则没有    </li>
-</ul>
-</li>
-<li><p>复杂规模评估  </p>
-<ul>
-<li>组成问题的部分是否可枚举(不可枚举) </li>
-<li>组成问题的部分是否具备同质性(异质性)  </li>
-<li>组成问题的部分是否彼此连通(连接的层次关系, 分配关系) </li>
-<li>问题是否存在时间限制  </li>
-<li>问题是否对时间敏感 </li>
-<li>问题是否存在相位效应</li>
-<li>问题是否存在动态的不可预测性</li>
-<li>问题的来源是否透明可见  </li>
-<li>问题的发生过程是否透明可见  </li>
-<li>问题是否同时存在多个目标状态  <ul>
-<li>多个目标之间是否存在以上可能导致问题复杂的’规模,时间,动态,透明’等复杂问题.</li>
-<li>部分目标是否存在冲突, 不表达等相容问题  </li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>分析问题的基本障碍</p>
-<ul>
-<li>确认偏误</li>
-<li>心理(思维)定势</li>
-<li>功能固定性</li>
-<li>不必要的约束</li>
-<li>不相关的信息</li>
-</ul>
-</li>
-<li><p>结构化的问题分析方式   </p>
-<ul>
-<li>搜集和界定问题  <ul>
-<li>搜集相关的问题, 期望的组成部分, 现状的组成部分, 差异的组成部分, 以及产生这些部分或者问题的原因.   <ul>
-<li>确认期望结果集  </li>
-<li>确认非期望结果集(现状集)  </li>
-</ul>
-</li>
-<li>提出各种假设并进行试验, 根据结果排除部分问题或者得出明确的结论   </li>
-<li>界定问题域的所属集合以及其约束.   </li>
-</ul>
-</li>
-<li>逻辑树,问题域建模  <ul>
-<li>寻找逻辑关系和结构关系  <ul>
-<li>寻找时间/步骤顺序 (时序)  </li>
-<li>寻找空间/结构顺序 (拓扑)  </li>
-<li>寻找程度/重要性顺序 (主次非)  </li>
-</ul>
-</li>
-<li>基本思维方法<ul>
-<li>归纳推理  <ul>
-<li>归类分组 概括其共性  以MECE为准则尽量做到不重不漏 </li>
-</ul>
-</li>
-<li>演绎推理 <ul>
-<li>三段论 排除问题或者得出明确的结论   </li>
-</ul>
-</li>
-<li>质疑和提问  </li>
-</ul>
-</li>
-</ul>
-</li>
-<li>构建逻辑模型(逻辑树)  <ul>
-<li>自上而下构建<ul>
-<li>提出概括性模型并递归的拆解和具体化其组成部分,直到每个部分得到确认或者无法确认.   </li>
-</ul>
-</li>
-<li>自下而上构建<ul>
-<li>通过已确认的基础部分进行有序的组合构造/抽象出上层模型  </li>
-</ul>
-</li>
-</ul>
-</li>
-<li>验证和迭代模型   </li>
-</ul>
-</li>
-</ul>
-<h3 id="计算机科学领域中的问题解决"><a href="#计算机科学领域中的问题解决" class="headerlink" title="计算机科学领域中的问题解决"></a>计算机科学领域中的问题解决</h3><ul>
-<li>定义问题域 (定义问题集以及问题的约束集)   <ul>
-<li>包含期望实现的目标, 问题的上下文,   解决方案必须的基本功能和必须运行在的问题环境.   </li>
-</ul>
-</li>
-<li>通过形式化方法构建计算模型  <ul>
-<li>计算模型目前有两大分支, 图灵机和lambda演算, 他们的计算能力等价.   </li>
-<li>使用数学语言对问题域进行描述和分析, 可以对模型的可靠性和稳健性进行论证, 但因成本问题形式化的方法可以进行分级实现,  设计规范, 实现规范, 验证规范.     </li>
-<li>构建的基本策略  <ul>
-<li>通过处理部分有序集以对计算领域进行建模, 其中有序的元素解释为信息或者计算的部分, 其中次序较高的元素以一致的方式扩展旗下方元素的信息.  通过这个方式, 域理论以非常一般化的途径对直觉概念进行形式化的逼近和收敛.    </li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>问题解决域 系统模型构建   </p>
-<ul>
-<li>问题解决域定义了解决问题的过程(实现路径)  </li>
-<li>问题解决域定义了解决问题的目标</li>
-<li>问题解决域定义了解决方案所必须运行的抽象环境.   </li>
-<li>解决方案从解决方案所运行的抽象环境植入到问题环境时, 这两个环境的差异往往是出错的原因.   </li>
-</ul>
-</li>
-<li><p>杂注   </p>
-<ul>
-<li>工程能力往往是针对问题解决域而言的, 在软件领域,  工作量往往是集中在工程实现层面的.   </li>
-<li>业务能力则是相对于问题域的而言,  对业务内容的敏感性, 对核心问题的洞察 .    </li>
-<li>数学素养, 几乎任何一个领域的成熟/发达程度都和这个领域中对形式化方法的渗透等级表现出极强的正相关.     </li>
-</ul>
-</li>
-</ul>
-<h3 id="相关理论"><a href="#相关理论" class="headerlink" title="相关理论:"></a>相关理论:</h3><ul>
-<li><p>序理论 </p>
-<ul>
-<li>序理论研究数学排序的直觉概念上的各种二元关系.  <ul>
-<li>从自然数的&lt;=次序这个直觉概念很容易扩展到其他数的集合的排序, 这种大于或者小于另外一个数的概念 一般是记数系统(数制)的基本直觉. </li>
-</ul>
-</li>
-<li><p>序的概念是超出了具有直接,直观的顺序或者相对数量感觉的上下文, 在其他上下文中 序 可以获得 包含或者专用的概念,  在抽象上相当于子集关系.  </p>
-<ul>
-<li>通过指定 “&lt;=关系必须是数学意义上的次序关系”这个属性,  序理论可以在一般性(普遍)架构下获得样例中的直觉次序<ul>
-<li>这种抽象的方法可以在一般情况下得出许多定理而不必关注于任何特定的序的细节, 然后这些定理可以轻松的转移到不太抽象的应用程序中.   </li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>(非严格)偏序  只对部分元素成立关系(部分可比 比如集合的包含关系, 并不是任何两个集合之间都存在包含关系)  </p>
-<ul>
-<li>偏序集合: 配备了偏序关系的集合    </li>
-<li>定义: <ul>
-<li>自反性:   对任意x∈A，有xRx  </li>
-<li>反对称性: 对任意x,y∈A，若xRy，且yRx，则x=y   </li>
-<li>传递性:   对任意x, y,z∈A，若xRy，且yRz，则xRz。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>全序：对集合中任意两个元素都有关系  <ul>
-<li>全序关系必然是偏序关系 </li>
-</ul>
-</li>
-<li>严格次序  <ul>
-<li>&lt;=为平常次序,  &lt;为严格次序  </li>
-</ul>
-</li>
-<li>严格偏序 <ul>
-<li>定义<ul>
-<li>反自反性:   对任意x∈A，xRx必然不成立  </li>
-<li>非对称性: 对任意x,y∈A，若xRy不成立，且yRx不成立，则x=y ;   如果xRy成立则yRx一定不成立    </li>
-<li>传递性:   对任意x, y,z∈A，若xRy，且yRz，则xRz。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>可视化 <ul>
-<li>可以使用hasse图等直观的表示部分有序的元素和关系 </li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>域理论:  </p>
-<ul>
-<li>域是特定种类的偏序集合, 因此域理论也可以看做序理论的分支.   </li>
-<li><p>域理论通过处理部分有序集以对计算领域进行建模, 其中有序的元素解释为信息或者计算的部分, 其中次序较高的元素以一致的方式扩展旗下方元素的信息.  通过这个方式, 域理论以非常一般化的途径对直觉概念进行形式化的逼近和收敛.  </p>
-<ol>
-<li>通过对计算的每个域增加一个额外的元素 即形式化’部分信息’或者’不完全信息’的概念,  来构造演算的模型,  并且计算的域被装备一个’次序关系’, 这其中的’未定义结果’或者说’部分信息’为最小元素. </li>
-<li>在这个模型之上, 计算的域总是部分有序的,  这种排序表示信息或者知识的层次, 元素在这个次序上越高, 它就更加明确和包含更多信息,  更低的元素表示不完全的知识或者中间结果.  </li>
-<li>接着通过在这个域上重复的应用单调函数来精制结果, 到达一个不动点(递归定义中的f(x)=x, 闭包算子的“封闭要素”)等价于完成一个计算.   </li>
-</ol>
-</li>
-<li><p>收敛规范</p>
-<ul>
-<li>在域理论中有一个重要的概念是有向子集(例如A中任意两个元素a和b, 存在一个元素c(可能与a或者b相等)使得 a&lt;=c 和 b &lt;= c), 有向子集是顺序的非空子集, 其中任何两个元素的上限均为该子集的元素.  <ul>
-<li>意味着有向子集的任何两个信息都被子集中的其他元素一致的扩展, 也因此可以将有向子集认为是一致的规范.   </li>
-<li>有向子集是域中没有两个元素矛盾的部分结果集, 这种可以比较的概念可以用做收敛序列的分析, 其中每个元素比上个元素更加具体.   在度量空间中, 序列的许多方面的作用类似域理论中的有向子集的作用.  </li>
-<li>“有向, 偏序” 很自然的我们会对dcpo 有向完全偏序感兴趣  </li>
-<li>把指定的局部结果看做不完整的知识 这个基础的思想中可以得到另外一个理想的属性 : 最小元素的存在.   最小元素对没有信息的状态进行建模-大多数计算的开始地方, 或者可以把最小元素作为完全不返回任何结果的计算输出. (域理论中的不动点)  </li>
-</ul>
-</li>
-</ul>
-</li>
-<li>域的基础  <ul>
-<li>因为我们无法计算无限大的对象 因此在实践中 “是否可以保证可以将域的所有元素作为更简单元素的极限来获得” 非常重要, 但是通常我们还是希望可以将它们任意近似地逼近.  </li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>Root-Cause-Analyze  </p>
-<ul>
-<li>核心问题和根本原因    </li>
-<li>产生问题的来源链路上, root位置的的原因为 root cause  根本原因.   </li>
-<li>不同的原因产生不同问题, 在组成’差异’的子集中, 核心问题来自于root cause, 其他问题 或者不是造成’差异’的主要部分,  也或者是属于核心问题的衍生.  </li>
-</ul>
-</li>
-<li><p>科学方法的基本循环步骤  (表征, 假设, 验证)    </p>
-<ul>
-<li>问题的认知与表述 (表征, 通过观察和分析明确问题)  <ul>
-<li>问题需要满足 可观察 可经验（empirical） 可量度   </li>
-</ul>
-</li>
-<li>提出假设  <ul>
-<li>提出一个达到解决问题的目标       </li>
-</ul>
-</li>
-<li>预测(解释)     <ul>
-<li>对提出的假设或者理论进行归纳和演绎推论  </li>
-</ul>
-</li>
-<li>实验   <ul>
-<li>对上述表征 假设 预测进行测试验证   </li>
-</ul>
-</li>
-<li>实验结果分析  提出新的假设   </li>
-<li>发布结果   </li>
-</ul>
-</li>
-</ul>
-
-          
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/09/16/2019-09-16-problem-domain/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1693,295 +1891,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/01/07/2019-01-08-fps-synchronization/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/07/2019-01-08-fps-synchronization/" itemprop="url">FPS游戏同步术语</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-07T17:21:00+08:00">
-                2019-01-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>在一个采用C/S架构的游戏中，客户端和服务端的游戏状态有差异是不可避免的。客户端和服务端各自都维护了一份游戏状态。这两份游戏状态依赖网络包通信保持同步。但由于各客户端到服务端的时延具有不确定性，游戏状态同步变得非常困难。通常服务端在游戏拓扑中承载的是状态仲裁者的角色，客户端玩家看到的“经验证”的有效游戏状态总是延后于服务端的游戏状态。  </p>
-<p>网络时延是必然存在的，所以游戏状态的不同步也是必然存在的。但我们可以通过技术手段尽量减轻不同步问题对用户体验带来的影响。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/07/2019-01-08-fps-synchronization/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/01/07/2019-01-07-elite/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/07/2019-01-07-elite/" itemprop="url">ELITE</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-07T03:21:00+08:00">
-                2019-01-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="对事物有极强的好奇心，并愿意与有好奇心的人惺惺相惜"><a href="#对事物有极强的好奇心，并愿意与有好奇心的人惺惺相惜" class="headerlink" title="对事物有极强的好奇心，并愿意与有好奇心的人惺惺相惜"></a>对事物有极强的好奇心，并愿意与有好奇心的人惺惺相惜</h3><hr>
-<p>在我看来，「好奇心」是辨别一个人是否聪明的「入门标准」。所谓入门标准，是指：<a href="#">有好奇心的人未必聪明，但没有好奇心的人几乎一定不聪明。</a>  </p>
-<p>这里所说的「好奇心」，不是指爱八卦或者窥探别人的隐私之类，而是指：<a href="#">在大部分人习以为常的场景下，有探究规律本质的欲望。</a>  </p>
-<blockquote>
-<p>举个例子：人类在地球上生活了那么多年，看了那么多日出日落，都没觉得有什么奇怪的地方。<br>但有一个人突然很好奇，为什么太阳从东边升起，西边落下，两次日出的时间间隔又差不多？<br>能意识到这个问题的人，就有成为聪明人的潜质。  </p>
-</blockquote>
-<p>当然，「好奇心」是可以伪造的。有些人，为了证明自己很有好奇心（继而证明自己很聪明），总是喜欢问各种各样「不明觉厉」的问题。  </p>
-<p>为此，我特意添上了后半句话：真正有好奇心的人，是愿意和另一个有好奇心的人惺惺相惜的。  </p>
-<p>如果你看到一个人，自己喜欢问很多问题，但是在别人提类似问题的时候却显得十分不耐烦，那就并不能说明他是一个有好奇心的人，只能说明他是「好表现」的人。   </p>
-<p>对于辨别一个人是否真正有好奇心，我这边有一个小 trick：   </p>
-<blockquote>
-<p>和人聊天时，有时对方会提到星座。如果他表现得对星座这个话题很感兴趣，我可能会向他抛出一个问题：<br><strong>为什么很多人会觉得 处（chǔ）女座 的人有强（qiǎng）迫症呢？</strong>   </p>
-</blockquote>
-<p>这个问题是很开放的，并没有什么标准答案。但我注意到，有相当一部分人会对这个问题表现出鄙夷和不耐烦，而他们本身却不是不相信星座的人。后来的事实证明，那些几乎都是不太聪明的人。   </p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/07/2019-01-07-elite/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2027,7 +1941,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-count">21</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>

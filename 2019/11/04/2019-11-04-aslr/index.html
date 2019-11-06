@@ -94,16 +94,16 @@
 
 
 
-<meta name="description" content="SDM框架对系统发展生命周期的过程描述SDM(软件开发方法)框架是在SDLC在软件开发早起  (SDM框架)软件开发过程有以下基本的核心活动内容 需求分析 (Requirements analysis)   领域设计 (Software design)   系统设计 (Software engineering)   编码开发 (Software construction)   功能验证 (Soft">
+<meta name="description" content="内存布局基本布局内核地址空间范围  [0XFFFF 0000 0000 0000, 0XFFFF FFFF FFFF FFFF]不规范地址空间    (0XFFFF 0000 0000 0000, 0X0000 FFFF FFFF FFFF)用户地址空间      [0X0000 FFFF FFFF FFFF, 0X0000 0000 0000 0000] 备注: 用户空间范围对应为0~TASK_">
 <meta property="og:type" content="article">
-<meta property="og:title" content="SDM模型">
-<meta property="og:url" content="https://zsummer.github.io/2019/10/01/2019-10-01-sdm/index.html">
+<meta property="og:title" content="linux内存布局和ASLR">
+<meta property="og:url" content="https://zsummer.github.io/2019/11/04/2019-11-04-aslr/index.html">
 <meta property="og:site_name" content="关于夏天的一切">
-<meta property="og:description" content="SDM框架对系统发展生命周期的过程描述SDM(软件开发方法)框架是在SDLC在软件开发早起  (SDM框架)软件开发过程有以下基本的核心活动内容 需求分析 (Requirements analysis)   领域设计 (Software design)   系统设计 (Software engineering)   编码开发 (Software construction)   功能验证 (Soft">
-<meta property="og:updated_time" content="2019-11-04T08:55:43.984Z">
+<meta property="og:description" content="内存布局基本布局内核地址空间范围  [0XFFFF 0000 0000 0000, 0XFFFF FFFF FFFF FFFF]不规范地址空间    (0XFFFF 0000 0000 0000, 0X0000 FFFF FFFF FFFF)用户地址空间      [0X0000 FFFF FFFF FFFF, 0X0000 0000 0000 0000] 备注: 用户空间范围对应为0~TASK_">
+<meta property="og:updated_time" content="2019-11-06T09:04:51.557Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SDM模型">
-<meta name="twitter:description" content="SDM框架对系统发展生命周期的过程描述SDM(软件开发方法)框架是在SDLC在软件开发早起  (SDM框架)软件开发过程有以下基本的核心活动内容 需求分析 (Requirements analysis)   领域设计 (Software design)   系统设计 (Software engineering)   编码开发 (Software construction)   功能验证 (Soft">
+<meta name="twitter:title" content="linux内存布局和ASLR">
+<meta name="twitter:description" content="内存布局基本布局内核地址空间范围  [0XFFFF 0000 0000 0000, 0XFFFF FFFF FFFF FFFF]不规范地址空间    (0XFFFF 0000 0000 0000, 0X0000 FFFF FFFF FFFF)用户地址空间      [0X0000 FFFF FFFF FFFF, 0X0000 0000 0000 0000] 备注: 用户空间范围对应为0~TASK_">
 
 
 
@@ -132,13 +132,13 @@
 
 
 
-  <link rel="canonical" href="https://zsummer.github.io/2019/10/01/2019-10-01-sdm/"/>
+  <link rel="canonical" href="https://zsummer.github.io/2019/11/04/2019-11-04-aslr/"/>
 
 
 
 
 
-  <title>SDM模型 | 关于夏天的一切</title>
+  <title>linux内存布局和ASLR | 关于夏天的一切</title>
   
 
 
@@ -251,7 +251,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/10/01/2019-10-01-sdm/">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/04/2019-11-04-aslr/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="夏天">
@@ -268,7 +268,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">SDM模型</h1>
+          <h1 class="post-title" itemprop="name headline">linux内存布局和ASLR</h1>
         
 
         <div class="post-meta">
@@ -280,8 +280,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-01T00:00:00+08:00">
-                2019-10-01
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-04T00:00:00+08:00">
+                2019-11-04
               </time>
             
 
@@ -340,7 +340,69 @@
       
 
       
-        <h3 id="SDM框架对系统发展生命周期的过程描述"><a href="#SDM框架对系统发展生命周期的过程描述" class="headerlink" title="SDM框架对系统发展生命周期的过程描述"></a>SDM框架对系统发展生命周期的过程描述</h3><p>SDM(软件开发方法)框架是在SDLC在软件开发早起</p>
+        <h3 id="内存布局"><a href="#内存布局" class="headerlink" title="内存布局"></a>内存布局</h3><h6 id="基本布局"><a href="#基本布局" class="headerlink" title="基本布局"></a>基本布局</h6><p>内核地址空间范围  [0XFFFF 0000 0000 0000, 0XFFFF FFFF FFFF FFFF]<br>不规范地址空间    (0XFFFF 0000 0000 0000, 0X0000 FFFF FFFF FFFF)<br>用户地址空间      [0X0000 FFFF FFFF FFFF, 0X0000 0000 0000 0000]</p>
+<p>备注: 用户空间范围对应为0~TASK_SIZE = 2^VA_BITS</p>
+<ol>
+<li>用户地址空间默认最大宽度是48 如上  </li>
+<li>内核地址空间和用户地址空间宽度相同  </li>
+<li>不同的页长默认有不同的宽度, 例如4KB页长默认是39位   16:47, 64:42等, 可直接选择48位.  </li>
+<li>开启LVA支持并且页长64可以支持到最大宽度52   </li>
+</ol>
+<h6 id="内核布局"><a href="#内核布局" class="headerlink" title="内核布局"></a>内核布局</h6><h6 id="用户空间布局"><a href="#用户空间布局" class="headerlink" title="用户空间布局"></a>用户空间布局</h6><ul>
+<li>TASK_SIZE</li>
+<li><p>栈空间,  向下增长  具体位置为(STACK_TOP - 随机值), STACK_TOP对应TASK_SIZE  </p>
+<ul>
+<li>栈的位置不能超过STACK_TOP的5/6,并且保证128M的栈空间  对齐到页.   </li>
+</ul>
+</li>
+<li><p>内存映射区域(mmap) 老版本 TASK_UNMAAPPED_BASE+随机值 向上增长   </p>
+</li>
+<li>内存映射区域(mmap) 新版本 STACK_TOP - 栈最大长度 - 间隙 - 随机值  向下增长  x86 2.6.7版本后   <ul>
+<li>新老版本的差别在于 新版本 堆和内存映射区域向同一个空间增长, 栈有最大长度限制 在32位下通过压缩栈的空间大小可以让堆和内存映射区域获得最大的使用空间.   </li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>堆空间(Heap)  brk/sbrk分配</p>
+</li>
+<li><p>BSS段(Block Started by Symbol) 未初始化数据段或者初始化为0 的全局变量和静态局部变量    * loader加载程序时, 会将BSS段分配的内存清零, 在目标文件中并不占用空间(目标没有BSS段 只有记录名称和大小).  </p>
+</li>
+<li><p>数据段(Data)  已初始化并且非0的全局变量和静态局部变量 </p>
+<ul>
+<li>例如int a[10000] = {1,2,3, …}; 与 int a[10000];</li>
+<li>前者在程序中有完整的数据存储, 而后者指标记了使用的大小, 对于目标文件来说会节省非常多的存储空间.   </li>
+</ul>
+</li>
+<li><p>代码段(Text)  存放机器指令  只读  </p>
+<ul>
+<li>存放</li>
+</ul>
+</li>
+<li>保留区</li>
+<li>0</li>
+</ul>
+<h6 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h6><p>非主线程的栈是mmap出来的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">mem = mmap (NULL, size, prot,</div><div class="line">            MAP_PRIVATE | MAP_ANONYMOUS | MAP_STACK, -1, 0);</div></pre></td></tr></table></figure></p>
+<h3 id="ELF文件装载过程"><a href="#ELF文件装载过程" class="headerlink" title="ELF文件装载过程"></a>ELF文件装载过程</h3><h3 id="Address-space-layout-randomization-地址空间布局随机化"><a href="#Address-space-layout-randomization-地址空间布局随机化" class="headerlink" title="Address space layout randomization 地址空间布局随机化"></a>Address space layout randomization 地址空间布局随机化</h3><p>  可以防范return-to-libc 这种攻击</p>
+<h5 id="ASLR在linux中的三个等级以及配置和禁用方法"><a href="#ASLR在linux中的三个等级以及配置和禁用方法" class="headerlink" title="ASLR在linux中的三个等级以及配置和禁用方法"></a>ASLR在linux中的三个等级以及配置和禁用方法</h5><ul>
+<li>系统全局配置<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">/proc/sys/kernel/randomize_va_space</div><div class="line">0 = Disabled</div><div class="line">1 = Conservative Randomization</div><div class="line">2 = Full Randomization</div><div class="line">```  </div><div class="line"></div><div class="line">1. 关闭  </div><div class="line">2. 保守随机化: 共享库 栈 mmap  vdso随机化   </div><div class="line">3. 完全随机化:  包括brk分配的内存   </div><div class="line">    2.1 代码段和数据段的随机化需要PIE位置无关可执行程序的支持  编译链接时添加 -fpie -pie   </div><div class="line"></div><div class="line">&gt; brk和mmap的分配由glibc确定 默认规则是小于M_MMAP_THRESHOLD宏走brk  但是新系统的算法可能会让大于这个参数的临时分配也走brk   </div><div class="line"></div><div class="line">* 修改/关闭系统配置</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="sysctl-w-kernel-randomize-va-space-0"><a href="#sysctl-w-kernel-randomize-va-space-0" class="headerlink" title="sysctl -w kernel.randomize_va_space=0"></a>sysctl -w kernel.randomize_va_space=0</h1><h1 id="echo-0-gt-proc-sys-kernel-randomize-va-space"><a href="#echo-0-gt-proc-sys-kernel-randomize-va-space" class="headerlink" title="echo 0 &gt; /proc/sys/kernel/randomize_va_space"></a>echo 0 &gt; /proc/sys/kernel/randomize_va_space</h1><p>```</p>
+<ul>
+<li>进程个性化设置: 进程描述符的成员personality设置 ADDR_NO_RANDOMIZE     <ul>
+<li>setarch $(uname -m) -R [–addr-no-randomize] [target exe]</li>
+<li>例如 ldd ./benchmark_fast 在aslr环境下会看到每次so的内存位置都在变化   <ul>
+<li>setarch $(uname -m) -R ldd ./benchmark_fast 这样去查看则是固定不变的  </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>ldd命令  </p>
+<p>代码段/数据段的随机化<br>gcc 编译时</p>
+<p>PIE 位置无关可执行程序<br>PIC </p>
+<p>KASLR  内核地址空间布局随机化  </p>
+<h3 id="SDM框架对系统发展生命周期的过程描述"><a href="#SDM框架对系统发展生命周期的过程描述" class="headerlink" title="SDM框架对系统发展生命周期的过程描述"></a>SDM框架对系统发展生命周期的过程描述</h3><p>SDM(软件开发方法)框架是在SDLC在软件开发早起</p>
 <ul>
 <li>(SDM框架)软件开发过程有以下基本的核心活动内容<ul>
 <li>需求分析 (Requirements analysis)  </li>
@@ -386,8 +448,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/16/2019-09-16-problem-domain/" rel="next" title="问题的解决">
-                <i class="fa fa-chevron-left"></i> 问题的解决
+              <a href="/2019/10/01/2019-10-01-sdm/" rel="next" title="SDM模型">
+                <i class="fa fa-chevron-left"></i> SDM模型
               </a>
             
           </div>
@@ -396,8 +458,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/11/04/2019-11-04-aslr/" rel="prev" title="linux内存布局和ASLR">
-                linux内存布局和ASLR <i class="fa fa-chevron-right"></i>
+              <a href="/2019/11/05/2019-11-05-fast-check-linux/" rel="prev" title="linux快速排查问题的命令">
+                linux快速排查问题的命令 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -523,7 +585,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#SDM框架对系统发展生命周期的过程描述"><span class="nav-number">1.</span> <span class="nav-text">SDM框架对系统发展生命周期的过程描述</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#内存布局"><span class="nav-number">1.</span> <span class="nav-text">内存布局</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#基本布局"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">基本布局</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#内核布局"><span class="nav-number">1.0.0.2.</span> <span class="nav-text">内核布局</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#用户空间布局"><span class="nav-number">1.0.0.3.</span> <span class="nav-text">用户空间布局</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#多线程"><span class="nav-number">1.0.0.4.</span> <span class="nav-text">多线程</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ELF文件装载过程"><span class="nav-number">2.</span> <span class="nav-text">ELF文件装载过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Address-space-layout-randomization-地址空间布局随机化"><span class="nav-number">3.</span> <span class="nav-text">Address space layout randomization 地址空间布局随机化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#ASLR在linux中的三个等级以及配置和禁用方法"><span class="nav-number">3.0.1.</span> <span class="nav-text">ASLR在linux中的三个等级以及配置和禁用方法</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#sysctl-w-kernel-randomize-va-space-0"><span class="nav-number"></span> <span class="nav-text">sysctl -w kernel.randomize_va_space=0</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#echo-0-gt-proc-sys-kernel-randomize-va-space"><span class="nav-number"></span> <span class="nav-text">echo 0 > /proc/sys/kernel/randomize_va_space</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SDM框架对系统发展生命周期的过程描述"><span class="nav-number">1.</span> <span class="nav-text">SDM框架对系统发展生命周期的过程描述</span></a></li></ol></div>
             
 
           </div>
