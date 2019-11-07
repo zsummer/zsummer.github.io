@@ -100,7 +100,7 @@
 <meta property="og:url" content="https://zsummer.github.io/2019/11/04/2019-11-04-aslr/index.html">
 <meta property="og:site_name" content="关于夏天的一切">
 <meta property="og:description" content="内存布局基本布局内核地址空间范围  [0XFFFF 0000 0000 0000, 0XFFFF FFFF FFFF FFFF]不规范地址空间    (0XFFFF 0000 0000 0000, 0X0000 FFFF FFFF FFFF)用户地址空间      [0X0000 FFFF FFFF FFFF, 0X0000 0000 0000 0000] 备注: 用户空间范围对应为0~TASK_">
-<meta property="og:updated_time" content="2019-11-06T09:04:51.557Z">
+<meta property="og:updated_time" content="2019-11-07T14:24:59.715Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux内存布局和ASLR">
 <meta name="twitter:description" content="内存布局基本布局内核地址空间范围  [0XFFFF 0000 0000 0000, 0XFFFF FFFF FFFF FFFF]不规范地址空间    (0XFFFF 0000 0000 0000, 0X0000 FFFF FFFF FFFF)用户地址空间      [0X0000 FFFF FFFF FFFF, 0X0000 0000 0000 0000] 备注: 用户空间范围对应为0~TASK_">
@@ -347,6 +347,8 @@
 <li>内核地址空间和用户地址空间宽度相同  </li>
 <li>不同的页长默认有不同的宽度, 例如4KB页长默认是39位   16:47, 64:42等, 可直接选择48位.  </li>
 <li>开启LVA支持并且页长64可以支持到最大宽度52   </li>
+<li>通过getconf PAGE_SIZE 可以查看系统的页大小  </li>
+<li>通过/proc/$pid/maps或者pmap可以查看一个进程的实际内存布局 </li>
 </ol>
 <h6 id="内核布局"><a href="#内核布局" class="headerlink" title="内核布局"></a>内核布局</h6><h6 id="用户空间布局"><a href="#用户空间布局" class="headerlink" title="用户空间布局"></a>用户空间布局</h6><ul>
 <li>TASK_SIZE</li>
@@ -387,43 +389,9 @@
 <li>系统全局配置<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">/proc/sys/kernel/randomize_va_space</div><div class="line">0 = Disabled</div><div class="line">1 = Conservative Randomization</div><div class="line">2 = Full Randomization</div><div class="line">```  </div><div class="line"></div><div class="line">1. 关闭  </div><div class="line">2. 保守随机化: 共享库 栈 mmap  vdso随机化   </div><div class="line">3. 完全随机化:  包括brk分配的内存   </div><div class="line">    2.1 代码段和数据段的随机化需要PIE位置无关可执行程序的支持  编译链接时添加 -fpie -pie   </div><div class="line"></div><div class="line">&gt; brk和mmap的分配由glibc确定 默认规则是小于M_MMAP_THRESHOLD宏走brk  但是新系统的算法可能会让大于这个参数的临时分配也走brk   </div><div class="line"></div><div class="line">* 修改/关闭系统配置</div></pre></td></tr></table></figure>
 </li>
 </ul>
-<h1 id="sysctl-w-kernel-randomize-va-space-0"><a href="#sysctl-w-kernel-randomize-va-space-0" class="headerlink" title="sysctl -w kernel.randomize_va_space=0"></a>sysctl -w kernel.randomize_va_space=0</h1><h1 id="echo-0-gt-proc-sys-kernel-randomize-va-space"><a href="#echo-0-gt-proc-sys-kernel-randomize-va-space" class="headerlink" title="echo 0 &gt; /proc/sys/kernel/randomize_va_space"></a>echo 0 &gt; /proc/sys/kernel/randomize_va_space</h1><p>```</p>
-<ul>
-<li>进程个性化设置: 进程描述符的成员personality设置 ADDR_NO_RANDOMIZE     <ul>
-<li>setarch $(uname -m) -R [–addr-no-randomize] [target exe]</li>
-<li>例如 ldd ./benchmark_fast 在aslr环境下会看到每次so的内存位置都在变化   <ul>
-<li>setarch $(uname -m) -R ldd ./benchmark_fast 这样去查看则是固定不变的  </li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p>ldd命令  </p>
-<p>代码段/数据段的随机化<br>gcc 编译时</p>
-<p>PIE 位置无关可执行程序<br>PIC </p>
-<p>KASLR  内核地址空间布局随机化  </p>
-<h3 id="SDM框架对系统发展生命周期的过程描述"><a href="#SDM框架对系统发展生命周期的过程描述" class="headerlink" title="SDM框架对系统发展生命周期的过程描述"></a>SDM框架对系统发展生命周期的过程描述</h3><p>SDM(软件开发方法)框架是在SDLC在软件开发早起</p>
-<ul>
-<li>(SDM框架)软件开发过程有以下基本的核心活动内容<ul>
-<li>需求分析 (Requirements analysis)  </li>
-<li>领域设计 (Software design)  </li>
-<li>系统设计 (Software engineering)  </li>
-<li>编码开发 (Software construction)  </li>
-<li>功能验证 (Software testing)  </li>
-<li>错误修正 (Debugging)    </li>
-<li>部署交付 (Software deployment)  </li>
-<li>维护 (Software maintenance)   <a id="more"></a> 
-根据所面临的现实问题以及所在环境的不同, 这些核心活动内容会在结构关系以及流程顺序上有相应的调整或者取舍 形成不同的规范/模型/框架等.   </li>
-</ul>
-</li>
-</ul>
-<p>例如:  </p>
-<ul>
-<li>线性过程的瀑布式开发模型 SDLC:专注于完整正确的计划   </li>
-<li>快速迭代的敏捷开发   : 持续交付来响应频繁变更的计划(快速试错) </li>
-<li>加强发布协调的DevOps   </li>
-</ul>
-<p>同设计模式一样, 这些模型提炼自对现实问题的具体解决过程, 在实际应用中并不需要一定去拘泥某个规范.<br>实际上, 在一个具备一定规模的项目中, 往往同时存在多种不同的开发方式共同组成适合该项目的开发过程,  这种方式也称之为’混合模型’,  在混合模型中,  允许一个项目沿着最有效的路径去组织属于自己的活动内容,  合适现实问题解决模型才是最恰当的.  </p>
+<h1 id="sysctl-w-kernel-randomize-va-space-0"><a href="#sysctl-w-kernel-randomize-va-space-0" class="headerlink" title="sysctl -w kernel.randomize_va_space=0"></a>sysctl -w kernel.randomize_va_space=0</h1><h1 id="echo-0-gt-proc-sys-kernel-randomize-va-space"><a href="#echo-0-gt-proc-sys-kernel-randomize-va-space" class="headerlink" title="echo 0 &gt; /proc/sys/kernel/randomize_va_space"></a>echo 0 &gt; /proc/sys/kernel/randomize_va_space</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">* 进程个性化设置: 进程描述符的成员personality设置 ADDR_NO_RANDOMIZE     </div><div class="line">  * setarch $(uname -m) -R [--addr-no-randomize] [target exe]</div><div class="line">  * 例如 ldd ./benchmark_fast 在aslr环境下会看到每次so的内存位置都在变化   </div><div class="line">    * setarch $(uname -m) -R ldd ./benchmark_fast 这样去查看则是固定不变的  </div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">ldd命令  </div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">代码段/数据段的随机化  </div><div class="line">gcc 编译时</div><div class="line"></div><div class="line"></div><div class="line">PIE 位置无关可执行程序  </div><div class="line">PIC </div><div class="line"></div><div class="line">KASLR  内核地址空间布局随机化  </div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">pmap x86一个带共享内存的进程.  00007f1-00007f2之间是64G大小的空间</div></pre></td></tr></table></figure>
+<p>pmap 22621</p>
+<p>22621:   ../../???/bin/???  –conf-file=../cfg.xml<br>0000000000400000  32460K r-x–  /data/home/???/bin/???<br>00000000025b3000    724K rw—  /data/home/???/bin/???<br>0000000002668000  49260K rw—    [ anon ]<br>0000000006835000  25172K rw—    [ anon ]<br>00000000080ca000 284456K rw—    [ anon ]<br>00000000404e9000    128K rw—    [ anon ]<br>0000000040fe3000    128K rw—    [ anon ]<br>00007f1000000000 2511808K rw-s-    [ shmid=0x39020085 ]<br>00007f213db99000      4K —–    [ anon ]<br>00007f213db9a000   8192K rw—    [ anon ]<br>00007f213e39a000   7336K r–s-  /dev/shm/???/???.nav<br>00007f213eac4000   8588K r–s-  /dev/shm/???/???.nav<br>00007f213f327000   7336K r–s-  /dev/shm/???/???.nav<br>00007f213fa51000   2052K rw-s-    [ shmid=0x39018084 ]<br>00007f213fc52000  40964K rw-s-    [ shmid=0x38f40068 ]<br>00007f2142453000  40964K rw-s-    [ shmid=0x38dd003a ]<br>00007f2144c54000  40964K rw-s-    [ shmid=0x38db0036 ]<br>00007f2147455000  40964K rw-s-    [ shmid=0x38d7802f ]<br>00007f2149c56000  40964K rw-s-    [ shmid=0x38d40028 ]<br>00007f214c457000  40964K rw-s-    [ shmid=0x38d10022 ]<br>00007f214ec58000  40964K rw-s-    [ shmid=0x38cf801f ]<br>00007f2151459000  40964K rw-s-    [ shmid=0x38cb0016 ]<br>00007f2153c5a000  40964K rw-s-    [ shmid=0x38ca0014 ]<br>00007f215645b000  40964K rw-s-    [ shmid=0x38c90012 ]<br>00007f2158c5c000  40964K rw-s-    [ shmid=0x38c7800f ]<br>00007f215b45d000   1024K rw-s-    [ shmid=0x50806c ]<br>00007f215b55d000   1576K r-x–  /lib64/libc-2.12.so<br>00007f215b6e7000   2048K —–  /lib64/libc-2.12.so<br>00007f215b8e7000     16K r—-  /lib64/libc-2.12.so<br>00007f215b8eb000      4K rw—  /lib64/libc-2.12.so<br>00007f215b8ec000     20K rw—    [ anon ]<br>00007f215b8f1000    524K r-x–  /lib64/libm-2.12.so<br>00007f215b974000   2044K —–  /lib64/libm-2.12.so<br>00007f215bb73000      4K r—-  /lib64/libm-2.12.so<br>00007f215bb74000      4K rw—  /lib64/libm-2.12.so<br>00007f215bb75000      8K r-x–  /lib64/libdl-2.12.so<br>00007f215bb77000   2048K —–  /lib64/libdl-2.12.so<br>00007f215bd77000      4K r—-  /lib64/libdl-2.12.so<br>00007f215bd78000      4K rw—  /lib64/libdl-2.12.so<br>00007f215bd79000     92K r-x–  /lib64/libpthread-2.12.so<br>00007f215bd90000   2048K —–  /lib64/libpthread-2.12.so<br>00007f215bf90000      4K r—-  /lib64/libpthread-2.12.so<br>00007f215bf91000      4K rw—  /lib64/libpthread-2.12.so<br>00007f215bf92000     16K rw—    [ anon ]<br>00007f215bf96000      8K r-x–  /lib64/libutil-2.12.so<br>00007f215bf98000   2044K —–  /lib64/libutil-2.12.so<br>00007f215c197000      4K r—-  /lib64/libutil-2.12.so<br>00007f215c198000      4K rw—  /lib64/libutil-2.12.so<br>00007f215c199000     28K r-x–  /lib64/librt-2.12.so<br>00007f215c1a0000   2044K —–  /lib64/librt-2.12.so<br>00007f215c39f000      4K r—-  /lib64/librt-2.12.so<br>00007f215c3a0000      4K rw—  /lib64/librt-2.12.so<br>00007f215c3a1000    128K r-x–  /lib64/ld-2.12.so<br>00007f215c43c000      4K rw—    [ anon ]<br>00007f215c43d000    208K r–s-  /dev/shm/???/???.nav<br>00007f215c471000    188K rw-s-    [ shmid=0x38c6800d ]<br>00007f215c4a0000     20K rw—    [ anon ]<br>00007f215c4a5000     16K rw—    [ anon ]<br>00007f215c4a9000      4K r–s-  /dev/shm/???/???.nav<br>00007f215c4aa000      4K r–s-  /dev/shm/???/???.nav<br>00007f215c4ab000     20K rw—    [ anon ]<br>00007f215c4b0000      8K rw—    [ anon ]<br>00007f215c4b2000     20K rw—    [ anon ]<br>00007f215c4b7000     12K r-x–  /lib64/lib???rity.so.1.0.19<br>00007f215c4ba000   1024K —–  /lib64/lib???rity.so.1.0.19<br>00007f215c5ba000      4K rw—  /lib64/lib???ity.so.1.0.19<br>00007f215c5bb000     16K rw—    [ anon ]<br>00007f215c5bf000      4K rw—    [ anon ]<br>00007f215c5c0000      4K r—-  /lib64/ld-2.12.so<br>00007f215c5c1000      4K rw—  /lib64/ld-2.12.so<br>00007f215c5c2000      4K rw—    [ anon ]<br>00007ffe6d6d3000    132K rw—    [ stack ]<br>00007ffe6d7ed000      8K r-x–    [ anon ]<br>ffffffffff600000      4K r-x–    [ anon ]<br> total          3405716K<br> ```</p>
 
       
     </div>
@@ -585,7 +553,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#内存布局"><span class="nav-number">1.</span> <span class="nav-text">内存布局</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#基本布局"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">基本布局</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#内核布局"><span class="nav-number">1.0.0.2.</span> <span class="nav-text">内核布局</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#用户空间布局"><span class="nav-number">1.0.0.3.</span> <span class="nav-text">用户空间布局</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#多线程"><span class="nav-number">1.0.0.4.</span> <span class="nav-text">多线程</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ELF文件装载过程"><span class="nav-number">2.</span> <span class="nav-text">ELF文件装载过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Address-space-layout-randomization-地址空间布局随机化"><span class="nav-number">3.</span> <span class="nav-text">Address space layout randomization 地址空间布局随机化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#ASLR在linux中的三个等级以及配置和禁用方法"><span class="nav-number">3.0.1.</span> <span class="nav-text">ASLR在linux中的三个等级以及配置和禁用方法</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#sysctl-w-kernel-randomize-va-space-0"><span class="nav-number"></span> <span class="nav-text">sysctl -w kernel.randomize_va_space=0</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#echo-0-gt-proc-sys-kernel-randomize-va-space"><span class="nav-number"></span> <span class="nav-text">echo 0 > /proc/sys/kernel/randomize_va_space</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SDM框架对系统发展生命周期的过程描述"><span class="nav-number">1.</span> <span class="nav-text">SDM框架对系统发展生命周期的过程描述</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#内存布局"><span class="nav-number">1.</span> <span class="nav-text">内存布局</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#基本布局"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">基本布局</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#内核布局"><span class="nav-number">1.0.0.2.</span> <span class="nav-text">内核布局</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#用户空间布局"><span class="nav-number">1.0.0.3.</span> <span class="nav-text">用户空间布局</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#多线程"><span class="nav-number">1.0.0.4.</span> <span class="nav-text">多线程</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ELF文件装载过程"><span class="nav-number">2.</span> <span class="nav-text">ELF文件装载过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Address-space-layout-randomization-地址空间布局随机化"><span class="nav-number">3.</span> <span class="nav-text">Address space layout randomization 地址空间布局随机化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#ASLR在linux中的三个等级以及配置和禁用方法"><span class="nav-number">3.0.1.</span> <span class="nav-text">ASLR在linux中的三个等级以及配置和禁用方法</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#sysctl-w-kernel-randomize-va-space-0"><span class="nav-number"></span> <span class="nav-text">sysctl -w kernel.randomize_va_space=0</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#echo-0-gt-proc-sys-kernel-randomize-va-space"><span class="nav-number"></span> <span class="nav-text">echo 0 > /proc/sys/kernel/randomize_va_space</span></a></div>
             
 
           </div>

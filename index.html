@@ -373,6 +373,8 @@
 <li>ipcsrm -m [shmid]    删除shmid标识的共享内存资源  </li>
 </ul>
 </li>
+</ul>
+<ul>
 <li><p>lsof [文件/路径]  查看占用该文件/该目录下文件的进程  </p>
 </li>
 <li><p>lsof -i  查看当前活动的网络连接 包括TCP / UDP</p>
@@ -401,6 +403,12 @@
 </li>
 <li><p>lsof -p [pid] 查看当前进程所有打开的文件/设备</p>
 </li>
+<li><p>内存布局的实际地址和实际大小等查询  内存泄露可快速判定</p>
+<ul>
+<li>cat /proc/pid/maps </li>
+<li>pmap</li>
+</ul>
+</li>
 </ul>
 <h3 id="系统"><a href="#系统" class="headerlink" title="系统"></a>系统</h3><p>uname -a  系统版本<br>cat /proc/version  内核版本  </p>
 <h3 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h3><ul>
@@ -426,6 +434,53 @@
 <h6 id="strace"><a href="#strace" class="headerlink" title="strace"></a>strace</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div></pre></td><td class="code"><pre><div class="line">-c 统计每一系统调用的所执行的时间,次数和出错的次数等. </div><div class="line">-d 输出strace关于标准错误的调试信息. </div><div class="line">-f 跟踪由fork调用所产生的子进程. </div><div class="line">-ff 如果提供-o filename,则所有进程的跟踪结果输出到相应的filename.pid中,pid是各进程的进程号. </div><div class="line">-F 尝试跟踪vfork调用.在-f时,vfork不被跟踪. </div><div class="line">-h 输出简要的帮助信息. </div><div class="line">-i 输出系统调用的入口指针. </div><div class="line">-q 禁止输出关于脱离的消息. </div><div class="line">-r 打印出相对时间关于,,每一个系统调用. </div><div class="line">-t 在输出中的每一行前加上时间信息. </div><div class="line">-tt 在输出中的每一行前加上时间信息,微秒级. </div><div class="line">-ttt 微秒级输出,以秒了表示时间. </div><div class="line">-T 显示每一调用所耗的时间. </div><div class="line">-v 输出所有的系统调用.一些调用关于环境变量,状态,输入输出等调用由于使用频繁,默认不输出. </div><div class="line">-V 输出strace的版本信息. </div><div class="line">-x 以十六进制形式输出非标准字符串 </div><div class="line">-xx 所有字符串以十六进制形式输出. </div><div class="line">-a column </div><div class="line">设置返回值的输出位置.默认 为40. </div><div class="line">-e expr </div><div class="line">指定一个表达式,用来控制如何跟踪.格式如下: </div><div class="line">[qualifier=][!]value1[,value2]... </div><div class="line">qualifier只能是 trace,abbrev,verbose,raw,signal,read,write其中之一.value是用来限定的符号或数字.默认的 qualifier是 trace.感叹号是否定符号.例如: </div><div class="line">-eopen等价于 -e trace=open,表示只跟踪open调用.而-etrace!=open表示跟踪除了open以外的其他调用.有两个特殊的符号 all 和 none. </div><div class="line">注意有些shell使用!来执行历史记录里的命令,所以要使用\\. </div><div class="line">-e trace=set </div><div class="line">只跟踪指定的系统 调用.例如:-e trace=open,close,rean,write表示只跟踪这四个系统调用.默认的为set=all. </div><div class="line">-e trace=file </div><div class="line">只跟踪有关文件操作的系统调用. </div><div class="line">-e trace=process </div><div class="line">只跟踪有关进程控制的系统调用. </div><div class="line">-e trace=network </div><div class="line">跟踪与网络有关的所有系统调用. </div><div class="line">-e strace=signal </div><div class="line">跟踪所有与系统信号有关的 系统调用 </div><div class="line">-e trace=ipc </div><div class="line">跟踪所有与进程通讯有关的系统调用 </div><div class="line">-e abbrev=set </div><div class="line">设定 strace输出的系统调用的结果集.-v 等与 abbrev=none.默认为abbrev=all. </div><div class="line">-e raw=set </div><div class="line">将指 定的系统调用的参数以十六进制显示. </div><div class="line">-e signal=set </div><div class="line">指定跟踪的系统信号.默认为all.如 signal=!SIGIO(或者signal=!io),表示不跟踪SIGIO信号. </div><div class="line">-e read=set </div><div class="line">输出从指定文件中读出 的数据.例如: </div><div class="line">-e read=3,5 </div><div class="line">-e write=set </div><div class="line">输出写入到指定文件中的数据. </div><div class="line">-o filename </div><div class="line">将strace的输出写入文件filename </div><div class="line">-p pid </div><div class="line">跟踪指定的进程pid. </div><div class="line">-s strsize </div><div class="line">指定输出的字符串的最大长度.默认为32.文件名一直全部输出. </div><div class="line">-u username </div><div class="line">以username 的UID和GID执行被跟踪的命令</div></pre></td></tr></table></figure>
 <h6 id="vmstat"><a href="#vmstat" class="headerlink" title="vmstat"></a>vmstat</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">Procs（进程）:</div><div class="line">  r: 运行队列中进程数量</div><div class="line">  b: 等待IO的进程数量</div><div class="line">Memory（内存）:</div><div class="line">  swpd: 使用虚拟内存大小</div><div class="line">  free: 可用内存大小</div><div class="line">  buff: 用作缓冲的内存大小</div><div class="line">  cache: 用作缓存的内存大小</div><div class="line">Swap:</div><div class="line">  si: 每秒从交换区写到内存的大小</div><div class="line">  so: 每秒写入交换区的内存大小</div><div class="line">  IO：（现在的Linux版本块的大小为1024bytes）</div><div class="line">  bi: 每秒读取的块数</div><div class="line">  bo: 每秒写入的块数</div><div class="line">system：</div><div class="line">  in: 每秒中断数，包括时钟中断</div><div class="line">  cs: 每秒上下文切换数</div><div class="line">  CPU（以百分比表示）</div><div class="line">  us: 用户进程执行时间(user time)</div><div class="line">  sy: 系统进程执行时间(system time)</div><div class="line">  id: 空闲时间(包括IO等待时间)</div><div class="line">  wa: 等待IO时间</div></pre></td></tr></table></figure>
 <h6 id="sar"><a href="#sar" class="headerlink" title="sar"></a>sar</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">-A 汇总所有的报告</div><div class="line">-a 报告文件读写使用情况</div><div class="line">-B 报告附加的缓存的使用情况</div><div class="line">-b 报告缓存的使用情况</div><div class="line">-c 报告系统调用的使用情况</div><div class="line">-d 报告磁盘的使用情况</div><div class="line">-g 报告串口的使用情况</div><div class="line">-h 报告关于buffer使用的统计数据</div><div class="line">-m 报告IPC消息队列和信号量的使用情况</div><div class="line">-n 报告命名cache的使用情况</div><div class="line">-p 报告调页活动的使用情况</div><div class="line">-q 报告运行队列和交换队列的平均长度</div><div class="line">-R 报告进程的活动情况</div><div class="line">-r 报告没有使用的内存页面和硬盘块</div><div class="line">-u 报告CPU的利用率</div><div class="line">-v 报告进程、i节点、文件和锁表状态</div><div class="line">-w 报告系统交换活动状况</div><div class="line">-y 报告TTY设备活动状况</div></pre></td></tr></table></figure>
+<h6 id="proc-pid-maps-虚拟内存地址"><a href="#proc-pid-maps-虚拟内存地址" class="headerlink" title="/proc/$pid/maps   虚拟内存地址"></a>/proc/$pid/maps   虚拟内存地址</h6><pre><code>address           perms offset  dev   inode   pathname
+08048000-08056000 r-xp 00000000 03:0c 64593   /usr/sbin/gpm
+</code></pre><p>对应内核的vm_area_struct项  </p>
+<ul>
+<li><p>地址 address [vm_start-vm_end]: 进程地址空间中区域的开始和结束地址  </p>
+</li>
+<li><p>权限 permissions [vm_flags]：虚拟内存的权限，</p>
+<ul>
+<li>[r=读] [w=写] [x=执行]  [s/p=共享/私有]     </li>
+<li>禁用显示 - </li>
+<li>mprotect设置权限   </li>
+</ul>
+</li>
+<li><p>偏移量 offset [vm_pgoff]：映射开始的偏移量  </p>
+<ul>
+<li>对于有名映射, 比如从文件使用mmap的映射, 表示此段虚拟内存起始地址在文件中以页为单位的偏移 .  <ul>
+<li>缺页异常时会根据这个找到文件对应地址的数据并加载上来  </li>
+</ul>
+</li>
+<li>对匿名映射 它等于0或者vm_start/PAGE_SIZE   </li>
+</ul>
+</li>
+<li><p>设备 device：映像文件的主设备号和次设备号</p>
+<ul>
+<li>对匿名映射来说 因为没有文件在磁盘上 所以没有设备号 始终为00:00 </li>
+<li>对有名映射来说 是映射的文件所在设备的设备号   </li>
+</ul>
+</li>
+<li>节点 inode：映像文件的节点号<ul>
+<li>对有名映射来说 是映射的文件的节点号</li>
+<li>对匿名映射来说 因为没有文件在磁盘上 所以没有节点号 始终为00:00  </li>
+</ul>
+</li>
+<li>路径 pathname: 映像文件的路径  <ul>
+<li>对有名来说 是映射的文件名</li>
+<li>对匿名映射来说 是此段虚拟内存在进程中的角色 <ul>
+<li>[stack]表示在进程中作为栈使用 </li>
+<li>[heap]表示堆</li>
+<li>[vdso]表示虚拟动态共享对象 它被系统调用用于切换到内核模式   </li>
+<li>其余情况则无显示</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h5 id="pmap-虚拟内存地址-类似-proc-pid-maps"><a href="#pmap-虚拟内存地址-类似-proc-pid-maps" class="headerlink" title="pmap 虚拟内存地址  类似 /proc/$pid/maps"></a>pmap 虚拟内存地址  类似 /proc/$pid/maps</h5><p>显示的数据更干净一些  还能显示出比如共享内存的shmid和起始位置 和大小    </p>
+
           
         
       
@@ -565,13 +620,16 @@
 
       
         
-          <h3 id="内存布局"><a href="#内存布局" class="headerlink" title="内存布局"></a>内存布局</h3><h6 id="基本布局"><a href="#基本布局" class="headerlink" title="基本布局"></a>基本布局</h6><p>内核地址空间范围  [0XFFFF 0000 0000 0000, 0XFFFF FFFF FFFF FFFF]<br>不规范地址空间    (0XFFFF 0000 0000 0000, 0X0000 FFFF FFFF FFFF)<br>用户地址空间      [0X0000 FFFF FFFF FFFF, 0X0000 0000 0000 0000]</p>
+          
+            <h3 id="内存布局"><a href="#内存布局" class="headerlink" title="内存布局"></a>内存布局</h3><h6 id="基本布局"><a href="#基本布局" class="headerlink" title="基本布局"></a>基本布局</h6><p>内核地址空间范围  [0XFFFF 0000 0000 0000, 0XFFFF FFFF FFFF FFFF]<br>不规范地址空间    (0XFFFF 0000 0000 0000, 0X0000 FFFF FFFF FFFF)<br>用户地址空间      [0X0000 FFFF FFFF FFFF, 0X0000 0000 0000 0000]</p>
 <p>备注: 用户空间范围对应为0~TASK_SIZE = 2^VA_BITS</p>
 <ol>
 <li>用户地址空间默认最大宽度是48 如上  </li>
 <li>内核地址空间和用户地址空间宽度相同  </li>
 <li>不同的页长默认有不同的宽度, 例如4KB页长默认是39位   16:47, 64:42等, 可直接选择48位.  </li>
 <li>开启LVA支持并且页长64可以支持到最大宽度52   </li>
+<li>通过getconf PAGE_SIZE 可以查看系统的页大小  </li>
+<li>通过/proc/$pid/maps或者pmap可以查看一个进程的实际内存布局 </li>
 </ol>
 <h6 id="内核布局"><a href="#内核布局" class="headerlink" title="内核布局"></a>内核布局</h6><h6 id="用户空间布局"><a href="#用户空间布局" class="headerlink" title="用户空间布局"></a>用户空间布局</h6><ul>
 <li>TASK_SIZE</li>
@@ -612,39 +670,11 @@
 <li>系统全局配置<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">/proc/sys/kernel/randomize_va_space</div><div class="line">0 = Disabled</div><div class="line">1 = Conservative Randomization</div><div class="line">2 = Full Randomization</div><div class="line">```  </div><div class="line"></div><div class="line">1. 关闭  </div><div class="line">2. 保守随机化: 共享库 栈 mmap  vdso随机化   </div><div class="line">3. 完全随机化:  包括brk分配的内存   </div><div class="line">    2.1 代码段和数据段的随机化需要PIE位置无关可执行程序的支持  编译链接时添加 -fpie -pie   </div><div class="line"></div><div class="line">&gt; brk和mmap的分配由glibc确定 默认规则是小于M_MMAP_THRESHOLD宏走brk  但是新系统的算法可能会让大于这个参数的临时分配也走brk   </div><div class="line"></div><div class="line">* 修改/关闭系统配置</div></pre></td></tr></table></figure>
 </li>
 </ul>
-<h1 id="sysctl-w-kernel-randomize-va-space-0"><a href="#sysctl-w-kernel-randomize-va-space-0" class="headerlink" title="sysctl -w kernel.randomize_va_space=0"></a>sysctl -w kernel.randomize_va_space=0</h1><h1 id="echo-0-gt-proc-sys-kernel-randomize-va-space"><a href="#echo-0-gt-proc-sys-kernel-randomize-va-space" class="headerlink" title="echo 0 &gt; /proc/sys/kernel/randomize_va_space"></a>echo 0 &gt; /proc/sys/kernel/randomize_va_space</h1><p>```</p>
-<ul>
-<li>进程个性化设置: 进程描述符的成员personality设置 ADDR_NO_RANDOMIZE     <ul>
-<li>setarch $(uname -m) -R [–addr-no-randomize] [target exe]</li>
-<li>例如 ldd ./benchmark_fast 在aslr环境下会看到每次so的内存位置都在变化   <ul>
-<li>setarch $(uname -m) -R ldd ./benchmark_fast 这样去查看则是固定不变的  </li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p>ldd命令  </p>
-<p>代码段/数据段的随机化<br>gcc 编译时</p>
-<p>PIE 位置无关可执行程序<br>PIC </p>
-<p>KASLR  内核地址空间布局随机化  </p>
-<h3 id="SDM框架对系统发展生命周期的过程描述"><a href="#SDM框架对系统发展生命周期的过程描述" class="headerlink" title="SDM框架对系统发展生命周期的过程描述"></a>SDM框架对系统发展生命周期的过程描述</h3><p>SDM(软件开发方法)框架是在SDLC在软件开发早起</p>
-<ul>
-<li>(SDM框架)软件开发过程有以下基本的核心活动内容<ul>
-<li>需求分析 (Requirements analysis)  </li>
-<li>领域设计 (Software design)  </li>
-<li>系统设计 (Software engineering)  </li>
-<li>编码开发 (Software construction)  </li>
-<li>功能验证 (Software testing)  </li>
-<li>错误修正 (Debugging)    </li>
-<li>部署交付 (Software deployment)  </li>
-<li>维护 (Software maintenance)
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/11/04/2019-11-04-aslr/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+<h1 id="sysctl-w-kernel-randomize-va-space-0"><a href="#sysctl-w-kernel-randomize-va-space-0" class="headerlink" title="sysctl -w kernel.randomize_va_space=0"></a>sysctl -w kernel.randomize_va_space=0</h1><h1 id="echo-0-gt-proc-sys-kernel-randomize-va-space"><a href="#echo-0-gt-proc-sys-kernel-randomize-va-space" class="headerlink" title="echo 0 &gt; /proc/sys/kernel/randomize_va_space"></a>echo 0 &gt; /proc/sys/kernel/randomize_va_space</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">* 进程个性化设置: 进程描述符的成员personality设置 ADDR_NO_RANDOMIZE     </div><div class="line">  * setarch $(uname -m) -R [--addr-no-randomize] [target exe]</div><div class="line">  * 例如 ldd ./benchmark_fast 在aslr环境下会看到每次so的内存位置都在变化   </div><div class="line">    * setarch $(uname -m) -R ldd ./benchmark_fast 这样去查看则是固定不变的  </div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">ldd命令  </div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">代码段/数据段的随机化  </div><div class="line">gcc 编译时</div><div class="line"></div><div class="line"></div><div class="line">PIE 位置无关可执行程序  </div><div class="line">PIC </div><div class="line"></div><div class="line">KASLR  内核地址空间布局随机化  </div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">pmap x86一个带共享内存的进程.  00007f1-00007f2之间是64G大小的空间</div></pre></td></tr></table></figure>
+<p>pmap 22621</p>
+<p>22621:   ../../???/bin/???  –conf-file=../cfg.xml<br>0000000000400000  32460K r-x–  /data/home/???/bin/???<br>00000000025b3000    724K rw—  /data/home/???/bin/???<br>0000000002668000  49260K rw—    [ anon ]<br>0000000006835000  25172K rw—    [ anon ]<br>00000000080ca000 284456K rw—    [ anon ]<br>00000000404e9000    128K rw—    [ anon ]<br>0000000040fe3000    128K rw—    [ anon ]<br>00007f1000000000 2511808K rw-s-    [ shmid=0x39020085 ]<br>00007f213db99000      4K —–    [ anon ]<br>00007f213db9a000   8192K rw—    [ anon ]<br>00007f213e39a000   7336K r–s-  /dev/shm/???/???.nav<br>00007f213eac4000   8588K r–s-  /dev/shm/???/???.nav<br>00007f213f327000   7336K r–s-  /dev/shm/???/???.nav<br>00007f213fa51000   2052K rw-s-    [ shmid=0x39018084 ]<br>00007f213fc52000  40964K rw-s-    [ shmid=0x38f40068 ]<br>00007f2142453000  40964K rw-s-    [ shmid=0x38dd003a ]<br>00007f2144c54000  40964K rw-s-    [ shmid=0x38db0036 ]<br>00007f2147455000  40964K rw-s-    [ shmid=0x38d7802f ]<br>00007f2149c56000  40964K rw-s-    [ shmid=0x38d40028 ]<br>00007f214c457000  40964K rw-s-    [ shmid=0x38d10022 ]<br>00007f214ec58000  40964K rw-s-    [ shmid=0x38cf801f ]<br>00007f2151459000  40964K rw-s-    [ shmid=0x38cb0016 ]<br>00007f2153c5a000  40964K rw-s-    [ shmid=0x38ca0014 ]<br>00007f215645b000  40964K rw-s-    [ shmid=0x38c90012 ]<br>00007f2158c5c000  40964K rw-s-    [ shmid=0x38c7800f ]<br>00007f215b45d000   1024K rw-s-    [ shmid=0x50806c ]<br>00007f215b55d000   1576K r-x–  /lib64/libc-2.12.so<br>00007f215b6e7000   2048K —–  /lib64/libc-2.12.so<br>00007f215b8e7000     16K r—-  /lib64/libc-2.12.so<br>00007f215b8eb000      4K rw—  /lib64/libc-2.12.so<br>00007f215b8ec000     20K rw—    [ anon ]<br>00007f215b8f1000    524K r-x–  /lib64/libm-2.12.so<br>00007f215b974000   2044K —–  /lib64/libm-2.12.so<br>00007f215bb73000      4K r—-  /lib64/libm-2.12.so<br>00007f215bb74000      4K rw—  /lib64/libm-2.12.so<br>00007f215bb75000      8K r-x–  /lib64/libdl-2.12.so<br>00007f215bb77000   2048K —–  /lib64/libdl-2.12.so<br>00007f215bd77000      4K r—-  /lib64/libdl-2.12.so<br>00007f215bd78000      4K rw—  /lib64/libdl-2.12.so<br>00007f215bd79000     92K r-x–  /lib64/libpthread-2.12.so<br>00007f215bd90000   2048K —–  /lib64/libpthread-2.12.so<br>00007f215bf90000      4K r—-  /lib64/libpthread-2.12.so<br>00007f215bf91000      4K rw—  /lib64/libpthread-2.12.so<br>00007f215bf92000     16K rw—    [ anon ]<br>00007f215bf96000      8K r-x–  /lib64/libutil-2.12.so<br>00007f215bf98000   2044K —–  /lib64/libutil-2.12.so<br>00007f215c197000      4K r—-  /lib64/libutil-2.12.so<br>00007f215c198000      4K rw—  /lib64/libutil-2.12.so<br>00007f215c199000     28K r-x–  /lib64/librt-2.12.so<br>00007f215c1a0000   2044K —–  /lib64/librt-2.12.so<br>00007f215c39f000      4K r—-  /lib64/librt-2.12.so<br>00007f215c3a0000      4K rw—  /lib64/librt-2.12.so<br>00007f215c3a1000    128K r-x–  /lib64/ld-2.12.so<br>00007f215c43c000      4K rw—    [ anon ]<br>00007f215c43d000    208K r–s-  /dev/shm/???/???.nav<br>00007f215c471000    188K rw-s-    [ shmid=0x38c6800d ]<br>00007f215c4a0000     20K rw—    [ anon ]<br>00007f215c4a5000     16K rw—    [ anon ]<br>00007f215c4a9000      4K r–s-  /dev/shm/???/???.nav<br>00007f215c4aa000      4K r–s-  /dev/shm/???/???.nav<br>00007f215c4ab000     20K rw—    [ anon ]<br>00007f215c4b0000      8K rw—    [ anon ]<br>00007f215c4b2000     20K rw—    [ anon ]<br>00007f215c4b7000     12K r-x–  /lib64/lib???rity.so.1.0.19<br>00007f215c4ba000   1024K —–  /lib64/lib???rity.so.1.0.19<br>00007f215c5ba000      4K rw—  /lib64/lib???ity.so.1.0.19<br>00007f215c5bb000     16K rw—    [ anon ]<br>00007f215c5bf000      4K rw—    [ anon ]<br>00007f215c5c0000      4K r—-  /lib64/ld-2.12.so<br>00007f215c5c1000      4K rw—  /lib64/ld-2.12.so<br>00007f215c5c2000      4K rw—    [ anon ]<br>00007ffe6d6d3000    132K rw—    [ stack ]<br>00007ffe6d7ed000      8K r-x–    [ anon ]<br>ffffffffff600000      4K r-x–    [ anon ]<br> total          3405716K<br> ```</p>
+
+          
         
       
     </div>
