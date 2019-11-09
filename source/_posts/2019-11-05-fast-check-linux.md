@@ -27,7 +27,22 @@ author: yawei.zhang
   * ipcsrm -M [shmkey]  删除共享内存资源  
   * ipcsrm -m [shmid]    删除shmid标识的共享内存资源  
 
+* ulimit -a   配置位置 /etc/security/limits.conf  
+  * coredump文件的大小
+  * 线程栈的大小  
+  * 单进程最大设备数
+    * 单进程最大设备数的硬性限制在/proc/sys/fs/nr_open 中配置  
+    * 系统配置的最大设备数可查看/proc/sys/fs/file-max 中配置  
+    * 系统配置的最大设备数修改/etc/sysctl.conf |  fs.file-max = 1000000
 
+* 全局线程总数 
+  * 查看位置 /proc/sys/kernel/threads-max  
+  
+* 单个进程最大线程数 PTHREAD_THREADS_MAX  新的NPTL实现中不存在该限制   
+  * 查看位置 /usr/include/bits/local_lim.h 
+  * 查看位置 /usr/include/x86_64-linux-gnu/bits/local_lim.h
+  
+* whereis   查看命令所在位置  
 
 * lsof [文件/路径]  查看占用该文件/该目录下文件的进程  
 
@@ -37,7 +52,7 @@ author: yawei.zhang
 
 * ulimit -s 栈大小  
 
-
+<!-- more --> 
 ### 进程分析和统计   
 
 * pstack [pid]  查看进程栈  
@@ -65,7 +80,7 @@ author: yawei.zhang
 ### 系统   
 uname -a  系统版本  
 cat /proc/version  内核版本  
-
+getconf GNU_LIBPTHREAD_VERSION   查看线程模型  
 
 ### 调试
 
@@ -233,5 +248,58 @@ address           perms offset  dev   inode   pathname
     * [vdso]表示虚拟动态共享对象 它被系统调用用于切换到内核模式   
     *  其余情况则无显示
 
-##### pmap 虚拟内存地址  类似 /proc/$pid/maps   
+###### pmap 虚拟内存地址  类似 /proc/$pid/maps   
 显示的数据更干净一些  还能显示出比如共享内存的shmid和起始位置 和大小    
+
+
+###### gstack  脚本  拷贝自centos  
+```
+#!/bin/sh
+
+if test $# -ne 1; then
+    echo "Usage: `basename $0 .sh` <process-id>" 1>&2
+    exit 1
+fi
+
+if test ! -r /proc/$1; then
+    echo "Process $1 not found." 1>&2
+    exit 1
+fi
+
+# GDB doesn't allow "thread apply all bt" when the process isn't
+# threaded; need to peek at the process to determine if that or the
+# simpler "bt" should be used.
+
+backtrace="bt"
+if test -d /proc/$1/task ; then
+    # Newer kernel; has a task/ directory.
+    if test `/bin/ls /proc/$1/task | /usr/bin/wc -l` -gt 1 2>/dev/null ; then
+        backtrace="thread apply all bt"
+    fi
+elif test -f /proc/$1/maps ; then
+    # Older kernel; go by it loading libpthread.
+    if /bin/grep -e libpthread /proc/$1/maps > /dev/null 2>&1 ; then
+        backtrace="thread apply all bt"
+    fi
+fi
+
+GDB=${GDB:-/usr/bin/gdb}
+
+if $GDB -nx --quiet --batch --readnever > /dev/null 2>&1; then
+    readnever=--readnever
+else
+    readnever=
+fi
+
+# Run GDB, strip out unwanted noise.
+$GDB --quiet $readnever -nx /proc/$1/exe $1 <<EOF 2>&1 | 
+set width 0
+set height 0
+set pagination no
+$backtrace
+EOF
+/bin/sed -n \
+    -e 's/^\((gdb) \)*//' \
+    -e '/^#/p' \
+    -e '/^Thread/p'
+```
