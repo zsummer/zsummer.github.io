@@ -100,7 +100,7 @@
 <meta property="og:url" content="https://zsummer.github.io/2019/11/05/2019-11-05-fast-check-linux/index.html">
 <meta property="og:site_name" content="关于夏天的一切">
 <meta property="og:description" content="全局分析和统计 top命令     free 查看内存使用信息   vmstate [delay时间]  按照delay时间打印内存使用 io读写 CPU用量等信息   iostat -m -x [时间] [次数]   io读写详细信息   sar 系统活动情况报告 追溯统计数据 从最近的0点0分开始显示数据     sar -A 所有   sar -u CPU   sar -q 负载 sar -">
-<meta property="og:updated_time" content="2019-11-07T14:15:45.070Z">
+<meta property="og:updated_time" content="2019-11-08T09:42:03.112Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux快速排查问题的命令">
 <meta name="twitter:description" content="全局分析和统计 top命令     free 查看内存使用信息   vmstate [delay时间]  按照delay时间打印内存使用 io读写 CPU用量等信息   iostat -m -x [时间] [次数]   io读写详细信息   sar 系统活动情况报告 追溯统计数据 从最近的0点0分开始显示数据     sar -A 所有   sar -u CPU   sar -q 负载 sar -">
@@ -371,8 +371,31 @@
 <li>ipcsrm -m [shmid]    删除shmid标识的共享内存资源  </li>
 </ul>
 </li>
-</ul>
+<li><p>ulimit -a   配置位置 /etc/security/limits.conf  </p>
 <ul>
+<li>coredump文件的大小</li>
+<li>线程栈的大小  </li>
+<li>单进程最大设备数<ul>
+<li>单进程最大设备数的硬性限制在/proc/sys/fs/nr_open 中配置  </li>
+<li>系统配置的最大设备数可查看/proc/sys/fs/file-max 中配置  </li>
+<li>系统配置的最大设备数修改/etc/sysctl.conf |  fs.file-max = 1000000</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>全局线程总数 </p>
+<ul>
+<li>查看位置 /proc/sys/kernel/threads-max  </li>
+</ul>
+</li>
+<li><p>单个进程最大线程数 PTHREAD_THREADS_MAX  新的NPTL实现中不存在该限制   </p>
+<ul>
+<li>查看位置 /usr/include/bits/local_lim.h </li>
+<li>查看位置 /usr/include/x86_64-linux-gnu/bits/local_lim.h</li>
+</ul>
+</li>
+<li><p>whereis   查看命令所在位置  </p>
+</li>
 <li><p>lsof [文件/路径]  查看占用该文件/该目录下文件的进程  </p>
 </li>
 <li><p>lsof -i  查看当前活动的网络连接 包括TCP / UDP</p>
@@ -382,6 +405,7 @@
 <li><p>ulimit -s 栈大小  </p>
 </li>
 </ul>
+<a id="more"></a> 
 <h3 id="进程分析和统计"><a href="#进程分析和统计" class="headerlink" title="进程分析和统计"></a>进程分析和统计</h3><ul>
 <li><p>pstack [pid]  查看进程栈  </p>
 </li>
@@ -408,7 +432,7 @@
 </ul>
 </li>
 </ul>
-<h3 id="系统"><a href="#系统" class="headerlink" title="系统"></a>系统</h3><p>uname -a  系统版本<br>cat /proc/version  内核版本  </p>
+<h3 id="系统"><a href="#系统" class="headerlink" title="系统"></a>系统</h3><p>uname -a  系统版本<br>cat /proc/version  内核版本<br>getconf GNU_LIBPTHREAD_VERSION   查看线程模型  </p>
 <h3 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h3><ul>
 <li><p>readelf  </p>
 <ul>
@@ -432,52 +456,24 @@
 <h6 id="strace"><a href="#strace" class="headerlink" title="strace"></a>strace</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div></pre></td><td class="code"><pre><div class="line">-c 统计每一系统调用的所执行的时间,次数和出错的次数等. </div><div class="line">-d 输出strace关于标准错误的调试信息. </div><div class="line">-f 跟踪由fork调用所产生的子进程. </div><div class="line">-ff 如果提供-o filename,则所有进程的跟踪结果输出到相应的filename.pid中,pid是各进程的进程号. </div><div class="line">-F 尝试跟踪vfork调用.在-f时,vfork不被跟踪. </div><div class="line">-h 输出简要的帮助信息. </div><div class="line">-i 输出系统调用的入口指针. </div><div class="line">-q 禁止输出关于脱离的消息. </div><div class="line">-r 打印出相对时间关于,,每一个系统调用. </div><div class="line">-t 在输出中的每一行前加上时间信息. </div><div class="line">-tt 在输出中的每一行前加上时间信息,微秒级. </div><div class="line">-ttt 微秒级输出,以秒了表示时间. </div><div class="line">-T 显示每一调用所耗的时间. </div><div class="line">-v 输出所有的系统调用.一些调用关于环境变量,状态,输入输出等调用由于使用频繁,默认不输出. </div><div class="line">-V 输出strace的版本信息. </div><div class="line">-x 以十六进制形式输出非标准字符串 </div><div class="line">-xx 所有字符串以十六进制形式输出. </div><div class="line">-a column </div><div class="line">设置返回值的输出位置.默认 为40. </div><div class="line">-e expr </div><div class="line">指定一个表达式,用来控制如何跟踪.格式如下: </div><div class="line">[qualifier=][!]value1[,value2]... </div><div class="line">qualifier只能是 trace,abbrev,verbose,raw,signal,read,write其中之一.value是用来限定的符号或数字.默认的 qualifier是 trace.感叹号是否定符号.例如: </div><div class="line">-eopen等价于 -e trace=open,表示只跟踪open调用.而-etrace!=open表示跟踪除了open以外的其他调用.有两个特殊的符号 all 和 none. </div><div class="line">注意有些shell使用!来执行历史记录里的命令,所以要使用\\. </div><div class="line">-e trace=set </div><div class="line">只跟踪指定的系统 调用.例如:-e trace=open,close,rean,write表示只跟踪这四个系统调用.默认的为set=all. </div><div class="line">-e trace=file </div><div class="line">只跟踪有关文件操作的系统调用. </div><div class="line">-e trace=process </div><div class="line">只跟踪有关进程控制的系统调用. </div><div class="line">-e trace=network </div><div class="line">跟踪与网络有关的所有系统调用. </div><div class="line">-e strace=signal </div><div class="line">跟踪所有与系统信号有关的 系统调用 </div><div class="line">-e trace=ipc </div><div class="line">跟踪所有与进程通讯有关的系统调用 </div><div class="line">-e abbrev=set </div><div class="line">设定 strace输出的系统调用的结果集.-v 等与 abbrev=none.默认为abbrev=all. </div><div class="line">-e raw=set </div><div class="line">将指 定的系统调用的参数以十六进制显示. </div><div class="line">-e signal=set </div><div class="line">指定跟踪的系统信号.默认为all.如 signal=!SIGIO(或者signal=!io),表示不跟踪SIGIO信号. </div><div class="line">-e read=set </div><div class="line">输出从指定文件中读出 的数据.例如: </div><div class="line">-e read=3,5 </div><div class="line">-e write=set </div><div class="line">输出写入到指定文件中的数据. </div><div class="line">-o filename </div><div class="line">将strace的输出写入文件filename </div><div class="line">-p pid </div><div class="line">跟踪指定的进程pid. </div><div class="line">-s strsize </div><div class="line">指定输出的字符串的最大长度.默认为32.文件名一直全部输出. </div><div class="line">-u username </div><div class="line">以username 的UID和GID执行被跟踪的命令</div></pre></td></tr></table></figure>
 <h6 id="vmstat"><a href="#vmstat" class="headerlink" title="vmstat"></a>vmstat</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">Procs（进程）:</div><div class="line">  r: 运行队列中进程数量</div><div class="line">  b: 等待IO的进程数量</div><div class="line">Memory（内存）:</div><div class="line">  swpd: 使用虚拟内存大小</div><div class="line">  free: 可用内存大小</div><div class="line">  buff: 用作缓冲的内存大小</div><div class="line">  cache: 用作缓存的内存大小</div><div class="line">Swap:</div><div class="line">  si: 每秒从交换区写到内存的大小</div><div class="line">  so: 每秒写入交换区的内存大小</div><div class="line">  IO：（现在的Linux版本块的大小为1024bytes）</div><div class="line">  bi: 每秒读取的块数</div><div class="line">  bo: 每秒写入的块数</div><div class="line">system：</div><div class="line">  in: 每秒中断数，包括时钟中断</div><div class="line">  cs: 每秒上下文切换数</div><div class="line">  CPU（以百分比表示）</div><div class="line">  us: 用户进程执行时间(user time)</div><div class="line">  sy: 系统进程执行时间(system time)</div><div class="line">  id: 空闲时间(包括IO等待时间)</div><div class="line">  wa: 等待IO时间</div></pre></td></tr></table></figure>
 <h6 id="sar"><a href="#sar" class="headerlink" title="sar"></a>sar</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">-A 汇总所有的报告</div><div class="line">-a 报告文件读写使用情况</div><div class="line">-B 报告附加的缓存的使用情况</div><div class="line">-b 报告缓存的使用情况</div><div class="line">-c 报告系统调用的使用情况</div><div class="line">-d 报告磁盘的使用情况</div><div class="line">-g 报告串口的使用情况</div><div class="line">-h 报告关于buffer使用的统计数据</div><div class="line">-m 报告IPC消息队列和信号量的使用情况</div><div class="line">-n 报告命名cache的使用情况</div><div class="line">-p 报告调页活动的使用情况</div><div class="line">-q 报告运行队列和交换队列的平均长度</div><div class="line">-R 报告进程的活动情况</div><div class="line">-r 报告没有使用的内存页面和硬盘块</div><div class="line">-u 报告CPU的利用率</div><div class="line">-v 报告进程、i节点、文件和锁表状态</div><div class="line">-w 报告系统交换活动状况</div><div class="line">-y 报告TTY设备活动状况</div></pre></td></tr></table></figure>
-<h6 id="proc-pid-maps-虚拟内存地址"><a href="#proc-pid-maps-虚拟内存地址" class="headerlink" title="/proc/$pid/maps   虚拟内存地址"></a>/proc/$pid/maps   虚拟内存地址</h6><pre><code>address           perms offset  dev   inode   pathname
-08048000-08056000 r-xp 00000000 03:0c 64593   /usr/sbin/gpm
-</code></pre><p>对应内核的vm_area_struct项  </p>
-<ul>
-<li><p>地址 address [vm_start-vm_end]: 进程地址空间中区域的开始和结束地址  </p>
-</li>
-<li><p>权限 permissions [vm_flags]：虚拟内存的权限，</p>
-<ul>
-<li>[r=读] [w=写] [x=执行]  [s/p=共享/私有]     </li>
-<li>禁用显示 - </li>
-<li>mprotect设置权限   </li>
-</ul>
-</li>
-<li><p>偏移量 offset [vm_pgoff]：映射开始的偏移量  </p>
-<ul>
-<li>对于有名映射, 比如从文件使用mmap的映射, 表示此段虚拟内存起始地址在文件中以页为单位的偏移 .  <ul>
-<li>缺页异常时会根据这个找到文件对应地址的数据并加载上来  </li>
-</ul>
-</li>
-<li>对匿名映射 它等于0或者vm_start/PAGE_SIZE   </li>
-</ul>
-</li>
-<li><p>设备 device：映像文件的主设备号和次设备号</p>
-<ul>
-<li>对匿名映射来说 因为没有文件在磁盘上 所以没有设备号 始终为00:00 </li>
-<li>对有名映射来说 是映射的文件所在设备的设备号   </li>
-</ul>
-</li>
-<li>节点 inode：映像文件的节点号<ul>
-<li>对有名映射来说 是映射的文件的节点号</li>
-<li>对匿名映射来说 因为没有文件在磁盘上 所以没有节点号 始终为00:00  </li>
-</ul>
-</li>
-<li>路径 pathname: 映像文件的路径  <ul>
-<li>对有名来说 是映射的文件名</li>
-<li>对匿名映射来说 是此段虚拟内存在进程中的角色 <ul>
-<li>[stack]表示在进程中作为栈使用 </li>
-<li>[heap]表示堆</li>
-<li>[vdso]表示虚拟动态共享对象 它被系统调用用于切换到内核模式   </li>
-<li>其余情况则无显示</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h5 id="pmap-虚拟内存地址-类似-proc-pid-maps"><a href="#pmap-虚拟内存地址-类似-proc-pid-maps" class="headerlink" title="pmap 虚拟内存地址  类似 /proc/$pid/maps"></a>pmap 虚拟内存地址  类似 /proc/$pid/maps</h5><p>显示的数据更干净一些  还能显示出比如共享内存的shmid和起始位置 和大小    </p>
+<h6 id="proc-pid-maps-虚拟内存地址"><a href="#proc-pid-maps-虚拟内存地址" class="headerlink" title="/proc/$pid/maps   虚拟内存地址"></a>/proc/$pid/maps   虚拟内存地址</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">address           perms offset  dev   inode   pathname</div><div class="line">08048000-08056000 r-xp 00000000 03:0c 64593   /usr/sbin/gpm</div><div class="line">```    </div><div class="line">对应内核的vm_area_struct项  </div><div class="line">* 地址 address [vm_start-vm_end]: 进程地址空间中区域的开始和结束地址  </div><div class="line">  </div><div class="line">* 权限 permissions [vm_flags]：虚拟内存的权限，</div><div class="line">  * [r=读] [w=写] [x=执行]  [s/p=共享/私有]     </div><div class="line">  * 禁用显示 - </div><div class="line">  * mprotect设置权限   </div><div class="line">  </div><div class="line">* 偏移量 offset [vm_pgoff]：映射开始的偏移量  </div><div class="line">  * 对于有名映射, 比如从文件使用mmap的映射, 表示此段虚拟内存起始地址在文件中以页为单位的偏移 .  </div><div class="line">    * 缺页异常时会根据这个找到文件对应地址的数据并加载上来  </div><div class="line">  * 对匿名映射 它等于0或者vm_start/PAGE_SIZE   </div><div class="line">  </div><div class="line">* 设备 device：映像文件的主设备号和次设备号</div><div class="line">  * 对匿名映射来说 因为没有文件在磁盘上 所以没有设备号 始终为00:00 </div><div class="line">  * 对有名映射来说 是映射的文件所在设备的设备号   </div><div class="line">* 节点 inode：映像文件的节点号</div><div class="line">  * 对有名映射来说 是映射的文件的节点号</div><div class="line">  * 对匿名映射来说 因为没有文件在磁盘上 所以没有节点号 始终为00:00  </div><div class="line">* 路径 pathname: 映像文件的路径  </div><div class="line">  * 对有名来说 是映射的文件名</div><div class="line">  * 对匿名映射来说 是此段虚拟内存在进程中的角色 </div><div class="line">    * [stack]表示在进程中作为栈使用 </div><div class="line">    * [heap]表示堆</div><div class="line">    * [vdso]表示虚拟动态共享对象 它被系统调用用于切换到内核模式   </div><div class="line">    *  其余情况则无显示</div><div class="line"></div><div class="line">###### pmap 虚拟内存地址  类似 /proc/$pid/maps   </div><div class="line">显示的数据更干净一些  还能显示出比如共享内存的shmid和起始位置 和大小    </div><div class="line"></div><div class="line"></div><div class="line">###### gstack  脚本  拷贝自centos</div></pre></td></tr></table></figure>
+<p>#!/bin/sh</p>
+<p>if test $# -ne 1; then<br>    echo “Usage: <code>basename $0 .sh</code> <process-id>“ 1&gt;&amp;2<br>    exit 1<br>fi</process-id></p>
+<p>if test ! -r /proc/$1; then<br>    echo “Process $1 not found.” 1&gt;&amp;2<br>    exit 1<br>fi</p>
+<h1 id="GDB-doesn’t-allow-“thread-apply-all-bt”-when-the-process-isn’t"><a href="#GDB-doesn’t-allow-“thread-apply-all-bt”-when-the-process-isn’t" class="headerlink" title="GDB doesn’t allow “thread apply all bt” when the process isn’t"></a>GDB doesn’t allow “thread apply all bt” when the process isn’t</h1><h1 id="threaded-need-to-peek-at-the-process-to-determine-if-that-or-the"><a href="#threaded-need-to-peek-at-the-process-to-determine-if-that-or-the" class="headerlink" title="threaded; need to peek at the process to determine if that or the"></a>threaded; need to peek at the process to determine if that or the</h1><h1 id="simpler-“bt”-should-be-used"><a href="#simpler-“bt”-should-be-used" class="headerlink" title="simpler “bt” should be used."></a>simpler “bt” should be used.</h1><p>backtrace=”bt”<br>if test -d /proc/$1/task ; then</p>
+<pre><code># Newer kernel; has a task/ directory.
+if test `/bin/ls /proc/$1/task | /usr/bin/wc -l` -gt 1 2&gt;/dev/null ; then
+    backtrace=&quot;thread apply all bt&quot;
+fi
+</code></pre><p>elif test -f /proc/$1/maps ; then</p>
+<pre><code># Older kernel; go by it loading libpthread.
+if /bin/grep -e libpthread /proc/$1/maps &gt; /dev/null 2&gt;&amp;1 ; then
+    backtrace=&quot;thread apply all bt&quot;
+fi
+</code></pre><p>fi</p>
+<p>GDB=${GDB:-/usr/bin/gdb}</p>
+<p>if $GDB -nx –quiet –batch –readnever &gt; /dev/null 2&gt;&1; then<br>    readnever=–readnever<br>else<br>    readnever=<br>fi</p>
+<h1 id="Run-GDB-strip-out-unwanted-noise"><a href="#Run-GDB-strip-out-unwanted-noise" class="headerlink" title="Run GDB, strip out unwanted noise."></a>Run GDB, strip out unwanted noise.</h1><p>$GDB –quiet $readnever -nx /proc/$1/exe $1 &lt;<eof 2="">&amp;1 |<br>set width 0<br>set height 0<br>set pagination no<br>$backtrace<br>EOF<br>/bin/sed -n \<br>    -e ‘s/^((gdb) )*//‘ \<br>    -e ‘/^#/p’ \<br>    -e ‘/^Thread/p’<br>```</eof></p>
 
       
     </div>
@@ -511,6 +507,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/11/09/2019-11-09-pie-pic-got-plt/" rel="prev" title="位置无关代码">
+                位置无关代码 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -587,7 +587,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-count">23</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -635,7 +635,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#全局分析和统计"><span class="nav-number">1.</span> <span class="nav-text">全局分析和统计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进程分析和统计"><span class="nav-number">2.</span> <span class="nav-text">进程分析和统计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#系统"><span class="nav-number">3.</span> <span class="nav-text">系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#调试"><span class="nav-number">4.</span> <span class="nav-text">调试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他手册-详细手册"><span class="nav-number">5.</span> <span class="nav-text">其他手册/详细手册</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#ldd-查看程序运行时库"><span class="nav-number">5.0.0.1.</span> <span class="nav-text">ldd   查看程序运行时库</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#strace"><span class="nav-number">5.0.0.2.</span> <span class="nav-text">strace</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#vmstat"><span class="nav-number">5.0.0.3.</span> <span class="nav-text">vmstat</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#sar"><span class="nav-number">5.0.0.4.</span> <span class="nav-text">sar</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#proc-pid-maps-虚拟内存地址"><span class="nav-number">5.0.0.5.</span> <span class="nav-text">/proc/$pid/maps   虚拟内存地址</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#pmap-虚拟内存地址-类似-proc-pid-maps"><span class="nav-number">5.0.1.</span> <span class="nav-text">pmap 虚拟内存地址  类似 /proc/$pid/maps</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#全局分析和统计"><span class="nav-number">1.</span> <span class="nav-text">全局分析和统计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进程分析和统计"><span class="nav-number">2.</span> <span class="nav-text">进程分析和统计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#系统"><span class="nav-number">3.</span> <span class="nav-text">系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#调试"><span class="nav-number">4.</span> <span class="nav-text">调试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他手册-详细手册"><span class="nav-number">5.</span> <span class="nav-text">其他手册/详细手册</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#ldd-查看程序运行时库"><span class="nav-number">5.0.0.1.</span> <span class="nav-text">ldd   查看程序运行时库</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#strace"><span class="nav-number">5.0.0.2.</span> <span class="nav-text">strace</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#vmstat"><span class="nav-number">5.0.0.3.</span> <span class="nav-text">vmstat</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#sar"><span class="nav-number">5.0.0.4.</span> <span class="nav-text">sar</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#proc-pid-maps-虚拟内存地址"><span class="nav-number">5.0.0.5.</span> <span class="nav-text">/proc/$pid/maps   虚拟内存地址</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GDB-doesn’t-allow-“thread-apply-all-bt”-when-the-process-isn’t"><span class="nav-number"></span> <span class="nav-text">GDB doesn’t allow “thread apply all bt” when the process isn’t</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#threaded-need-to-peek-at-the-process-to-determine-if-that-or-the"><span class="nav-number"></span> <span class="nav-text">threaded; need to peek at the process to determine if that or the</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#simpler-“bt”-should-be-used"><span class="nav-number"></span> <span class="nav-text">simpler “bt” should be used.</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Run-GDB-strip-out-unwanted-noise"><span class="nav-number"></span> <span class="nav-text">Run GDB, strip out unwanted noise.</span></a></div>
             
 
           </div>

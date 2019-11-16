@@ -94,12 +94,16 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="关于夏天的一切">
-<meta property="og:url" content="https://zsummer.github.io/index.html">
+<meta name="description" content="目录   目录 ELF文件类型和描述 文件类型 链接器视图 加载器视图 基本测试命令 基础术语知识 目标文件格式的比较和说明 其他词汇说明     可重定位文件 lib.cpp片段分析 so.cpp片段分析 libso.so片段分析   注1:   实验数据附录 lib.o二进制分析 so.o二进制分析 pic版本so.o二进制分析 libso.so二进制分析     ELF文件类型和描述 (Ex">
+<meta property="og:type" content="article">
+<meta property="og:title" content="动态链接 静态链接 符号">
+<meta property="og:url" content="https://zsummer.github.io/2019/11/09/2019-11-12-link-symbol/index.html">
 <meta property="og:site_name" content="关于夏天的一切">
+<meta property="og:description" content="目录   目录 ELF文件类型和描述 文件类型 链接器视图 加载器视图 基本测试命令 基础术语知识 目标文件格式的比较和说明 其他词汇说明     可重定位文件 lib.cpp片段分析 so.cpp片段分析 libso.so片段分析   注1:   实验数据附录 lib.o二进制分析 so.o二进制分析 pic版本so.o二进制分析 libso.so二进制分析     ELF文件类型和描述 (Ex">
+<meta property="og:updated_time" content="2019-11-16T09:45:03.564Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="关于夏天的一切">
+<meta name="twitter:title" content="动态链接 静态链接 符号">
+<meta name="twitter:description" content="目录   目录 ELF文件类型和描述 文件类型 链接器视图 加载器视图 基本测试命令 基础术语知识 目标文件格式的比较和说明 其他词汇说明     可重定位文件 lib.cpp片段分析 so.cpp片段分析 libso.so片段分析   注1:   实验数据附录 lib.o二进制分析 so.o二进制分析 pic版本so.o二进制分析 libso.so二进制分析     ELF文件类型和描述 (Ex">
 
 
 
@@ -128,13 +132,13 @@
 
 
 
-  <link rel="canonical" href="https://zsummer.github.io/"/>
+  <link rel="canonical" href="https://zsummer.github.io/2019/11/09/2019-11-12-link-symbol/"/>
 
 
 
 
 
-  <title>关于夏天的一切</title>
+  <title>动态链接 静态链接 符号 | 关于夏天的一切</title>
   
 
 
@@ -159,9 +163,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-   page-home 
- ">
+  <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -234,9 +236,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -266,9 +268,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/11/09/2019-11-12-link-symbol/" itemprop="url">动态链接 静态链接 符号</a></h1>
+          <h1 class="post-title" itemprop="name headline">动态链接 静态链接 符号</h1>
         
 
         <div class="post-meta">
@@ -340,9 +340,7 @@
       
 
       
-        
-          
-            <h3><span id="目录">目录</span></h3><hr>
+        <h3><span id="目录">目录</span></h3><hr>
 <!-- TOC -->
 <ul>
 <li><a href="#目录">目录</a></li>
@@ -722,8 +720,6 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">skyler@debian:~/symbo$ objdump -S so.npic.o    </div><div class="line"></div><div class="line">so.npic.o：     文件格式 elf64-x86-64</div><div class="line"></div><div class="line"></div><div class="line">Disassembly of section .text:</div><div class="line"></div><div class="line">0000000000000000 &lt;_Z13so_inner_funcii&gt;:</div><div class="line">   0:   55                      push   %rbp</div><div class="line">   1:   48 89 e5                mov    %rsp,%rbp</div><div class="line">   4:   89 7d fc                mov    %edi,-0x4(%rbp)</div><div class="line">   7:   89 75 f8                mov    %esi,-0x8(%rbp)</div><div class="line">   a:   8b 55 fc                mov    -0x4(%rbp),%edx</div><div class="line">   d:   8b 45 f8                mov    -0x8(%rbp),%eax</div><div class="line">  10:   01 d0                   add    %edx,%eax</div><div class="line">  12:   5d                      pop    %rbp</div><div class="line">  13:   c3                      retq   </div><div class="line"></div><div class="line">0000000000000014 &lt;_Z7so_funcii&gt;:</div><div class="line">  14:   55                      push   %rbp</div><div class="line">  15:   48 89 e5                mov    %rsp,%rbp</div><div class="line">  18:   53                      push   %rbx</div><div class="line">  19:   48 83 ec 28             sub    $0x28,%rsp</div><div class="line">  1d:   89 7d dc                mov    %edi,-0x24(%rbp)</div><div class="line">  20:   89 75 d8                mov    %esi,-0x28(%rbp)</div><div class="line">  23:   8b 55 d8                mov    -0x28(%rbp),%edx</div><div class="line">  26:   8b 45 dc                mov    -0x24(%rbp),%eax</div><div class="line">  29:   89 d6                   mov    %edx,%esi</div><div class="line">  2b:   89 c7                   mov    %eax,%edi</div><div class="line">  2d:   e8 00 00 00 00          callq  32 &lt;_Z7so_funcii+0x1e&gt;</div><div class="line">  32:   89 c3                   mov    %eax,%ebx</div><div class="line">  34:   8b 55 d8                mov    -0x28(%rbp),%edx</div><div class="line">  37:   8b 45 dc                mov    -0x24(%rbp),%eax</div><div class="line">  3a:   89 d6                   mov    %edx,%esi</div><div class="line">  3c:   89 c7                   mov    %eax,%edi</div><div class="line">  3e:   e8 00 00 00 00          callq  43 &lt;_Z7so_funcii+0x2f&gt;</div><div class="line">  43:   01 d8                   add    %ebx,%eax</div><div class="line">  45:   89 45 ec                mov    %eax,-0x14(%rbp)</div><div class="line">  48:   8b 45 ec                mov    -0x14(%rbp),%eax</div><div class="line">  4b:   48 83 c4 28             add    $0x28,%rsp</div><div class="line">  4f:   5b                      pop    %rbx</div><div class="line">  50:   5d                      pop    %rbp</div><div class="line">  51:   c3                      retq</div></pre></td></tr></table></figure>
 <h4><span id="pic版本soo二进制分析">pic版本so.o二进制分析</span></h4><p>so.pic.o<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div></pre></td><td class="code"><pre><div class="line">skyler@debian:~/symbo$ readelf -a so.pic.o  </div><div class="line">ELF 头：</div><div class="line">  Magic：  7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 </div><div class="line">  类别:                              ELF64</div><div class="line">  数据:                              2 补码，小端序 (little endian)</div><div class="line">  版本:                              1 (current)</div><div class="line">  OS/ABI:                            UNIX - System V</div><div class="line">  ABI 版本:                          0</div><div class="line">  类型:                              REL (可重定位文件)</div><div class="line">  系统架构:                          Advanced Micro Devices X86-64</div><div class="line">  版本:                              0x1</div><div class="line">  入口点地址：              0x0</div><div class="line">  程序头起点：              0 (bytes into file)</div><div class="line">  Start of section headers:          904 (bytes into file)</div><div class="line">  标志：             0x0</div><div class="line">  本头的大小：       64 (字节)</div><div class="line">  程序头大小：       0 (字节)</div><div class="line">  Number of program headers:         0</div><div class="line">  节头大小：         64 (字节)</div><div class="line">  节头数量：         12</div><div class="line">  字符串表索引节头： 11</div><div class="line"></div><div class="line">节头：</div><div class="line">  [号] 名称              类型             地址              偏移量</div><div class="line">       大小              全体大小          旗标   链接   信息   对齐</div><div class="line">  [ 0]                   NULL             0000000000000000  00000000</div><div class="line">       0000000000000000  0000000000000000           0     0     0</div><div class="line">  [ 1] .text             PROGBITS         0000000000000000  00000040</div><div class="line">       0000000000000052  0000000000000000  AX       0     0     1</div><div class="line">  [ 2] .rela.text        RELA             0000000000000000  000002c8</div><div class="line">       0000000000000030  0000000000000018   I       9     1     8</div><div class="line">  [ 3] .data             PROGBITS         0000000000000000  00000092</div><div class="line">       0000000000000000  0000000000000000  WA       0     0     1</div><div class="line">  [ 4] .bss              NOBITS           0000000000000000  00000098</div><div class="line">       0000000000000010  0000000000000000  WA       0     0     8</div><div class="line">  [ 5] .comment          PROGBITS         0000000000000000  00000098</div><div class="line">       0000000000000012  0000000000000001  MS       0     0     1</div><div class="line">  [ 6] .note.GNU-stack   PROGBITS         0000000000000000  000000aa</div><div class="line">       0000000000000000  0000000000000000           0     0     1</div><div class="line">  [ 7] .eh_frame         PROGBITS         0000000000000000  000000b0</div><div class="line">       0000000000000058  0000000000000000   A       0     0     8</div><div class="line">  [ 8] .rela.eh_frame    RELA             0000000000000000  000002f8</div><div class="line">       0000000000000030  0000000000000018   I       9     7     8</div><div class="line">  [ 9] .symtab           SYMTAB           0000000000000000  00000108</div><div class="line">       0000000000000150  0000000000000018          10     8     8</div><div class="line">  [10] .strtab           STRTAB           0000000000000000  00000258</div><div class="line">       000000000000006e  0000000000000000           0     0     1</div><div class="line">  [11] .shstrtab         STRTAB           0000000000000000  00000328</div><div class="line">       0000000000000059  0000000000000000           0     0     1</div><div class="line">Key to Flags:</div><div class="line">  W (write), A (alloc), X (execute), M (merge), S (strings), I (info),</div><div class="line">  L (link order), O (extra OS processing required), G (group), T (TLS),</div><div class="line">  C (compressed), x (unknown), o (OS specific), E (exclude),</div><div class="line">  l (large), p (processor specific)</div><div class="line"></div><div class="line">There are no section groups in this file.</div><div class="line"></div><div class="line">本文件中没有程序头。</div><div class="line"></div><div class="line">重定位节 &apos;.rela.text&apos; 位于偏移量 0x2c8 含有 2 个条目：</div><div class="line">  偏移量          信息           类型           符号值        符号名称 + 加数</div><div class="line">00000000002e  000d00000004 R_X86_64_PLT32    0000000000000000 _Z8lib_funcii - 4</div><div class="line">00000000003f  000a00000004 R_X86_64_PLT32    0000000000000000 _Z13so_inner_funcii - 4</div><div class="line"></div><div class="line">重定位节 &apos;.rela.eh_frame&apos; 位于偏移量 0x2f8 含有 2 个条目：</div><div class="line">  偏移量          信息           类型           符号值        符号名称 + 加数</div><div class="line">000000000020  000200000002 R_X86_64_PC32     0000000000000000 .text + 0</div><div class="line">000000000040  000200000002 R_X86_64_PC32     0000000000000000 .text + 14</div><div class="line"></div><div class="line">The decoding of unwind sections for machine type Advanced Micro Devices X86-64 is not currently supported.</div><div class="line"></div><div class="line">Symbol table &apos;.symtab&apos; contains 14 entries:</div><div class="line">   Num:    Value          Size Type    Bind   Vis      Ndx Name</div><div class="line">     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND </div><div class="line">     1: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS so.cpp</div><div class="line">     2: 0000000000000000     0 SECTION LOCAL  DEFAULT    1 </div><div class="line">     3: 0000000000000000     0 SECTION LOCAL  DEFAULT    3 </div><div class="line">     4: 0000000000000000     0 SECTION LOCAL  DEFAULT    4 </div><div class="line">     5: 0000000000000000     0 SECTION LOCAL  DEFAULT    6 </div><div class="line">     6: 0000000000000000     0 SECTION LOCAL  DEFAULT    7 </div><div class="line">     7: 0000000000000000     0 SECTION LOCAL  DEFAULT    5 </div><div class="line">     8: 0000000000000000     8 OBJECT  GLOBAL DEFAULT    4 g_static_so_bss</div><div class="line">     9: 0000000000000008     8 OBJECT  GLOBAL DEFAULT    4 g_static_so_data</div><div class="line">    10: 0000000000000000    20 FUNC    GLOBAL DEFAULT    1 _Z13so_inner_funcii</div><div class="line">    11: 0000000000000014    62 FUNC    GLOBAL DEFAULT    1 _Z7so_funcii</div><div class="line">    12: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT  UND _GLOBAL_OFFSET_TABLE_</div><div class="line">    13: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT  UND _Z8lib_funcii</div><div class="line"></div><div class="line">No version information found in this file.</div></pre></td></tr></table></figure></p>
 <h4><span id="libsoso二进制分析">libso.so二进制分析</span></h4>
-          
-        
       
     </div>
     
@@ -740,224 +736,28 @@
       
 
       
-
-      
-
       
       
-        <div class="post-eof"></div>
+
       
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/09/2019-11-09-pie-pic-got-plt/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/11/09/2019-11-09-pie-pic-got-plt/" itemprop="url">位置无关代码</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-09T00:00:00+08:00">
-                2019-11-09
-              </time>
+              <a href="/2019/11/09/2019-11-09-pie-pic-got-plt/" rel="next" title="位置无关代码">
+                <i class="fa fa-chevron-left"></i> 位置无关代码
+              </a>
             
+          </div>
 
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          <h3 id="ELF文件"><a href="#ELF文件" class="headerlink" title="ELF文件"></a>ELF文件</h3><h6 id="内存布局"><a href="#内存布局" class="headerlink" title="内存布局"></a>内存布局</h6><table>
-<thead>
-<tr>
-<th>LINKING VIEW </th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>ELF HEADER</td>
-</tr>
-<tr>
-<td>PROGRAM HEADER TABLE OPTIONAL </td>
-</tr>
-<tr>
-<td>SECTION 1  </td>
-</tr>
-<tr>
-<td>SECTION 2</td>
-</tr>
-<tr>
-<td>SECTION n …</td>
-</tr>
-<tr>
-<td>SECTION HEADER TABLE  </td>
-</tr>
-</tbody>
-</table>
-<h6 id="执行视图"><a href="#执行视图" class="headerlink" title="执行视图"></a>执行视图</h6><table>
-<thead>
-<tr>
-<th>EXECUTION VIEW </th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>PROGRAM HEADER TABLE </td>
-</tr>
-<tr>
-<td>SEGMENT 1 </td>
-</tr>
-<tr>
-<td>SEGMENT 2 </td>
-</tr>
-<tr>
-<td>SEGMENT N …</td>
-</tr>
-<tr>
-<td>SECTION HEADER TABLE OPTIONAL </td>
-</tr>
-</tbody>
-</table>
-<h6 id="主要区别"><a href="#主要区别" class="headerlink" title="主要区别"></a>主要区别</h6><ul>
-<li>PROGRAM HEADER TABLE是运行时对应SEGMENT的TABLE 所以在目标文件中并不需要存在 实际上GCC代码编译出来的目标文件也不存在该</li>
-<li><p>节 SECTION  (目标文件中的SECTION是和SECTION HEADER TABLE中的条目一一对应, 用于链接器对代码进行重定位(非PIC会重定位))</p>
-<ul>
-<li>.TEXT</li>
-<li>.BSS</li>
-<li>.DATA  </li>
-</ul>
-</li>
-<li><p>分段  SEGMENT (载入内存后以SEGMENT组织, SEGMENT对应PROGRAM HEADER TABLE 中的条目, 目标代码中的SECTION会组织到各个SEGMENT中)  </p>
-<ul>
-<li>.TEXT的内容会组织到代码段中  </li>
-<li>.DATA .BSS的内容会包含在数据段中  </li>
-</ul>
-</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/11/09/2019-11-09-pie-pic-got-plt/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -967,1305 +767,11 @@
   </article>
 
 
-    
-      
 
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/05/2019-11-05-fast-check-linux/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/11/05/2019-11-05-fast-check-linux/" itemprop="url">linux快速排查问题的命令</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-05T00:00:00+08:00">
-                2019-11-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="全局分析和统计"><a href="#全局分析和统计" class="headerlink" title="全局分析和统计"></a>全局分析和统计</h3><ul>
-<li><p>top命令   </p>
-<ul>
-<li>free 查看内存使用信息  </li>
-<li>vmstate [delay时间]  按照delay时间打印内存使用 io读写 CPU用量等信息  </li>
-<li>iostat -m -x [时间] [次数]   io读写详细信息</li>
-</ul>
-</li>
-<li><p>sar 系统活动情况报告 追溯统计数据 从最近的0点0分开始显示数据   </p>
-<ul>
-<li>sar -A 所有  </li>
-<li>sar -u CPU  </li>
-<li>sar -q 负载</li>
-<li>sar -r 内存</li>
-<li>CPU存在瓶颈，可用 sar -u 和 sar -q 等来查看</li>
-<li>内存存在瓶颈，可用sar -B、sar -r 和 sar -W 等来查看</li>
-<li>I/O存在瓶颈，可用 sar -b、sar -u 和 sar -d 等来查看</li>
-</ul>
-</li>
-<li><p>df 查看当前硬盘存储</p>
-<ul>
-<li>du -h  –max-depth=1 [./]   统计当前目录树下的文件大小  </li>
-</ul>
-</li>
-<li><p>IPC资源查询   </p>
-<ul>
-<li>ipcs -m 查看共享内存资源  </li>
-<li>ipcsrm -M [shmkey]  删除共享内存资源  </li>
-<li>ipcsrm -m [shmid]    删除shmid标识的共享内存资源  </li>
-</ul>
-</li>
-<li><p>ulimit -a   配置位置 /etc/security/limits.conf  </p>
-<ul>
-<li>coredump文件的大小</li>
-<li>线程栈的大小  </li>
-<li>单进程最大设备数<ul>
-<li>单进程最大设备数的硬性限制在/proc/sys/fs/nr_open 中配置  </li>
-<li>系统配置的最大设备数可查看/proc/sys/fs/file-max 中配置  </li>
-<li>系统配置的最大设备数修改/etc/sysctl.conf |  fs.file-max = 1000000</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>全局线程总数 </p>
-<ul>
-<li>查看位置 /proc/sys/kernel/threads-max  </li>
-</ul>
-</li>
-<li><p>单个进程最大线程数 PTHREAD_THREADS_MAX  新的NPTL实现中不存在该限制   </p>
-<ul>
-<li>查看位置 /usr/include/bits/local_lim.h </li>
-<li>查看位置 /usr/include/x86_64-linux-gnu/bits/local_lim.h</li>
-</ul>
-</li>
-<li><p>whereis   查看命令所在位置  </p>
-</li>
-<li><p>lsof [文件/路径]  查看占用该文件/该目录下文件的进程  </p>
-</li>
-<li><p>lsof -i  查看当前活动的网络连接 包括TCP / UDP</p>
-</li>
-<li><p>lsof -p [pid] 查看当前进程所有打开的文件/设备</p>
-</li>
-<li><p>ulimit -s 栈大小  </p>
-</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/11/05/2019-11-05-fast-check-linux/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
+    <div class="post-spread">
       
     </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
   </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/04/2019-11-04-aslr/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/11/04/2019-11-04-aslr/" itemprop="url">linux内存布局和ASLR</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-04T00:00:00+08:00">
-                2019-11-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="内存布局"><a href="#内存布局" class="headerlink" title="内存布局"></a>内存布局</h3><h6 id="基本布局"><a href="#基本布局" class="headerlink" title="基本布局"></a>基本布局</h6><p>内核地址空间范围  [0XFFFF 0000 0000 0000, 0XFFFF FFFF FFFF FFFF]<br>不规范地址空间    (0XFFFF 0000 0000 0000, 0X0000 FFFF FFFF FFFF)<br>用户地址空间      [0X0000 FFFF FFFF FFFF, 0X0000 0000 0000 0000]</p>
-<p>备注: 用户空间范围对应为0~TASK_SIZE = 2^VA_BITS</p>
-<ol>
-<li>用户地址空间默认最大宽度是48 如上  </li>
-<li>内核地址空间和用户地址空间宽度相同  </li>
-<li>不同的页长默认有不同的宽度, 例如4KB页长默认是39位   16:47, 64:42等, 可直接选择48位.  </li>
-<li>开启LVA支持并且页长64可以支持到最大宽度52   </li>
-<li>通过getconf PAGE_SIZE 可以查看系统的页大小  </li>
-<li>通过/proc/$pid/maps或者pmap可以查看一个进程的实际内存布局 </li>
-<li>mprotect 可以修改内存页权限   </li>
-<li>madvise 可以修改建议内存使用的方式  </li>
-<li>老的LinuxThreads (管理线程机制) 设计中线程栈的位置在 HEAP之下 的高位 导致无法可信的设置heap大小  </li>
-<li>新的NPTL解决了老的线程机制中的管理单点问题 信号问题 内存布局问题等 顺便实现了PTHREAD_PROCESS_SHARED </li>
-<li>pthread_attr_setstackaddr可指定线程栈的地址(mmap)   </li>
-<li>pthread的创建和销毁 <ol>
-<li>创建   <ol>
-<li>使用用户提供的stack创建线程并加入__stack_user </li>
-<li>nptl 先尝试获取stack_cache中tid为0大小合适的空闲stack, 如果失败则从mmap分配新的stack, 然后加入stack_used  </li>
-<li>tid list等信息存储在stack内存的高地址端的头部  </li>
-</ol>
-</li>
-<li>start_thread执行完用户函数后会进行数据回收和清理(但无法销毁自身)   <ol>
-<li>如果该线程非detach 则等待join  (没有join则会一直保留)  </li>
-<li>如果该线程被detach 则执行__free_tcb   <ol>
-<li>如果是用户分配的stack 从stack_user链表中移除并清理tls 线程局部存储  </li>
-<li>如果是自动分配的stack 从stack_used链表中移除, 然后加入stack_cache中, 清理tls线程局部存储(此时tid不为0)   </li>
-<li>检查当前stack_cache的总大小, 超过阈值则遍历一次stack_cache并释放掉(tid为0)空闲的stack, 如果小于阈值则提前break该次遍历   </li>
-</ol>
-</li>
-</ol>
-</li>
-<li>内核在该线程结束后 会对该线程的tid清零(创建线程时CLONE_CHILD_CLEARTID参数会让内存清除某标记内存), 此后该资源可以安全销毁.        </li>
-</ol>
-</li>
-<li>brk和mmap的分配由glibc确定 默认规则是小于M_MMAP_THRESHOLD宏走brk  但是新系统的算法可能会让大于这个参数的临时分配也走brk
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/11/04/2019-11-04-aslr/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/10/01/2019-10-01-sdm/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/10/01/2019-10-01-sdm/" itemprop="url">SDM模型</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-01T00:00:00+08:00">
-                2019-10-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="SDM框架对系统发展生命周期的过程描述"><a href="#SDM框架对系统发展生命周期的过程描述" class="headerlink" title="SDM框架对系统发展生命周期的过程描述"></a>SDM框架对系统发展生命周期的过程描述</h3><p>SDM(软件开发方法)框架是在SDLC在软件开发早起</p>
-<ul>
-<li>(SDM框架)软件开发过程有以下基本的核心活动内容<ul>
-<li>需求分析 (Requirements analysis)  </li>
-<li>领域设计 (Software design)  </li>
-<li>系统设计 (Software engineering)  </li>
-<li>编码开发 (Software construction)  </li>
-<li>功能验证 (Software testing)  </li>
-<li>错误修正 (Debugging)    </li>
-<li>部署交付 (Software deployment)  </li>
-<li>维护 (Software maintenance)
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/10/01/2019-10-01-sdm/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/09/16/2019-09-16-problem-domain/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/09/16/2019-09-16-problem-domain/" itemprop="url">问题的解决</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-16T00:00:00+08:00">
-                2019-09-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>在认知心理学中, 问题解决的思维过程被描述为: 在问题空间下, 经过思考与推理, 达到目的的心理历程.<br>该过程分为四个阶段  </p>
-<ul>
-<li>发现问题</li>
-<li>分析（明确）问题</li>
-<li>提出假设  </li>
-<li>验证假设  </li>
-</ul>
-<p>其中问题空间(问题域)是指问题解决者对所要解决的问题的一切可能的认识状态, 包括对问题的初始状态和目标状态的认识, 以及如何从初始状态转化为目标状态的认知操作等.    </p>
-<p>问题的解决就是对问题空间进行搜索, 找到一条从问题的初始状态到达目标状态的通路.   </p>
-<h2 id="问题解决的一般性阶段及其描述"><a href="#问题解决的一般性阶段及其描述" class="headerlink" title="问题解决的一般性阶段及其描述:"></a>问题解决的一般性阶段及其描述:</h2><ul>
-<li><strong>问题的存在,发现和提出</strong>  </li>
-<li><strong>定义问题域, 即定义问题集以及问题的约束集</strong>  </li>
-<li><strong>从问题域中递归的构造可演算的计算(概念)模型</strong>  </li>
-<li><strong>制定现实可执行的解决方案</strong>  </li>
-<li><strong>实施并植入问题域所在现实环境验证</strong>   </li>
-<li><strong>问题的解决</strong>  </li>
-</ul>
-<p>在这个过程中, 每个过程的推进都可能会伴随对其前向的阶段所做的处理发起修正, 在此过程中我们会不断的逼近’真正的问题’的问题定义, 以及’真正的问题解决’的结果, 从而采用形式化的方法寻找到最优的解决路径   </p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/09/16/2019-09-16-problem-domain/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/06/08/2019-06-08-rvo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/06/08/2019-06-08-rvo/" itemprop="url">RVO源码阅读笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-08T18:37:00+08:00">
-                2019-06-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h5 id="KDTREE"><a href="#KDTREE" class="headerlink" title="KDTREE"></a>KDTREE</h5><p>空间K维划分, 用来快速寻找距离最近的障碍(指定数量)  优化RVO的资源消耗.  </p>
-<h3 id="路径规划"><a href="#路径规划" class="headerlink" title="路径规划"></a>路径规划</h3><h5 id="高级规划"><a href="#高级规划" class="headerlink" title="高级规划"></a>高级规划</h5><p>DIJKSTRA 最短路径  等寻路方法  </p>
-<h5 id="底层规划"><a href="#底层规划" class="headerlink" title="底层规划"></a>底层规划</h5><p>VO RVO ORCA等Obstacle Avoidance避障算法  </p>
-<h3 id="KDTREE-1"><a href="#KDTREE-1" class="headerlink" title="KDTREE"></a>KDTREE</h3><p>这个是一个简单的KDTREE实现 用来寻找距离最近的障碍(指定数量)  优化RVO的资源消耗.  </p>
-<h3 id="VO-Velocity-Obstacles-速度障碍"><a href="#VO-Velocity-Obstacles-速度障碍" class="headerlink" title="VO  Velocity Obstacles  速度障碍"></a>VO  Velocity Obstacles  速度障碍</h3><p>核心思想: 只要在未来有可能会发生碰撞的速度 都排除在外<br>抖动现象: 两个位移单位存在可能会发生路径碰撞的情况下会同时采取保守的避让速度,导致新速度偏离过大又大幅度回归,从而产生震荡.  </p>
-<h3 id="RVO-Reciprocal-Velocity-Obstacles-互惠的速度障碍"><a href="#RVO-Reciprocal-Velocity-Obstacles-互惠的速度障碍" class="headerlink" title="RVO Reciprocal Velocity Obstacles  互惠的速度障碍"></a>RVO Reciprocal Velocity Obstacles  互惠的速度障碍</h3><p>核心思想: 优化VO思想, 假定对方也会采取避障行为, 缩小(average VO)速度.   </p>
-<h3 id="ORCA-Optimal-Reciprocal-Collision-Avoidance-最优互惠碰撞避免"><a href="#ORCA-Optimal-Reciprocal-Collision-Avoidance-最优互惠碰撞避免" class="headerlink" title="ORCA  Optimal Reciprocal Collision Avoidance  最优互惠碰撞避免"></a>ORCA  Optimal Reciprocal Collision Avoidance  最优互惠碰撞避免</h3><p>核心思想: 优化RVO, 额外考虑速度大小, 求解过程使用线性规划,更高效简洁.   </p>
-<ul>
-<li><strong>对其他所有agents的ORCA求交（线性规划），再与自己可选速度求交集，得候选速度集ORCAτA</strong>  </li>
-<li><strong>在候选集中求解跟自己偏好速度最近的一个速度vnewA</strong>  </li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/06/08/2019-06-08-rvo/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/02/14/2019-02-14-vba/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/02/14/2019-02-14-vba/" itemprop="url">编写VBA脚本示例代码</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-14T17:21:00+08:00">
-                2019-02-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>VBA检测脚本<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/02/14/2019-02-14-vba/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/01/29/2019-01-17-Odyssey/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/29/2019-01-17-Odyssey/" itemprop="url">古希腊历史和奥德赛</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-29T14:21:00+08:00">
-                2019-01-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>在现代英语中，人们将奥德赛这个词引申为“长途的冒险行程”，用来形容类似的探索或者冒险经历。  </p>
-<p>希腊半岛又称为巴尔干半岛(有时包含更多的区域),  雅典位于阿提卡半岛, 斯巴达和奥林匹亚位于伯罗奔尼撒半岛.    </p>
-<p>提洛岛是基克拉泽斯群岛的心脏, 希腊神话中女神勒托的居住地, 阿波罗和阿耳忒弥斯的出生地, 为宗教圣地.  </p>
-</blockquote>
-<h3 id="story-line"><a href="#story-line" class="headerlink" title="story line:"></a>story line:</h3><p><img src="http://a0.att.hudong.com/41/79/01300000433093124784792406044.jpg" alt="古代希腊">   </p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/29/2019-01-17-Odyssey/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/01/17/2019-01-17-type-system-erase/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/17/2019-01-17-type-system-erase/" itemprop="url">类型擦除</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-17T11:21:00+08:00">
-                2019-01-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="类型擦除定义"><a href="#类型擦除定义" class="headerlink" title="类型擦除定义"></a>类型擦除定义</h3><p><strong> 不需要程序伴随类型修饰的操作语义成为擦除语义, 用来使程序在运行时不依赖类型.  </strong>  </p>
-<h3 id="类型擦除语义或者可实现类型擦除效果的实现方式"><a href="#类型擦除语义或者可实现类型擦除效果的实现方式" class="headerlink" title="类型擦除语义或者可实现类型擦除效果的实现方式"></a>类型擦除语义或者可实现类型擦除效果的实现方式</h3><ul>
-<li>多态    </li>
-<li>闭包   </li>
-<li>模板 (可以在C++模板中应用鸭子风格)   </li>
-<li><p>容器 any/tuploe     </p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/17/2019-01-17-type-system-erase/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-  </section>
-
-  
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
-  </nav>
-
 
 
           </div>
@@ -2273,6 +779,10 @@
 
 
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
         
@@ -2293,8 +803,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.png"
@@ -2347,6 +866,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">ELF文件类型和描述</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">2.1.</span> <span class="nav-text">文件类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">2.2.</span> <span class="nav-text">链接器视图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">2.3.</span> <span class="nav-text">加载器视图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">2.4.</span> <span class="nav-text">基本测试命令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">2.5.</span> <span class="nav-text">基础术语知识</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#undefined"><span class="nav-number">2.5.1.</span> <span class="nav-text">目标文件格式的比较和说明</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#undefined"><span class="nav-number">2.5.2.</span> <span class="nav-text">其他词汇说明</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">可重定位文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">3.1.</span> <span class="nav-text">lib.cpp片段分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">3.2.</span> <span class="nav-text">so.cpp片段分析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#undefined"><span class="nav-number">3.2.1.</span> <span class="nav-text">libso.so片段分析</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">3.3.</span> <span class="nav-text">注1:</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">4.</span> <span class="nav-text">实验数据附录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">4.1.</span> <span class="nav-text">lib.o二进制分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">4.2.</span> <span class="nav-text">so.o二进制分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">4.3.</span> <span class="nav-text">pic版本so.o二进制分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">4.4.</span> <span class="nav-text">libso.so二进制分析</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -2467,10 +1002,10 @@
 
 
   
-    <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
 <script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
 
-  
+
 
   
 

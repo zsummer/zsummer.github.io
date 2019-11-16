@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="ELF文件内存布局   LINKING VIEW      ELF HEADER   PROGRAM HEADER TABLE OPTIONAL    SECTION 1     SECTION 2   SECTION n …   SECTION HEADER TABLE      执行视图   EXECUTION VIEW      PROGRAM HEADER TABLE    SEGMENT">
+<meta property="og:type" content="article">
+<meta property="og:title" content="位置无关代码">
+<meta property="og:url" content="https://zsummer.github.io/2019/11/09/2019-11-09-pie-pic-got-plt/index.html">
+<meta property="og:site_name" content="关于夏天的一切">
+<meta property="og:description" content="ELF文件内存布局   LINKING VIEW      ELF HEADER   PROGRAM HEADER TABLE OPTIONAL    SECTION 1     SECTION 2   SECTION n …   SECTION HEADER TABLE      执行视图   EXECUTION VIEW      PROGRAM HEADER TABLE    SEGMENT">
+<meta property="og:updated_time" content="2019-11-12T14:03:54.423Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="位置无关代码">
+<meta name="twitter:description" content="ELF文件内存布局   LINKING VIEW      ELF HEADER   PROGRAM HEADER TABLE OPTIONAL    SECTION 1     SECTION 2   SECTION n …   SECTION HEADER TABLE      执行视图   EXECUTION VIEW      PROGRAM HEADER TABLE    SEGMENT">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zsummer.github.io/2019/11/09/2019-11-09-pie-pic-got-plt/"/>
+
+
+
+
+
+  <title>位置无关代码 | 关于夏天的一切</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">关于夏天的一切</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我总觉得对你的爱很美</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/09/2019-11-09-pie-pic-got-plt/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">位置无关代码</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-09T00:00:00+08:00">
+                2019-11-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="ELF文件"><a href="#ELF文件" class="headerlink" title="ELF文件"></a>ELF文件</h3><h6 id="内存布局"><a href="#内存布局" class="headerlink" title="内存布局"></a>内存布局</h6><table>
+<thead>
+<tr>
+<th>LINKING VIEW </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ELF HEADER</td>
+</tr>
+<tr>
+<td>PROGRAM HEADER TABLE OPTIONAL </td>
+</tr>
+<tr>
+<td>SECTION 1  </td>
+</tr>
+<tr>
+<td>SECTION 2</td>
+</tr>
+<tr>
+<td>SECTION n …</td>
+</tr>
+<tr>
+<td>SECTION HEADER TABLE  </td>
+</tr>
+</tbody>
+</table>
+<h6 id="执行视图"><a href="#执行视图" class="headerlink" title="执行视图"></a>执行视图</h6><table>
+<thead>
+<tr>
+<th>EXECUTION VIEW </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PROGRAM HEADER TABLE </td>
+</tr>
+<tr>
+<td>SEGMENT 1 </td>
+</tr>
+<tr>
+<td>SEGMENT 2 </td>
+</tr>
+<tr>
+<td>SEGMENT N …</td>
+</tr>
+<tr>
+<td>SECTION HEADER TABLE OPTIONAL </td>
+</tr>
+</tbody>
+</table>
+<h6 id="主要区别"><a href="#主要区别" class="headerlink" title="主要区别"></a>主要区别</h6><ul>
+<li>PROGRAM HEADER TABLE是运行时对应SEGMENT的TABLE 所以在目标文件中并不需要存在 实际上GCC代码编译出来的目标文件也不存在该</li>
+<li><p>节 SECTION  (目标文件中的SECTION是和SECTION HEADER TABLE中的条目一一对应, 用于链接器对代码进行重定位(非PIC会重定位))</p>
+<ul>
+<li>.TEXT</li>
+<li>.BSS</li>
+<li>.DATA  </li>
+</ul>
+</li>
+<li><p>分段  SEGMENT (载入内存后以SEGMENT组织, SEGMENT对应PROGRAM HEADER TABLE 中的条目, 目标代码中的SECTION会组织到各个SEGMENT中)  </p>
+<ul>
+<li>.TEXT的内容会组织到代码段中  </li>
+<li>.DATA .BSS的内容会包含在数据段中  </li>
+</ul>
+</li>
+</ul>
+<a id="more"></a> 
+<h3 id="分析过程"><a href="#分析过程" class="headerlink" title="分析过程"></a>分析过程</h3><p> 通过命令 readelf a.out -S section 查看SECTION 可以看到.plt .plt.got的信息<br> 旗标FLAG中 A代表分配内存  X代表执行 W为可写  见末尾KEY说明<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line"> 文件：a.out</div><div class="line">共有 36 个节头，从偏移量 0x2c00 开始：</div><div class="line"></div><div class="line">节头：</div><div class="line">  [号] 名称              类型             地址              偏移量              大小              全体大小        旗标   链接   信息   对齐</div><div class="line">  [ 0]                   NULL             0000000000000000  00000000       0000000000000000  0000000000000000           0     0     0</div><div class="line">  [ 1] .interp           PROGBITS         0000000000000238  00000238       000000000000001c  0000000000000000   A       0     0     1</div><div class="line">  [ 2] .note.ABI-tag     NOTE             0000000000000254  00000254       0000000000000020  0000000000000000   A       0     0     4</div><div class="line">  [ 3] .note.gnu.build-i NOTE             0000000000000274  00000274       0000000000000024  0000000000000000   A       0     0     4</div><div class="line">  [ 4] .gnu.hash         GNU_HASH         0000000000000298  00000298       000000000000001c  0000000000000000   A       5     0     8</div><div class="line">  [ 5] .dynsym           DYNSYM           00000000000002b8  000002b8       00000000000000f0  0000000000000018   A       6     1     8</div><div class="line">  [ 6] .dynstr           STRTAB           00000000000003a8  000003a8       00000000000000c9  0000000000000000   A       0     0     1</div><div class="line">  [ 7] .gnu.version      VERSYM           0000000000000472  00000472       0000000000000014  0000000000000002   A       5     0     2</div><div class="line">  [ 8] .gnu.version_r    VERNEED          0000000000000488  00000488       0000000000000020  0000000000000000   A       6     1     8</div><div class="line">  [ 9] .rela.dyn         RELA             00000000000004a8  000004a8       00000000000000d8  0000000000000018   A       5     0     8</div><div class="line">  [10] .rela.plt         RELA             0000000000000580  00000580       0000000000000048  0000000000000018  AI       5    24     8</div><div class="line">  [11] .init             PROGBITS         00000000000005c8  000005c8       0000000000000017  0000000000000000  AX       0     0     4</div><div class="line">  [12] .plt              PROGBITS         00000000000005e0  000005e0       0000000000000040  0000000000000010  AX       0     0     16</div><div class="line">  [13] .plt.got          PROGBITS         0000000000000620  00000620       0000000000000008  0000000000000000  AX       0     0     8</div><div class="line">  [14] .text             PROGBITS         0000000000000630  00000630       0000000000000212  0000000000000000  AX       0     0     16</div><div class="line">  [15] .fini             PROGBITS         0000000000000844  00000844       0000000000000009  0000000000000000  AX       0     0     4</div><div class="line">  [16] .rodata           PROGBITS         0000000000000850  00000850       0000000000000027  0000000000000000   A       0     0     4</div><div class="line">  [17] .eh_frame_hdr     PROGBITS         0000000000000878  00000878       000000000000003c  0000000000000000   A       0     0     4</div><div class="line">  [18] .eh_frame         PROGBITS         00000000000008b8  000008b8       000000000000010c  0000000000000000   A       0     0     8</div><div class="line">  [19] .init_array       INIT_ARRAY       0000000000200da8  00000da8       0000000000000008  0000000000000008  WA       0     0     8</div><div class="line">  [20] .fini_array       FINI_ARRAY       0000000000200db0  00000db0       0000000000000008  0000000000000008  WA       0     0     8</div><div class="line">  [21] .jcr              PROGBITS         0000000000200db8  00000db8       0000000000000008  0000000000000000  WA       0     0     8</div><div class="line">  [22] .dynamic          DYNAMIC          0000000000200dc0  00000dc0       0000000000000210  0000000000000010  WA       6     0     8</div><div class="line">  [23] .got              PROGBITS         0000000000200fd0  00000fd0       0000000000000030  0000000000000008  WA       0     0     8</div><div class="line">  [24] .got.plt          PROGBITS         0000000000201000  00001000       0000000000000030  0000000000000008  WA       0     0     8</div><div class="line">  [25] .data             PROGBITS         0000000000201030  00001030       0000000000000010  0000000000000000  WA       0     0     8</div><div class="line">  [26] .bss              NOBITS           0000000000201040  00001040       0000000000000008  0000000000000000  WA       0     0     1</div><div class="line">  [27] .comment          PROGBITS         0000000000000000  00001040       000000000000002d  0000000000000001  MS       0     0     1</div><div class="line">  [28] .debug_aranges    PROGBITS         0000000000000000  0000106d       0000000000000030  0000000000000000           0     0     1</div><div class="line">  [29] .debug_info       PROGBITS         0000000000000000  0000109d       0000000000000973  0000000000000000           0     0     1</div><div class="line">  [30] .debug_abbrev     PROGBITS         0000000000000000  00001a10       0000000000000211  0000000000000000           0     0     1</div><div class="line">  [31] .debug_line       PROGBITS         0000000000000000  00001c21       0000000000000155  0000000000000000           0     0     1</div><div class="line">  [32] .debug_str        PROGBITS         0000000000000000  00001d76       00000000000003d7  0000000000000001  MS       0     0     1</div><div class="line">  [33] .symtab           SYMTAB           0000000000000000  00002150       0000000000000708  0000000000000018          34    52     8</div><div class="line">  [34] .strtab           STRTAB           0000000000000000  00002858       0000000000000256  0000000000000000           0     0     1</div><div class="line">  [35] .shstrtab         STRTAB           0000000000000000  00002aae       000000000000014c  0000000000000000           0     0     1</div><div class="line">Key to Flags:</div><div class="line">  W (write), A (alloc), X (execute), M (merge), S (strings), I (info),</div><div class="line">  L (link order), O (extra OS processing required), G (group), T (TLS),</div><div class="line">  C (compressed), x (unknown), o (OS specific), E (exclude),</div><div class="line">  l (large), p (processor specific)</div></pre></td></tr></table></figure></p>
+<p> <a href="https://www.cnblogs.com/jiqingwu/p/elf_format_research_01.html" target="_blank" rel="external">https://www.cnblogs.com/jiqingwu/p/elf_format_research_01.html</a><br> <a href="https://blog.csdn.net/qq_32400847/article/details/71001693" target="_blank" rel="external">https://blog.csdn.net/qq_32400847/article/details/71001693</a><br> <a href="http://www.wowotech.net/basic_subject/pic.html" target="_blank" rel="external">http://www.wowotech.net/basic_subject/pic.html</a><br> <a href="https://blog.csdn.net/loushuai/article/details/50493603" target="_blank" rel="external">https://blog.csdn.net/loushuai/article/details/50493603</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/05/2019-11-05-fast-check-linux/" rel="next" title="linux快速排查问题的命令">
+                <i class="fa fa-chevron-left"></i> linux快速排查问题的命令
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/11/09/2019-11-12-link-symbol/" rel="prev" title="动态链接 静态链接 符号">
+                动态链接 静态链接 符号 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="夏天" />
+          <p class="site-author-name" itemprop="name">夏天</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">categories</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#ELF文件"><span class="nav-number">1.</span> <span class="nav-text">ELF文件</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#内存布局"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">内存布局</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#执行视图"><span class="nav-number">1.0.0.2.</span> <span class="nav-text">执行视图</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#主要区别"><span class="nav-number">1.0.0.3.</span> <span class="nav-text">主要区别</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析过程"><span class="nav-number">2.</span> <span class="nav-text">分析过程</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">夏天</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Gemini
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
