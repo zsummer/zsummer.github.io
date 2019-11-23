@@ -103,6 +103,7 @@ pie用于链接时产生地址无关代码的可执行文件, 让可执行文件
 
 #### 基础术语知识   
 ##### 目标文件格式的比较和说明    
+目标文件格式提供了
 * a.out 文件格式  
   * 旧版unix like系统(包括linux1.2以及之前的版本)中用于可执行文件 目标代码 共享库等的文件格式, 后续基本被ELF取代   
   * 后续习惯性把a.out作为可执行文件的默认输出名, 即使格式不是a.out   
@@ -155,25 +156,61 @@ pie用于链接时产生地址无关代码的可执行文件, 让可执行文件
   * .data section 里面装载了被初始化的数据
   * .bss section 里面装载了未被初始化或者初始化为0的数据  
     * bss 不占据ELF文件的空间 因为没有内容只有空间大小和类型信息  
-  * .symtab section 符号表   
-  * .dynsym section 动态库的符号表  
+  
+  * .commont 开发环境的时候使用的GCC版本信息   
+  * .shstrtab 指的是section header string table 保存了各个section的名字   
   * .strtab 或者 .dynstr section 里面装载了字符串信息 
   * .rodata 字符串常量  
   * .eh_frame 其内部存放了以DWARF格式保存的一些调试信息 格式与 .debug_frame 是很相似的（不完全相同）.  
+  
+  * .dynsym  动态库的符号表  
+    * 动态加载需要的符号表(动态库)  
+  * .symtab section 符号表(全量)   
+    * 包括了.strtab里面定义的符号 每个符号对应的符号表是一个Elf64_Symbol结构体 除了包含.strtab外 符号表中还包含了一些section的符号表条目 
+    * Value 符号所在的section偏移, 比如代码段的相对偏移地址, 数据段的相对偏移地址    
+    * Size 大小,  如果是变量则是变量的size, 如果是函数则是指令的行数  
+    * Type 符号的类型 NOTYPE或者UND代表是外部符号, FUNC函数, OBJECT数据, SECTION 节 
+      * 如果是so/exe则还有bss data等字段    
+    * Bind 绑定类型 LOCAL GLOBAL  
+    * vis  
+    * NDX
+    * NAME 符号名  
+
   * .rel 打头的 sections 里面装载了重定位条目   
     * 在最终二进制文件中 使用"符号的地址"在此目标文件中的"偏移量"处修补该值   
-    * .rel.text (目标文件.o)包含了代码段中引用的外部函数和全局变量的重定位条目  
-    * .rela.eh_frame (目标文件.o)同.rel.text 一样属于重定位信息的 section 只不过它包含的是  eh_frame 的重定位信息  
-    * .rel.plt 节的每个表项对应了所有外部过程调用符号的重定位信息  
+
+
+    * .rel.text RELOCATION RECORDS FOR [.text] (object file)包含了代码段中引用的函数和全局变量的重定位条目 包括调用当前编译单元的
+      * Offset 偏移地址 代码段中要修改掉的地址  
+      * Type 类型 不启用PIC的一般是PC32 启用后如下
+        * PLT32 函数符号 外部或者内部  
+        * GOT PC RELX 全局变量符号  包括外部和内部  
+      * VALUE 符号名和加数  
+
+
+
+    * .rela.eh_frame RELOCATION RECORDS FOR [.eh_frame](object file)  eh_frame 的重定位信息    
+      * 在编译成object file的过程中, 该section提供了当前编译单元所定义的函数符号以及符号所在代码段的偏移位置.  
+      * OFFSET 当前函数在代码段中的开始位置  
+      * TYPE   PC32 本地实现  
+      * VALUE  符号表中的类型名以及符号的Value位置   
+
+
+
+    * .rel.plt (动态库或者EXE)节的每个表项对应了所有外部过程调用符号的重定位信息  
       * 主要是 JUMP_SLOT 类型的重定位项  
         * 重定位只需将符号地址填入被修正的内存即可
       * 比如定义了一个函数test, 所有call test的地方都存在这个位置  
-    * .rel.dyn section 的每个表项对应了除了外部过程调用的符号以外的所有重定位对象  
+    * .rel.dyn section (动态库或者EXE)的每个表项对应了除了外部过程调用的符号以外的所有重定位对象(一般是数据)  
       * 主要是 GLOB_DAT 类型的重定位项
         * 重定位只需将符号地址填入被修正的内存即可
       * 比如extern来自so文件的全局静态变量  
       * 或者开启pic后自己的全局静态变量  
-    * 类型
+  
+    * 类型  
+      * GOT Global Offset Table  全局偏移表  
+      * PC  program counter relative displacement  程序计数的相对偏移   
+      * PLT procedure linkage table  过程链接表
       * R_386_GOT32：该重定位类型计算从全局偏移表（global offset table）的基址到符号所在的全局偏移表表项的距离，并且通知链接编辑器建立全局偏移表。（G+A-P）
       * R_386_PLT32：该重定位类型计算符号的过程链接表表项地址，并且通知链接编辑器构建过程链接表。（L+A-P）
       * R_386_COPY：链接编辑器创建此重定位类型是用于动态链接的。它的r_offset成员对应一个可写segment中的位置。符号表索引指定了一个在当前目标文件和共享目标文件中都存在的符号。在执行期间，动态链接器拷贝与共享目标的符号相关的数据到偏移指定的位置。（none）
@@ -182,9 +219,7 @@ pie用于链接时产生地址无关代码的可执行文件, 让可执行文件
       * R_386_RELATIVE：链接编辑器创建此重定位类型是用于动态链接的，它的偏移成员给出了共享目标中的一个位置，这个位置包含了一个表示相对地址的值。动态链接器通过把共享目标被加载的虚拟地址与相对地址相加，计算出对应的虚拟地址。此重定位类型的重定位表项必须把符号表索引置为0。（B+A）
       * R_386_GOTOFF：此类型的重定位计算符号值和全局偏移表地址的差值，并且通知链接编辑器构建全局偏移表。（S+A-GOT）
       * R_386_GOTPC：此类型类似于R_386_PC32。只是它在计算中使用全局偏移表的地址。这种类型的重定位引用的通常是_GLOBAL_OFFSET_TABLE_DE类型的符号，并且通知链接编辑器构建全局偏移表。（GOT+A-P）****
-  * .commont 开发环境的时候使用的GCC版本信息   
-  * .shstrtab 指的是section header string table 保存了各个section的名字   
-  * .symtab保存了符号表，其中包括了.strtab里面定义的符号 每个符号对应的符号表是一个Elf64_Symbol结构体 除了包含.strtab外 符号表中还包含了一些section的符号表条目 
+
   * 这些条目给链接的时候需要和其他可重定位文件或者库的对应的section合并时提供了必要的信息  
 
 
