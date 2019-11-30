@@ -340,14 +340,14 @@
       
 
       
-        <h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><ul>
+        <h3><span id="基本概念">基本概念</span></h3><ul>
 <li><strong>哈希算法：</strong> 根据设定的哈希函数H（key）和处理冲突方法将一组关键字映象到一个有限的地址区间上的算法。也称为散列算法、杂凑算法。  </li>
 <li><strong>哈希表：</strong> 数据经过哈希算法之后得到的集合。这样关键字和数据在集合中的位置存在一定的关系，可以根据这种关系快速查询。  </li>
 <li><strong>非哈希表：</strong> 与哈希表相对应，集合中的 数据和其存放位置没任何关联关系的集合。 由此可见，哈希算法是一种特殊的算法，能将任意数据散列后映射到有限的空间上，通常计算机软件中用作快速查找或加密使用。   </li>
 <li><strong>哈希冲突：</strong> 两个不同的输入值，根据同一散列函数计算出的散列值相同的现象叫做碰撞。    <a id="more"></a>  
 </li>
 </ul>
-<h3 id="常见的Hash函数"><a href="#常见的Hash函数" class="headerlink" title="常见的Hash函数"></a>常见的Hash函数</h3><ul>
+<h3><span id="常见的hash函数">常见的Hash函数</span></h3><ul>
 <li><strong>直接定址法：</strong> 直接以关键字k或者k加上某个常数（k+c）作为哈希地址。  </li>
 <li><strong>数字分析法：</strong> 提取关键字中取值比较均匀的数字作为哈希地址。  </li>
 <li><strong>除留余数法：</strong> 用关键字k除以某个不大于哈希表长度m的数p，将所得余数作为哈希表地址。  </li>
@@ -355,7 +355,7 @@
 <li><strong>平方取中法：</strong> 如果关键字各个部分分布都不均匀的话，可以先求出它的平方值，然后按照需求取中间的几位作为哈希地址。  </li>
 <li><strong>伪随机数法：</strong> 采用一个伪随机数当作哈希函数。  </li>
 </ul>
-<h3 id="常见的解决冲突方案"><a href="#常见的解决冲突方案" class="headerlink" title="常见的解决冲突方案"></a>常见的解决冲突方案</h3><h4 id="开放定址法"><a href="#开放定址法" class="headerlink" title="开放定址法"></a>开放定址法</h4><p>从发生冲突的那个单元起，按照一定的次序，从哈希表中找到一个空闲的单元。然后把发生冲突的元素存入到该单元的一种方法。开放定址法需要的表长度要大于等于所需要存放的元素。<br>在开放定址法中解决冲突的方法有：线行探查法、平方探查法、双散列函数探查法。<br>开放定址法的缺点在于<strong>删除元素的时候不能真的删除，否则会引起查找错误，只能做一个特殊标记。</strong>只到有下个元素插入才能真正删除该元素。  </p>
+<h3><span id="常见的解决冲突方案">常见的解决冲突方案</span></h3><h4><span id="开放定址法">开放定址法</span></h4><p>从发生冲突的那个单元起，按照一定的次序，从哈希表中找到一个空闲的单元。然后把发生冲突的元素存入到该单元的一种方法。开放定址法需要的表长度要大于等于所需要存放的元素。<br>在开放定址法中解决冲突的方法有：线行探查法、平方探查法、双散列函数探查法。<br>开放定址法的缺点在于<strong>删除元素的时候不能真的删除，否则会引起查找错误，只能做一个特殊标记。</strong>只到有下个元素插入才能真正删除该元素。  </p>
 <ul>
 <li><p><strong>线行探查法</strong><br>线行探查法是开放定址法中最简单的冲突处理方法，它从发生冲突的单元起，依次判断下一个单元是否为空，当达到最后一个单元时，再从表首依次判断。直到碰到空闲的单元或者探查完全部单元为止。  </p>
 </li>
@@ -364,11 +364,11 @@
 <li><p><strong>双散列函数探查法</strong><br>这种方法使用两个散列函数hl和h2。其中hl和前面的h一样，以关键字为自变量，产生一个0至m—l之间的数作为散列地址；h2也以关键字为自变量，产生一个l至m—1之间的、并和m互素的数(即m不能被该数整除)作为探查序列的地址增量(即步长)，探查序列的步长值是固定值l；对于平方探查法，探查序列的步长值是探查次数i的两倍减l；对于双散列函数探查法，其探查序列的步长值是同一关键字的另一散列函数的值。  </p>
 </li>
 </ul>
-<h4 id="链地址法（拉链法）"><a href="#链地址法（拉链法）" class="headerlink" title="链地址法（拉链法）"></a>链地址法（拉链法）</h4><p>链接地址法的思路是将哈希值相同的元素构成一个同义词的单链表，并将单链表的头指针存放在哈希表的第i个单元中，查找、插入和删除主要在同义词链表中进行。链表法适用于经常进行插入和删除的情况。</p>
+<h4><span id="链地址法拉链法">链地址法（拉链法）</span></h4><p>链接地址法的思路是将哈希值相同的元素构成一个同义词的单链表，并将单链表的头指针存放在哈希表的第i个单元中，查找、插入和删除主要在同义词链表中进行。链表法适用于经常进行插入和删除的情况。</p>
 <p>注：在java中，链接地址法也是HashMap解决哈希冲突的方法之一，jdk1.7完全采用单链表来存储同义词，<strong>jdk1.8则采用了一种混合模式，对于链表长度大于8的，会转换为红黑树存储。</strong>   </p>
-<h4 id="再哈希法"><a href="#再哈希法" class="headerlink" title="再哈希法"></a>再哈希法</h4><p>就是同时构造多个不同的哈希函数：<br>Hi = RHi(key)   i= 1,2,3 … k;<br>当H1 = RH1(key)  发生冲突时，再用H2 = RH2(key) 进行计算，直到冲突不再产生，这种方法不易产生聚集，但是增加了计算时间。   </p>
-<h4 id="建立公共溢出区"><a href="#建立公共溢出区" class="headerlink" title="建立公共溢出区"></a>建立公共溢出区</h4><p>将哈希表分为公共表和溢出表，当溢出发生时，将所有溢出数据统一放到溢出区。  </p>
-<h3 id="与map的区别"><a href="#与map的区别" class="headerlink" title="与map的区别"></a>与map的区别</h3><h4 id="迭代器失效情况"><a href="#迭代器失效情况" class="headerlink" title="迭代器失效情况"></a>迭代器失效情况</h4><h5 id="unordered-map"><a href="#unordered-map" class="headerlink" title="unordered_map:"></a>unordered_map:</h5><table>
+<h4><span id="再哈希法">再哈希法</span></h4><p>就是同时构造多个不同的哈希函数：<br>Hi = RHi(key)   i= 1,2,3 … k;<br>当H1 = RH1(key)  发生冲突时，再用H2 = RH2(key) 进行计算，直到冲突不再产生，这种方法不易产生聚集，但是增加了计算时间。   </p>
+<h4><span id="建立公共溢出区">建立公共溢出区</span></h4><p>将哈希表分为公共表和溢出表，当溢出发生时，将所有溢出数据统一放到溢出区。  </p>
+<h3><span id="与map的区别">与map的区别</span></h3><h4><span id="迭代器失效情况">迭代器失效情况</span></h4><h5><span id="unordered_map">unordered_map:</span></h5><table>
 <thead>
 <tr>
 <th>操作</th>
@@ -394,7 +394,7 @@
 </tr>
 </tbody>
 </table>
-<h5 id="map-通常实现为红黑树-非强制标准"><a href="#map-通常实现为红黑树-非强制标准" class="headerlink" title="map (通常实现为红黑树,非强制标准):"></a>map (通常实现为红黑树,非强制标准):</h5><table>
+<h5><span id="map-通常实现为红黑树非强制标准">map (通常实现为红黑树,非强制标准):</span></h5><table>
 <thead>
 <tr>
 <th>操作</th>
@@ -412,7 +412,7 @@
 </tr>
 </tbody>
 </table>
-<h5 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h5><ul>
+<h5><span id="其他">其他</span></h5><ul>
 <li>map是有序的，unordered_map是无序的  </li>
 <li>两者之间的查找速度不同（log(N)和N）  </li>
 <li>由于hash要控制负载率在0-1之间，所以unordered_map消耗空间更大。  </li>
@@ -420,7 +420,7 @@
 <li>遍历, unordered_map需要逐桶遍历  可能有大量的无效桶  .  </li>
 <li>unordered_map不能反向遍历  </li>
 <li>O(lgN)和常数级的差别很小。比如10000个元素的map，log_2(N) = 13.28，才不到14次。  </li>
-<li>散列表的时间复杂度仍然是O(N), 性能上map更稳定  </li>
+<li>散列表的时间复杂度仍然是O(N), 性能上map更稳定</li>
 </ul>
 
       
@@ -535,7 +535,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-count">27</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -583,7 +583,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本概念"><span class="nav-number">1.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常见的Hash函数"><span class="nav-number">2.</span> <span class="nav-text">常见的Hash函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常见的解决冲突方案"><span class="nav-number">3.</span> <span class="nav-text">常见的解决冲突方案</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#开放定址法"><span class="nav-number">3.1.</span> <span class="nav-text">开放定址法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#链地址法（拉链法）"><span class="nav-number">3.2.</span> <span class="nav-text">链地址法（拉链法）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#再哈希法"><span class="nav-number">3.3.</span> <span class="nav-text">再哈希法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#建立公共溢出区"><span class="nav-number">3.4.</span> <span class="nav-text">建立公共溢出区</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与map的区别"><span class="nav-number">4.</span> <span class="nav-text">与map的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#迭代器失效情况"><span class="nav-number">4.1.</span> <span class="nav-text">迭代器失效情况</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#unordered-map"><span class="nav-number">4.1.1.</span> <span class="nav-text">unordered_map:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#map-通常实现为红黑树-非强制标准"><span class="nav-number">4.1.2.</span> <span class="nav-text">map (通常实现为红黑树,非强制标准):</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#其他"><span class="nav-number">4.1.3.</span> <span class="nav-text">其他</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">常见的Hash函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">常见的解决冲突方案</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">3.1.</span> <span class="nav-text">开放定址法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">3.2.</span> <span class="nav-text">链地址法（拉链法）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">3.3.</span> <span class="nav-text">再哈希法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">3.4.</span> <span class="nav-text">建立公共溢出区</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">4.</span> <span class="nav-text">与map的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">4.1.</span> <span class="nav-text">迭代器失效情况</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#undefined"><span class="nav-number">4.1.1.</span> <span class="nav-text">unordered_map:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#undefined"><span class="nav-number">4.1.2.</span> <span class="nav-text">map (通常实现为红黑树,非强制标准):</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#undefined"><span class="nav-number">4.1.3.</span> <span class="nav-text">其他</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>

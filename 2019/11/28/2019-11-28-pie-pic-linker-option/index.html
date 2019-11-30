@@ -94,13 +94,16 @@
 
 
 
+<meta name="description" content="目录 目录 选项说明  选项说明 -shared    编译一个共享库时候要始终指定 -fPIC -fpic或者编译器的其他变种选项      -shared 和-static可以同时存在 因此可以编译出’纯静态的’的so     -rdynamic    该选项指示链接器添加所有的符号到动态符号表, 不仅仅是用到的部分   在INTEL X64 linux gcc-6 未测试出该选项有否的异同">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Lullabye For Lan">
-<meta property="og:url" content="https://zsummer.github.io/2017/10/01/2017-10-01-lullabye/index.html">
+<meta property="og:title" content="位置无关代码生成(重定位)选项和说明 GCC">
+<meta property="og:url" content="https://zsummer.github.io/2019/11/28/2019-11-28-pie-pic-linker-option/index.html">
 <meta property="og:site_name" content="关于夏天的一切">
-<meta property="og:updated_time" content="2019-03-06T13:03:54.364Z">
+<meta property="og:description" content="目录 目录 选项说明  选项说明 -shared    编译一个共享库时候要始终指定 -fPIC -fpic或者编译器的其他变种选项      -shared 和-static可以同时存在 因此可以编译出’纯静态的’的so     -rdynamic    该选项指示链接器添加所有的符号到动态符号表, 不仅仅是用到的部分   在INTEL X64 linux gcc-6 未测试出该选项有否的异同">
+<meta property="og:updated_time" content="2019-11-30T09:40:25.119Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Lullabye For Lan">
+<meta name="twitter:title" content="位置无关代码生成(重定位)选项和说明 GCC">
+<meta name="twitter:description" content="目录 目录 选项说明  选项说明 -shared    编译一个共享库时候要始终指定 -fPIC -fpic或者编译器的其他变种选项      -shared 和-static可以同时存在 因此可以编译出’纯静态的’的so     -rdynamic    该选项指示链接器添加所有的符号到动态符号表, 不仅仅是用到的部分   在INTEL X64 linux gcc-6 未测试出该选项有否的异同">
 
 
 
@@ -129,13 +132,13 @@
 
 
 
-  <link rel="canonical" href="https://zsummer.github.io/2017/10/01/2017-10-01-lullabye/"/>
+  <link rel="canonical" href="https://zsummer.github.io/2019/11/28/2019-11-28-pie-pic-linker-option/"/>
 
 
 
 
 
-  <title>Lullabye For Lan | 关于夏天的一切</title>
+  <title>位置无关代码生成(重定位)选项和说明 GCC | 关于夏天的一切</title>
   
 
 
@@ -248,7 +251,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2017/10/01/2017-10-01-lullabye/">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/28/2019-11-28-pie-pic-linker-option/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="夏天">
@@ -265,7 +268,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Lullabye For Lan</h1>
+          <h1 class="post-title" itemprop="name headline">位置无关代码生成(重定位)选项和说明 GCC</h1>
         
 
         <div class="post-meta">
@@ -277,8 +280,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-10-01T03:21:00+08:00">
-                2017-10-01
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-28T00:00:00+08:00">
+                2019-11-28
               </time>
             
 
@@ -287,6 +290,28 @@
             
           </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -315,7 +340,59 @@
       
 
       
-        
+        <h3><span id="目录">目录</span></h3><ul>
+<li><a href="#目录">目录</a></li>
+<li><a href="#选项说明">选项说明</a></li>
+</ul>
+<h3><span id="选项说明">选项说明</span></h3><ul>
+<li>-shared   <ul>
+<li>编译一个共享库时候要始终指定 -fPIC -fpic或者编译器的其他变种选项     </li>
+<li>-shared 和-static可以同时存在 因此可以编译出’纯静态的’的so</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>-rdynamic  </p>
+<ul>
+<li>该选项指示链接器添加所有的符号到动态符号表, 不仅仅是用到的部分  </li>
+<li>在INTEL X64 linux gcc-6 未测试出该选项有否的异同 (也可认为是默认存在)   <ul>
+<li>无论是否用过都会添加  </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>-fpic    (position-independent code)</p>
+<ul>
+<li>用于生成PIC 位置无关代码 的共享库, 在链接到EXE时如果GOT表超过某些特定机器指定的最大值时会返回错误, 这时需要使用-fPIC进行重新编译和链接   </li>
+</ul>
+</li>
+<li><p>-fPIC </p>
+<ul>
+<li>和-fpic一样, 但是回避掉了GOT大小的限制问题  </li>
+<li>在编译和链接时都需要指定    </li>
+</ul>
+</li>
+<li><p>-fpie</p>
+</li>
+<li>-fPIE  编译选项  <ul>
+<li>和-fpic类似,  这个选项是(只)用来生成链接到可执行文件 的 位置无关代码    </li>
+</ul>
+</li>
+<li>-pie  链接器选项<ul>
+<li>用于链接 位置无关可执行文件 的可执行文件  </li>
+</ul>
+</li>
+<li>-fpie -fPIE -pie 同时使用可生效   <ul>
+<li>最初的实现来自redhat -pie,  因此总是要配合-pie使用才会有效.    </li>
+<li>位置无关可执行文件的ELF类型为DYN 和共享库一样    </li>
+<li>未使用该选项生成的是EXEC类型</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>-no-pie  新版本g++比如6版本 默认启用pie 如不需要则要显式去除</li>
+</ul>
+
       
     </div>
     
@@ -339,8 +416,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/09/19/2017-09-19-world-line-collect/" rel="next" title="wolrd line convergence">
-                <i class="fa fa-chevron-left"></i> wolrd line convergence
+              <a href="/2019/11/25/2019-11-25-link-plt/" rel="next" title="PLT procedure linkage table  过程链接表">
+                <i class="fa fa-chevron-left"></i> PLT procedure linkage table  过程链接表
               </a>
             
           </div>
@@ -349,8 +426,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/10/18/2017-10-18-revolt/" rel="prev" title="Revolt">
-                Revolt <i class="fa fa-chevron-right"></i>
+              <a href="/2019/11/29/2019-11-29-static-linking/" rel="prev" title="静态链接过程">
+                静态链接过程 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -403,8 +480,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.png"
@@ -457,6 +543,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">选项说明</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

@@ -94,16 +94,16 @@
 
 
 
-<meta name="description" content="SDM框架对系统发展生命周期的过程描述SDM(软件开发方法)框架是在SDLC在软件开发早起  (SDM框架)软件开发过程有以下基本的核心活动内容 需求分析 (Requirements analysis)   领域设计 (Software design)   系统设计 (Software engineering)   编码开发 (Software construction)   功能验证 (Soft">
+<meta name="description" content="目录  目录 调测工具 汇编和寄存器说明 PLT基本定义和流程说明 GOT数据部分- [缺点](#缺点) - [优点](#优点)  测试代码 elf文件和指令分析   调测工具readelf -a  查看elf信息objdump -S 查看汇编指令ldd 查看动态加载gdb 通过layout regs打开寄存器显示, 通过set disassemble-next-line on打开汇编gdb 通过">
 <meta property="og:type" content="article">
-<meta property="og:title" content="SDM模型">
-<meta property="og:url" content="https://zsummer.github.io/2019/10/01/2019-10-01-sdm/index.html">
+<meta property="og:title" content="PLT procedure linkage table  过程链接表">
+<meta property="og:url" content="https://zsummer.github.io/2019/11/25/2019-11-25-link-plt/index.html">
 <meta property="og:site_name" content="关于夏天的一切">
-<meta property="og:description" content="SDM框架对系统发展生命周期的过程描述SDM(软件开发方法)框架是在SDLC在软件开发早起  (SDM框架)软件开发过程有以下基本的核心活动内容 需求分析 (Requirements analysis)   领域设计 (Software design)   系统设计 (Software engineering)   编码开发 (Software construction)   功能验证 (Soft">
-<meta property="og:updated_time" content="2019-11-04T08:55:43.984Z">
+<meta property="og:description" content="目录  目录 调测工具 汇编和寄存器说明 PLT基本定义和流程说明 GOT数据部分- [缺点](#缺点) - [优点](#优点)  测试代码 elf文件和指令分析   调测工具readelf -a  查看elf信息objdump -S 查看汇编指令ldd 查看动态加载gdb 通过layout regs打开寄存器显示, 通过set disassemble-next-line on打开汇编gdb 通过">
+<meta property="og:updated_time" content="2019-11-30T09:39:58.419Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SDM模型">
-<meta name="twitter:description" content="SDM框架对系统发展生命周期的过程描述SDM(软件开发方法)框架是在SDLC在软件开发早起  (SDM框架)软件开发过程有以下基本的核心活动内容 需求分析 (Requirements analysis)   领域设计 (Software design)   系统设计 (Software engineering)   编码开发 (Software construction)   功能验证 (Soft">
+<meta name="twitter:title" content="PLT procedure linkage table  过程链接表">
+<meta name="twitter:description" content="目录  目录 调测工具 汇编和寄存器说明 PLT基本定义和流程说明 GOT数据部分- [缺点](#缺点) - [优点](#优点)  测试代码 elf文件和指令分析   调测工具readelf -a  查看elf信息objdump -S 查看汇编指令ldd 查看动态加载gdb 通过layout regs打开寄存器显示, 通过set disassemble-next-line on打开汇编gdb 通过">
 
 
 
@@ -132,13 +132,13 @@
 
 
 
-  <link rel="canonical" href="https://zsummer.github.io/2019/10/01/2019-10-01-sdm/"/>
+  <link rel="canonical" href="https://zsummer.github.io/2019/11/25/2019-11-25-link-plt/"/>
 
 
 
 
 
-  <title>SDM模型 | 关于夏天的一切</title>
+  <title>PLT procedure linkage table  过程链接表 | 关于夏天的一切</title>
   
 
 
@@ -251,7 +251,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/10/01/2019-10-01-sdm/">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/25/2019-11-25-link-plt/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="夏天">
@@ -268,7 +268,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">SDM模型</h1>
+          <h1 class="post-title" itemprop="name headline">PLT procedure linkage table  过程链接表</h1>
         
 
         <div class="post-meta">
@@ -280,8 +280,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-01T00:00:00+08:00">
-                2019-10-01
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-25T00:00:00+08:00">
+                2019-11-25
               </time>
             
 
@@ -340,28 +340,86 @@
       
 
       
-        <h3><span id="sdm框架对系统发展生命周期的过程描述">SDM框架对系统发展生命周期的过程描述</span></h3><p>SDM(软件开发方法)框架是在SDLC在软件开发早起</p>
+        <h3><span id="目录">目录</span></h3><!-- TOC -->
 <ul>
-<li>(SDM框架)软件开发过程有以下基本的核心活动内容<ul>
-<li>需求分析 (Requirements analysis)  </li>
-<li>领域设计 (Software design)  </li>
-<li>系统设计 (Software engineering)  </li>
-<li>编码开发 (Software construction)  </li>
-<li>功能验证 (Software testing)  </li>
-<li>错误修正 (Debugging)    </li>
-<li>部署交付 (Software deployment)  </li>
-<li>维护 (Software maintenance)   <a id="more"></a> 
-根据所面临的现实问题以及所在环境的不同, 这些核心活动内容会在结构关系以及流程顺序上有相应的调整或者取舍 形成不同的规范/模型/框架等.   </li>
+<li><a href="#目录">目录</a></li>
+<li><a href="#调测工具">调测工具</a></li>
+<li><a href="#汇编和寄存器说明">汇编和寄存器说明</a></li>
+<li><a href="#plt基本定义和流程说明">PLT基本定义和流程说明</a></li>
+<li><a href="#got数据部分">GOT数据部分</a><pre><code>- [缺点](#缺点)
+- [优点](#优点)
+</code></pre></li>
+<li><a href="#测试代码">测试代码</a></li>
+<li><a href="#elf文件和指令分析">elf文件和指令分析</a><!-- /TOC -->
+</li>
+</ul>
+<h3><span id="调测工具">调测工具</span></h3><p>readelf -a  查看elf信息<br>objdump -S 查看汇编指令<br>ldd 查看动态加载<br>gdb 通过<code>layout regs</code>打开寄存器显示, 通过<code>set disassemble-next-line on</code>打开汇编<br>gdb 通过peda插件字节显示汇编和寄存器  和上面的原生方式选择一个即可<br>gdb关闭ASLR：<br>set disable-randomization on<br>开启ASLR：<br>set disable-randomization off<br>查看ASLR状态：<br>show disable-randomization</p>
+<a id="more"></a>
+<h3><span id="汇编和寄存器说明">汇编和寄存器说明</span></h3><p>“@”符号表示“将符号左边的变量钳制在符号右边的地址</p>
+<ul>
+<li><p>寄存器单位  </p>
+<ul>
+<li>E开头是32位  </li>
+<li>R开头是64位  </li>
+</ul>
+</li>
+<li><p>一般寄存器:AX BX CX DX</p>
+<ul>
+<li>AX:累积寄存器 是加法乘法指令的缺省寄存器</li>
+<li>BX:基底寄存器 内存寻址时存放基地址</li>
+<li>CX:计数寄存器 是重复(REP)前缀指令和LOOP指令的内定计数器  </li>
+<li>DX:资料寄存器 用来放整数除法产生的余数  </li>
+</ul>
+</li>
+<li><p>索引寄存器:SI DI  源/目标索引寄存器”(source/destination index)  </p>
+<ul>
+<li>SI:来源索引寄存器  字符串操作指令中, DS:ESI指向源串  </li>
+<li>DI:目的索引寄存器  字符串操作指令中, ES:EDI指向目标串</li>
+</ul>
+</li>
+<li><p>指针寄存器</p>
+<ul>
+<li>SP:堆栈指针寄存器 专门用作堆栈指针 被形象地称为栈顶指针  </li>
+<li>BP:基址指针寄存器 经常被用作高级语言函数调用的”框架指针|栈帧指针”(frame pointer)  <ul>
+<li>在EBP上方分别是原来的EBP 返回地址 参数  </li>
+<li>EBP下方是(函数)的临时变量  </li>
+</ul>
+</li>
+<li>IP: 指令指针 Instruction Pointer 存放下次将要执行的指令在代码段的偏移量 (不考虑预读队列)  <ul>
+<li>概念上是PC 程序计数器  X86体系下叫IP </li>
 </ul>
 </li>
 </ul>
-<p>例如:  </p>
-<ul>
-<li>线性过程的瀑布式开发模型 SDLC:专注于完整正确的计划   </li>
-<li>快速迭代的敏捷开发   : 持续交付来响应频繁变更的计划(快速试错) </li>
-<li>加强发布协调的DevOps   </li>
+</li>
 </ul>
-<p>同设计模式一样, 这些模型提炼自对现实问题的具体解决过程, 在实际应用中并不需要一定去拘泥某个规范.<br>实际上, 在一个具备一定规模的项目中, 往往同时存在多种不同的开发方式共同组成适合该项目的开发过程,  这种方式也称之为’混合模型’,  在混合模型中,  允许一个项目沿着最有效的路径去组织属于自己的活动内容,  合适现实问题解决模型才是最恰当的.</p>
+<h3><span id="plt基本定义和流程说明">PLT基本定义和流程说明</span></h3><ol>
+<li>为本地的函数生成对应的 函数符号.plt 命名的过程  </li>
+<li>为本地的符号生成带偏移信息的符号表  </li>
+<li>每个映像文件都生成一个GOT表, 第一项保存基址位置, 第二项保存link_map, link_map通过前后指针把所有映像文件(库)和符号表串联起来   </li>
+<li>运行时对位置无关的函数和全局变量的访问通过GOT表访问   </li>
+<li>GOT表会在模块加载时候填充好变量的真正地址以及plt过程的惰性获取代码入口    <ol>
+<li>PLT过程 类似函数钩子 <ol>
+<li>本模块对位置无关的函数访问先call 函数@.plt过程  </li>
+<li>该过程会先直接跳转到GOT中对应位置保存的地址处  <ol>
+<li>如果未获取实际位置, 则跳转到到该过程的下一行代码   </li>
+<li>压入当前函数符号在GOT中的编号并jmp到符号解析函数_dl_runtime_resolve_xsave进行解析  </li>
+<li>通过link_map进行遍历查找 _dl_fixup </li>
+<li>填充GOT表</li>
+<li>(这里实际会call到真实函数并返回到call 函数@.plt的位置)  </li>
+</ol>
+</li>
+<li>进入实际函数执行并返回到 call 函数@.plt的位置</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h3><span id="got数据部分">GOT数据部分</span></h3><p>不需要PLT的额外部分   </p>
+<h6><span id="缺点">缺点</span></h6><p>为了性能需要一个寄存器存储GOT表的位置???<br>运行时要经过计算来获得<br>符号的地址, 从某种方面来说也对运行速度有点小影响.  </p>
+<h6><span id="优点">优点</span></h6><p>位置无关代码的优点就跟他名字一样, 可以保证加载到任意地址都能<br>正常执行, 这也是每个动态链接库都需要支持的.</p>
+<h3><span id="测试代码">测试代码</span></h3><h3><span id="elf文件和指令分析">elf文件和指令分析</span></h3><p>[rip+0x2006e4]        # 0x555555754fd8  0x00007ffff7dd7048<br>[rip+0x2006d0]        # 0x555555754fd0  0x00007ffff7dd7030</p>
+<p>[rip+0x20074f]        # 0x7ffff7dd6fc8  0x00007ffff7dd7050<br>[rip+0x20073b]        # 0x7ffff7dd6fc0  0x00007ffff7dd7038</p>
+<p>[rip+0x20073e]        # 0x7ffff7dd6fd8  0x00007ffff7dd7030<br>[rip+0x20073a]        # 0x7ffff7dd6fe0  0x00007ffff7dd7048</p>
 
       
     </div>
@@ -386,8 +444,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/16/2019-09-16-problem-domain/" rel="next" title="问题的解决">
-                <i class="fa fa-chevron-left"></i> 问题的解决
+              <a href="/2019/11/23/2019-11-23-elf-hash/" rel="next" title="ELF的hash算法">
+                <i class="fa fa-chevron-left"></i> ELF的hash算法
               </a>
             
           </div>
@@ -396,8 +454,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/11/04/2019-11-04-aslr/" rel="prev" title="linux内存布局和ASLR">
-                linux内存布局和ASLR <i class="fa fa-chevron-right"></i>
+              <a href="/2019/11/28/2019-11-28-pie-pic-linker-option/" rel="prev" title="位置无关代码生成(重定位)选项和说明 GCC">
+                位置无关代码生成(重定位)选项和说明 GCC <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -523,7 +581,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">SDM框架对系统发展生命周期的过程描述</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">调测工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">汇编和寄存器说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">4.</span> <span class="nav-text">PLT基本定义和流程说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">5.</span> <span class="nav-text">GOT数据部分</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#undefined"><span class="nav-number">5.0.0.1.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#undefined"><span class="nav-number">5.0.0.2.</span> <span class="nav-text">优点</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">6.</span> <span class="nav-text">测试代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">7.</span> <span class="nav-text">elf文件和指令分析</span></a></li></ol></div>
             
 
           </div>

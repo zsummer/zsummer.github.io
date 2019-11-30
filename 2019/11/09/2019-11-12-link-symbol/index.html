@@ -100,7 +100,7 @@
 <meta property="og:url" content="https://zsummer.github.io/2019/11/09/2019-11-12-link-symbol/index.html">
 <meta property="og:site_name" content="关于夏天的一切">
 <meta property="og:description" content="目录   目录 ELF文件类型和描述 文件类型 链接器视图 加载器视图 基本测试命令 基础术语知识 目标文件格式的比较和说明 其他词汇说明     可重定位文件 lib.cpp片段分析 so.cpp片段分析 libso.so片段分析   注1:   实验数据附录 lib.o二进制分析 so.o二进制分析 pic版本so.o二进制分析 libso.so二进制分析     ELF文件类型和描述 (Ex">
-<meta property="og:updated_time" content="2019-11-20T10:04:28.125Z">
+<meta property="og:updated_time" content="2019-11-30T09:40:03.626Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="动态链接 静态链接 符号">
 <meta name="twitter:description" content="目录   目录 ELF文件类型和描述 文件类型 链接器视图 加载器视图 基本测试命令 基础术语知识 目标文件格式的比较和说明 其他词汇说明     可重定位文件 lib.cpp片段分析 so.cpp片段分析 libso.so片段分析   注1:   实验数据附录 lib.o二进制分析 so.o二进制分析 pic版本so.o二进制分析 libso.so二进制分析     ELF文件类型和描述 (Ex">
@@ -404,6 +404,7 @@
 <li><p>coredump文件 核心转储  </p>
 </li>
 </ul>
+<a id="more"></a>
 <h4><span id="链接器视图">链接器视图</span></h4><p>链接器关心的内容<br>| LINKING VIEW<br>| -<br>| ELF HEADER<br>| PROGRAM HEADER TABLE OPTIONAL<br>| SECTION 1  .text<br>| SECTION 2  .data<br>| SECTION n …<br>| SECTION HEADER TABLE  </p>
 <h4><span id="加载器视图">加载器视图</span></h4><p>加载器关心的内容<br>| EXECUTION VIEW<br>| -<br>| ELF HEADER<br>| PROGRAM HEADER TABLE<br>| SEGMENT 1<br>| SEGMENT 2<br>| SEGMENT N …<br>| SECTION HEADER TABLE OPTIONAL </p>
 <h4><span id="基本测试命令">基本测试命令</span></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">ldd - print shared library dependencies  </div><div class="line">readelf -a 查看elf文件</div><div class="line">objdump -S 查看汇编码</div><div class="line"></div><div class="line">gcc -g -c lib.cpp  编译目标文件  </div><div class="line">gcc -g -c -fpic lib.cpp  启用地址无关代码选项来编译目标文件   </div><div class="line">ar -cr liblib.a  lib.o  打包目标文件到静态库   </div><div class="line">g++ -g -fPIC -fpic -shared so.cpp -o so.so  启用地址无关代码的链接选项和编译选项来编译共享库   </div><div class="line">g++ -g -fpie -fPIE -pie -o main  lib.o libso.so </div><div class="line"></div><div class="line">export LD_LIBRARY_PATH=&quot;./&quot; 设置临时的共享库搜索路径  </div><div class="line"></div><div class="line">pic选项用于编译地址无关代码  </div><div class="line">PIC选项用于链接时产生地址无关代码的共享库  </div><div class="line">pie用于链接时产生地址无关代码的可执行文件, 让可执行文件就像共享库一样可以被重新分配地址, 这种可执行文件必须链接到Scrt1.o  </div><div class="line"> * -pie是链接选项 最开始有red hat补充支持  </div><div class="line"> * -fpie -fPIC为编译选项 </div><div class="line">-pie 必须和-fpie和-fPIE一起使用才能得到预期的效果, 并且编译的目标文件必须是可执行文件</div></pre></td></tr></table></figure>
@@ -866,7 +867,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-count">27</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
