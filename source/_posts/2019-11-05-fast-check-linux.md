@@ -97,8 +97,37 @@ getconf GNU_LIBPTHREAD_VERSION   查看线程模型
   
 * size [file] 查看程序被映射到内存中映像的大小信息  
 
-
-
+* gdb  
+  * gdb -tui 可以显示文本界面 text ui   
+  * layout regs 进入汇编调试模式  
+  * disassemble /rm  显示汇编指令的同时显示对应代码
+  * set disassemble-next-line on 自动反汇编后面要执行的代码  
+  * 添加peda插件 直接显示汇编了   
+  * ```  
+    git clone https://github.com/longld/peda.git ~/peda
+    echo "source ~/peda/peda.py" >> ~/.gdbinit
+    ```
+  * x /nfu <mem addr>   显示指定内存的值, 内存长度(单位)由u决定
+    * n项  显示数量  
+      * 要往下显示多少个 [fu] 即 n*(fu)   0代表一个都不显示 
+    * f项  显示方式  
+      * x 按十六进制格式显示变量 
+      * d 按十进制格式显示变量  
+      * u 按十进制格式显示无符号整型  
+      * o 按八进制格式显示变量 
+      * t 按二进制格式显示变量 
+      * a 按十六进制格式显示变量 
+      * i 指令地址格式
+      * c 按字符格式显示变量 
+      * f 按浮点数格式显示变量  
+    * u项 单位大小   
+      * b表示单字节 
+      * h表示双字节 
+      * w表示四字节 
+      * g表示八字节  
+    * 示例   x/1xg  0x8888   
+      * 以十六进制显示地址0x8888位置存储的8字节内容(比如long long类型的数字)
+  
 ### 其他手册/详细手册   
 
 ###### ldd   查看程序运行时库  

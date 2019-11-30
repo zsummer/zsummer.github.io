@@ -55,7 +55,7 @@ author: yawei.zhang
           
 * coredump文件 核心转储  
 
-
+<!-- more -->
 #### 链接器视图   
 链接器关心的内容   
 | LINKING VIEW 
