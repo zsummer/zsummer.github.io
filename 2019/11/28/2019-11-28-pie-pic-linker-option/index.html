@@ -94,16 +94,16 @@
 
 
 
-<meta name="description" content="目录 目录 选项说明  选项说明 -shared    编译一个共享库时候要始终指定 -fPIC -fpic或者编译器的其他变种选项      -shared 和-static可以同时存在 因此可以编译出’纯静态的’的so     -rdynamic    该选项指示链接器添加所有的符号到动态符号表, 不仅仅是用到的部分   在INTEL X64 linux gcc-6 未测试出该选项有否的异同">
+<meta name="description" content="目录 目录 选项说明  选项说明 -rdynamic    该选项指示链接器添加所有的符号到动态符号表, 不仅仅是用到的部分   在INTEL X64 linux gcc-6 未测试出该选项有否的异同 (也可认为是默认存在)    无论是否用过都会添加       -fpic    (position-independent code)  编译选项和链接选项    用于生成PIC 位置无关代码 的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="位置无关代码生成(重定位)选项和说明 GCC">
 <meta property="og:url" content="https://zsummer.github.io/2019/11/28/2019-11-28-pie-pic-linker-option/index.html">
 <meta property="og:site_name" content="关于夏天的一切">
-<meta property="og:description" content="目录 目录 选项说明  选项说明 -shared    编译一个共享库时候要始终指定 -fPIC -fpic或者编译器的其他变种选项      -shared 和-static可以同时存在 因此可以编译出’纯静态的’的so     -rdynamic    该选项指示链接器添加所有的符号到动态符号表, 不仅仅是用到的部分   在INTEL X64 linux gcc-6 未测试出该选项有否的异同">
-<meta property="og:updated_time" content="2019-11-30T09:40:25.119Z">
+<meta property="og:description" content="目录 目录 选项说明  选项说明 -rdynamic    该选项指示链接器添加所有的符号到动态符号表, 不仅仅是用到的部分   在INTEL X64 linux gcc-6 未测试出该选项有否的异同 (也可认为是默认存在)    无论是否用过都会添加       -fpic    (position-independent code)  编译选项和链接选项    用于生成PIC 位置无关代码 的">
+<meta property="og:updated_time" content="2019-12-02T14:16:48.940Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="位置无关代码生成(重定位)选项和说明 GCC">
-<meta name="twitter:description" content="目录 目录 选项说明  选项说明 -shared    编译一个共享库时候要始终指定 -fPIC -fpic或者编译器的其他变种选项      -shared 和-static可以同时存在 因此可以编译出’纯静态的’的so     -rdynamic    该选项指示链接器添加所有的符号到动态符号表, 不仅仅是用到的部分   在INTEL X64 linux gcc-6 未测试出该选项有否的异同">
+<meta name="twitter:description" content="目录 目录 选项说明  选项说明 -rdynamic    该选项指示链接器添加所有的符号到动态符号表, 不仅仅是用到的部分   在INTEL X64 linux gcc-6 未测试出该选项有否的异同 (也可认为是默认存在)    无论是否用过都会添加       -fpic    (position-independent code)  编译选项和链接选项    用于生成PIC 位置无关代码 的">
 
 
 
@@ -345,13 +345,6 @@
 <li><a href="#选项说明">选项说明</a></li>
 </ul>
 <h3><span id="选项说明">选项说明</span></h3><ul>
-<li>-shared   <ul>
-<li>编译一个共享库时候要始终指定 -fPIC -fpic或者编译器的其他变种选项     </li>
-<li>-shared 和-static可以同时存在 因此可以编译出’纯静态的’的so</li>
-</ul>
-</li>
-</ul>
-<ul>
 <li><p>-rdynamic  </p>
 <ul>
 <li>该选项指示链接器添加所有的符号到动态符号表, 不仅仅是用到的部分  </li>
@@ -361,36 +354,83 @@
 </li>
 </ul>
 </li>
-<li><p>-fpic    (position-independent code)</p>
+<li><p>-fpic    (position-independent code)  编译选项和链接选项  </p>
 <ul>
 <li>用于生成PIC 位置无关代码 的共享库, 在链接到EXE时如果GOT表超过某些特定机器指定的最大值时会返回错误, 这时需要使用-fPIC进行重新编译和链接   </li>
 </ul>
 </li>
-<li><p>-fPIC </p>
-<ul>
+<li>-fPIC 编译选项和链接选项  <ul>
 <li>和-fpic一样, 但是回避掉了GOT大小的限制问题  </li>
 <li>在编译和链接时都需要指定    </li>
 </ul>
 </li>
-<li><p>-fpie</p>
-</li>
-<li>-fPIE  编译选项  <ul>
-<li>和-fpic类似,  这个选项是(只)用来生成链接到可执行文件 的 位置无关代码    </li>
-</ul>
-</li>
-<li>-pie  链接器选项<ul>
-<li>用于链接 位置无关可执行文件 的可执行文件  </li>
-</ul>
-</li>
-<li>-fpie -fPIE -pie 同时使用可生效   <ul>
-<li>最初的实现来自redhat -pie,  因此总是要配合-pie使用才会有效.    </li>
-<li>位置无关可执行文件的ELF类型为DYN 和共享库一样    </li>
-<li>未使用该选项生成的是EXEC类型</li>
-</ul>
-</li>
 </ul>
 <ul>
-<li>-no-pie  新版本g++比如6版本 默认启用pie 如不需要则要显式去除</li>
+<li><p>-fPIE  编译选项 </p>
+<ul>
+<li>编译位置无关代码, 和PIC相同, 但是PIE假定了编译出的目标文件用于链接成可执行文件  </li>
+<li>主要是访问外部符号时是否使用PLT/GOT  </li>
+<li>实际可用-fPIC代替(不假定目标文件的最终链接目的)   </li>
+<li>-fpie 和-fpic一样  </li>
+</ul>
+</li>
+<li><p>-pie  链接器选项</p>
+<ul>
+<li>用于生成 位置无关可执行文件 的可执行文件  </li>
+<li>生成的可执行文件的ELF类型不是EXEC而是和共享库一样DYN</li>
+<li>需要-fPIE配合使用 否则会出现访问外部符号时候无法正确找到的错误  <ul>
+<li>这个问题等同用PIC链接非PIC编译的库</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>其他备注  </p>
+<ul>
+<li><p>-no-pie  新版本g++比如6版本 默认启用pie 如不需要则要显式去除  </p>
+<ul>
+<li>部分编译器支持  </li>
+</ul>
+</li>
+<li><p>-fno-plt  </p>
+<ul>
+<li>部分编译器支持  </li>
+</ul>
+</li>
+<li><p>-fno-jump-tables</p>
+<ul>
+<li>部分编译器支持  </li>
+</ul>
+</li>
+<li><p>动态库查找路径</p>
+<ul>
+<li>链接时如果要使用-l 则需要先-L指定目录  </li>
+<li>运行时如果不在系统指定目录的库需要设置LD_LIBRARY_PATH或者配置文件<ul>
+<li>例如 简单设置export LD_LIBRARY_PATH=”./“ 路径    </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>–static 组织在链接时使用动态库</p>
+</li>
+<li><p>–shared 生成动态库</p>
+</li>
+<li><p>–static-libgcc 链接静态libgcc库</p>
+</li>
+<li><p>–shared-libgcc 链接动态libgcc库</p>
+</li>
+<li><p>-static和-shared可以同时存在 这样会创建共享库 但该共享库引用的其他库会静态地链接到该共享库中  </p>
+<ul>
+<li>-Wl,–whole-archive 告诉链接器对其后面出现的静态库包含的函数和变量打包到动态库  </li>
+<li>-Wl,–no-whole-archive 关掉特性  <ul>
+<li>举例  -Wl,–whole-archive -la -lb -lc -Wl,–no-whole-archive</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>dlopen动态load共享库</p>
+</li>
+</ul>
+</li>
 </ul>
 
       
@@ -505,7 +545,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-count">28</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
