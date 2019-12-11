@@ -13,21 +13,21 @@ author: yawei.zhang
 
 - [目录](#目录)
 - [词的关系概括](#词的关系概括)
-  - [polysemy 词汇蕴含规则](#polysemy-词汇蕴含规则)
-    - [linear polysemy 线性多义](#linear-polysemy-线性多义)
-    - [non-linear polysemy 非线性多义](#non-linear-polysemy-非线性多义)
-    - [一词多义](#一词多义)
-  - [hyperonym–hyponym 上下义关系](#hyperonymhyponym-上下义关系)
-  - [autonymy 反义关系](#autonymy-反义关系)
-  - [synonymy 同义关系](#synonymy-同义关系)
+    - [polysemy 词汇蕴含规则](#polysemy-词汇蕴含规则)
+        - [linear polysemy 线性多义](#linear-polysemy-线性多义)
+        - [non-linear polysemy 非线性多义](#non-linear-polysemy-非线性多义)
+        - [一词多义](#一词多义)
+    - [hyperonym–hyponym 上下义关系](#hyperonymhyponym-上下义关系)
+    - [autonymy 反义关系](#autonymy-反义关系)
+    - [synonymy 同义关系](#synonymy-同义关系)
 - [语义聚合关系](#语义聚合关系)
-  - [上下义词](#上下义词)
-  - [总分词](#总分词)
-  - [类义词(狭义)](#类义词狭义)
+    - [上下义词](#上下义词)
+    - [总分词](#总分词)
+    - [类义词(狭义)](#类义词狭义)
 - [面向对象中的关系](#面向对象中的关系)
-  - [类型和实例关系](#类型和实例关系)
-  - [hyperonym–hyponym (supertype–subtype) 上下义关系, 超类子类关系 IS-A 关系](#hyperonymhyponym-supertypesubtype-上下义关系-超类子类关系-is-a-关系)
-  - [holonym–meronym 整体部分关系](#holonymmeronym-整体部分关系)
+    - [类型和实例关系](#类型和实例关系)
+    - [hyperonym–hyponym (supertype–subtype) 上下义关系, 超类子类关系  IS-A 关系 继承/泛化关系](#hyperonymhyponym-supertypesubtype-上下义关系-超类子类关系--is-a-关系-继承泛化关系)
+    - [holonym–meronym  整体部分关系 HAS-A 关系](#holonymmeronym--整体部分关系-has-a-关系)
 - [集合关系](#集合关系)
 
 <!-- /TOC -->
@@ -79,8 +79,8 @@ author: yawei.zhang
   * (实例)的类型     
 * instance of   
   * (类型) 的实例  
-  
-#### hyperonym–hyponym (supertype–subtype) 上下义关系, 超类子类关系  IS-A 关系     
+
+#### hyperonym–hyponym (supertype–subtype) 上下义关系, 超类子类关系  IS-A 关系 继承/泛化关系     
 * 子类包含所有超类的属性/方法 可以用 "子类 IS A 父类" 来进行判定和使用   
 * 所有可以对超类适用的规范同样也可以适用于其子类   
   * 李氏替换原则
@@ -89,11 +89,19 @@ author: yawei.zhang
     * 李氏替换原则中 避免重写父类的非抽象方法, 而多态的实现是通过重写抽象方法实现.   
     * 面向对象中的抽象方法是定义方法的声明规范而不约束其实现因此扔可 概括为上句 " 所有可以对超类适用的规范同样也可以适用于其子类"   
 
-#### holonym–meronym  整体部分关系  
+#### holonym–meronym  整体部分关系 HAS-A 关系  
 
 *  aggregation 聚合关系  不存在所属权  HAS-A 关系  
-*  composition 组成关系  存在所属权  PART-OF 关系  
-*  containment 成员关系  member-of 关系  
+   *  部分可以脱离/超出整体的生命周期独立存在 比如家庭成员和家庭  玩家和工会  
+  
+*  composition 组成关系  存在所属权  PART-OF| HAS-A 关系 
+   * 部分不可以脱离整体的生命周期管理 比如四肢和人体  
+   * 对于编程来讲, 我们实例化玩家对象, 实例化背包对象, 玩家下线需要连带清理背包对象.   
+  
+*  containment 包含关系   member-of | contains-a | part-of|HAS-A 关系  
+   *  对成员的访问必须经过整体  成员为内涵状态  
+   *  对于C++来说 privete:下的数据成员必须使用该类的接口访问  
+   *  例如玩家对象和玩家的等级属性  
 
 
 
@@ -122,4 +130,5 @@ ALIAS-A (没有这个术语) 的关系则是 A = B 即 别名.
 换成具体到OO语言里,  继承是一种特殊的聚合方式.
 聚合更具有一般化的性质 更松散  
 
+因此 IS-A  is a  HAS-A  通过IS-A到HAS-A的转化可获得更好的一般性(泛化)  泛化转关联本身也是一种泛化
 

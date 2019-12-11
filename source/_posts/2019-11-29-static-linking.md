@@ -13,6 +13,8 @@ author: yawei.zhang
 
 - [目录](#目录)
 - [基本编译链接流程](#基本编译链接流程)
+- [静态链接过程概述](#静态链接过程概述)
+- [静态链接过程流程追踪和代码验证](#静态链接过程流程追踪和代码验证)
   - [测试源代码](#测试源代码)
   - [生成汇编代码 (从这里开始会有两个分支代码 NON-PIC 和 PIC对照)](#生成汇编代码-从这里开始会有两个分支代码-non-pic-和-pic对照)
     - [汇编代码 (相对位置版本)](#汇编代码-相对位置版本)
@@ -38,6 +40,10 @@ author: yawei.zhang
   * g++ -shared lib.o -o a.out 
 
 <!-- more -->
+
+### 静态链接过程概述  
+
+### 静态链接过程流程追踪和代码验证
 #### 测试源代码    
 ``` C++
 int g_static_bss = 0;
@@ -279,11 +285,12 @@ main:
 * .rela.eh_frame Call Frame Information 
   * 提供了异常的Stack Unwind 支持  
   * 这张表提供了'给定一个PC值, 可以查到上一个stack frame位置'
-  * Stack Unwind 指从最內层函数呼叫堆栈开始，找到最外层
-    * _Unwind_Backtrace() 
+  * Stack Unwind 指从最內层函数呼叫堆栈开始，找到最外层  
+    * _Unwind_Backtrace()   
     * uw_frame_state_for() 
     * uw_update_context() 
-    * uw_update_context_1()
+    * uw_update_context_1()  
+
 
 * PC32 的PC是指的 program counter   在本文的汇编中对应寄存器的RIP 
 * PC32 在重定位类型中代表相对指令位置的重定位
