@@ -6,10 +6,10 @@
 
 
 <html class="theme-next gemini use-motion" lang="en">
-<head><meta name="generator" content="Hexo 3.9.0">
-  <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 <meta name="theme-color" content="#222">
 
 
@@ -20,8 +20,8 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
 
 
@@ -39,7 +39,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -73,21 +73,21 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
-
-
-  <meta name="keywords" content="Hexo, NexT">
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
 
 
 
@@ -97,14 +97,14 @@
 <meta name="description" content="全局分析和统计 top命令     free 查看内存使用信息   vmstate [delay时间]  按照delay时间打印内存使用 io读写 CPU用量等信息   iostat -m -x [时间] [次数]   io读写详细信息   sar 系统活动情况报告 追溯统计数据 从最近的0点0分开始显示数据     sar -A 所有   sar -u CPU   sar -q 负载 sar -">
 <meta property="og:type" content="article">
 <meta property="og:title" content="linux快速排查问题的命令">
-<meta property="og:url" content="https://zsummer.github.io/2019/11/05/2019-11-05-fast-check-linux/index.html">
+<meta property="og:url" content="https:&#x2F;&#x2F;zsummer.github.io&#x2F;2019&#x2F;11&#x2F;05&#x2F;2019-11-05-fast-check-linux&#x2F;index.html">
 <meta property="og:site_name" content="关于夏天的一切">
 <meta property="og:description" content="全局分析和统计 top命令     free 查看内存使用信息   vmstate [delay时间]  按照delay时间打印内存使用 io读写 CPU用量等信息   iostat -m -x [时间] [次数]   io读写详细信息   sar 系统活动情况报告 追溯统计数据 从最近的0点0分开始显示数据     sar -A 所有   sar -u CPU   sar -q 负载 sar -">
-<meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-11-27T09:31:16.101Z">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-11-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2019-11-27T09:31:16.101Z">
+<meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="linux快速排查问题的命令">
-<meta name="twitter:description" content="全局分析和统计 top命令     free 查看内存使用信息   vmstate [delay时间]  按照delay时间打印内存使用 io读写 CPU用量等信息   iostat -m -x [时间] [次数]   io读写详细信息   sar 系统活动情况报告 追溯统计数据 从最近的0点0分开始显示数据     sar -A 所有   sar -u CPU   sar -q 负载 sar -">
 
 
 
@@ -133,7 +133,7 @@
 
 
 
-  <link rel="canonical" href="https://zsummer.github.io/2019/11/05/2019-11-05-fast-check-linux/">
+  <link rel="canonical" href="https://zsummer.github.io/2019/11/05/2019-11-05-fast-check-linux/"/>
 
 
 
@@ -155,9 +155,9 @@
 
 
 
-</head>
+<meta name="generator" content="Hexo 4.1.1"></head>
 
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="en">
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
 
   
   
@@ -167,13 +167,13 @@
   <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
     
 
     <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
+      <a href="/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">关于夏天的一切</span>
         <span class="logo-line-after"><i></i></span>
@@ -203,7 +203,7 @@
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
             Home
           </a>
@@ -213,7 +213,7 @@
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
             Archives
           </a>
@@ -247,20 +247,20 @@
   
   
 
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
   
   
   
   <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/05/2019-11-05-fast-check-linux/">
 
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="夏天">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.png">
     </span>
 
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="关于夏天的一切">
     </span>
 
@@ -292,7 +292,7 @@
           </span>
 
           
-            <span class="post-category">
+            <span class="post-category" >
             
               <span class="post-meta-divider">|</span>
             
@@ -303,7 +303,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/develop/" itemprop="url" rel="index">
                     <span itemprop="name">develop</span>
                   </a>
@@ -459,65 +459,26 @@
 <li>disassemble /rm  显示汇编指令的同时显示对应代码</li>
 <li>set disassemble-next-line on 自动反汇编后面要执行的代码  </li>
 <li>添加peda插件 直接显示汇编了   </li>
-<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/longld/peda.git ~/peda</span><br><span class="line">echo &quot;source ~/peda/peda.py&quot; &gt;&gt; ~/.gdbinit</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>x /nfu <mem addr="">   显示指定内存的值, 内存长度(单位)由u决定</mem></p>
-<ul>
-<li>n项  显示数量  <ul>
-<li>要往下显示多少个 [fu] 即 n*(fu)   0代表一个都不显示 </li>
-</ul>
-</li>
-<li>f项  显示方式  <ul>
-<li>x 按十六进制格式显示变量 </li>
-<li>d 按十进制格式显示变量  </li>
-<li>u 按十进制格式显示无符号整型  </li>
-<li>o 按八进制格式显示变量 </li>
-<li>t 按二进制格式显示变量 </li>
-<li>a 按十六进制格式显示变量 </li>
-<li>i 指令地址格式</li>
-<li>c 按字符格式显示变量 </li>
-<li>f 按浮点数格式显示变量  </li>
-</ul>
-</li>
-<li>u项 单位大小   <ul>
-<li>b表示单字节 </li>
-<li>h表示双字节 </li>
-<li>w表示四字节 </li>
-<li>g表示八字节  </li>
-</ul>
-</li>
-<li>示例   x/1xg  0x8888   <ul>
-<li>以十六进制显示地址0x8888位置存储的8字节内容(比如long long类型的数字)</li>
+<li>```<br>git clone <a href="https://github.com/longld/peda.git" target="_blank" rel="noopener">https://github.com/longld/peda.git</a> ~/peda<br>echo “source ~/peda/peda.py” &gt;&gt; ~/.gdbinit<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">  * x &#x2F;nfu &lt;mem addr&gt;   显示指定内存的值, 内存长度(单位)由u决定</span><br><span class="line">    * n项  显示数量  </span><br><span class="line">      * 要往下显示多少个 [fu] 即 n*(fu)   0代表一个都不显示 </span><br><span class="line">    * f项  显示方式  </span><br><span class="line">      * x 按十六进制格式显示变量 </span><br><span class="line">      * d 按十进制格式显示变量  </span><br><span class="line">      * u 按十进制格式显示无符号整型  </span><br><span class="line">      * o 按八进制格式显示变量 </span><br><span class="line">      * t 按二进制格式显示变量 </span><br><span class="line">      * a 按十六进制格式显示变量 </span><br><span class="line">      * i 指令地址格式</span><br><span class="line">      * c 按字符格式显示变量 </span><br><span class="line">      * f 按浮点数格式显示变量  </span><br><span class="line">    * u项 单位大小   </span><br><span class="line">      * b表示单字节 </span><br><span class="line">      * h表示双字节 </span><br><span class="line">      * w表示四字节 </span><br><span class="line">      * g表示八字节  </span><br><span class="line">    * 示例   x&#x2F;1xg  0x8888   </span><br><span class="line">      * 以十六进制显示地址0x8888位置存储的8字节内容(比如long long类型的数字)</span><br><span class="line">  </span><br><span class="line">### 其他手册&#x2F;详细手册   </span><br><span class="line"></span><br><span class="line">###### ldd   查看程序运行时库  </span><br><span class="line">显示 依赖的库名,  实际记载到的库, 库加载后的开始地址 </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">###### strace</span><br></pre></td></tr></table></figure></li>
 </ul>
 </li>
 </ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3><span id="其他手册详细手册">其他手册/详细手册</span></h3><h6><span id="ldd-查看程序运行时库">ldd   查看程序运行时库</span></h6><p>显示 依赖的库名,  实际记载到的库, 库加载后的开始地址 </p>
-<h6><span id="strace">strace</span></h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">-c 统计每一系统调用的所执行的时间,次数和出错的次数等. </span><br><span class="line">-d 输出strace关于标准错误的调试信息. </span><br><span class="line">-f 跟踪由fork调用所产生的子进程. </span><br><span class="line">-ff 如果提供-o filename,则所有进程的跟踪结果输出到相应的filename.pid中,pid是各进程的进程号. </span><br><span class="line">-F 尝试跟踪vfork调用.在-f时,vfork不被跟踪. </span><br><span class="line">-h 输出简要的帮助信息. </span><br><span class="line">-i 输出系统调用的入口指针. </span><br><span class="line">-q 禁止输出关于脱离的消息. </span><br><span class="line">-r 打印出相对时间关于,,每一个系统调用. </span><br><span class="line">-t 在输出中的每一行前加上时间信息. </span><br><span class="line">-tt 在输出中的每一行前加上时间信息,微秒级. </span><br><span class="line">-ttt 微秒级输出,以秒了表示时间. </span><br><span class="line">-T 显示每一调用所耗的时间. </span><br><span class="line">-v 输出所有的系统调用.一些调用关于环境变量,状态,输入输出等调用由于使用频繁,默认不输出. </span><br><span class="line">-V 输出strace的版本信息. </span><br><span class="line">-x 以十六进制形式输出非标准字符串 </span><br><span class="line">-xx 所有字符串以十六进制形式输出. </span><br><span class="line">-a column </span><br><span class="line">设置返回值的输出位置.默认 为40. </span><br><span class="line">-e expr </span><br><span class="line">指定一个表达式,用来控制如何跟踪.格式如下: </span><br><span class="line">[qualifier=][!]value1[,value2]... </span><br><span class="line">qualifier只能是 trace,abbrev,verbose,raw,signal,read,write其中之一.value是用来限定的符号或数字.默认的 qualifier是 trace.感叹号是否定符号.例如: </span><br><span class="line">-eopen等价于 -e trace=open,表示只跟踪open调用.而-etrace!=open表示跟踪除了open以外的其他调用.有两个特殊的符号 all 和 none. </span><br><span class="line">注意有些shell使用!来执行历史记录里的命令,所以要使用\\. </span><br><span class="line">-e trace=set </span><br><span class="line">只跟踪指定的系统 调用.例如:-e trace=open,close,rean,write表示只跟踪这四个系统调用.默认的为set=all. </span><br><span class="line">-e trace=file </span><br><span class="line">只跟踪有关文件操作的系统调用. </span><br><span class="line">-e trace=process </span><br><span class="line">只跟踪有关进程控制的系统调用. </span><br><span class="line">-e trace=network </span><br><span class="line">跟踪与网络有关的所有系统调用. </span><br><span class="line">-e strace=signal </span><br><span class="line">跟踪所有与系统信号有关的 系统调用 </span><br><span class="line">-e trace=ipc </span><br><span class="line">跟踪所有与进程通讯有关的系统调用 </span><br><span class="line">-e abbrev=set </span><br><span class="line">设定 strace输出的系统调用的结果集.-v 等与 abbrev=none.默认为abbrev=all. </span><br><span class="line">-e raw=set </span><br><span class="line">将指 定的系统调用的参数以十六进制显示. </span><br><span class="line">-e signal=set </span><br><span class="line">指定跟踪的系统信号.默认为all.如 signal=!SIGIO(或者signal=!io),表示不跟踪SIGIO信号. </span><br><span class="line">-e read=set </span><br><span class="line">输出从指定文件中读出 的数据.例如: </span><br><span class="line">-e read=3,5 </span><br><span class="line">-e write=set </span><br><span class="line">输出写入到指定文件中的数据. </span><br><span class="line">-o filename </span><br><span class="line">将strace的输出写入文件filename </span><br><span class="line">-p pid </span><br><span class="line">跟踪指定的进程pid. </span><br><span class="line">-s strsize </span><br><span class="line">指定输出的字符串的最大长度.默认为32.文件名一直全部输出. </span><br><span class="line">-u username </span><br><span class="line">以username 的UID和GID执行被跟踪的命令</span><br></pre></td></tr></table></figure>
-<h6><span id="vmstat">vmstat</span></h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Procs（进程）:</span><br><span class="line">  r: 运行队列中进程数量</span><br><span class="line">  b: 等待IO的进程数量</span><br><span class="line">Memory（内存）:</span><br><span class="line">  swpd: 使用虚拟内存大小</span><br><span class="line">  free: 可用内存大小</span><br><span class="line">  buff: 用作缓冲的内存大小</span><br><span class="line">  cache: 用作缓存的内存大小</span><br><span class="line">Swap:</span><br><span class="line">  si: 每秒从交换区写到内存的大小</span><br><span class="line">  so: 每秒写入交换区的内存大小</span><br><span class="line">  IO：（现在的Linux版本块的大小为1024bytes）</span><br><span class="line">  bi: 每秒读取的块数</span><br><span class="line">  bo: 每秒写入的块数</span><br><span class="line">system：</span><br><span class="line">  in: 每秒中断数，包括时钟中断</span><br><span class="line">  cs: 每秒上下文切换数</span><br><span class="line">  CPU（以百分比表示）</span><br><span class="line">  us: 用户进程执行时间(user time)</span><br><span class="line">  sy: 系统进程执行时间(system time)</span><br><span class="line">  id: 空闲时间(包括IO等待时间)</span><br><span class="line">  wa: 等待IO时间</span><br></pre></td></tr></table></figure>
-<h6><span id="sar">sar</span></h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">-A 汇总所有的报告</span><br><span class="line">-a 报告文件读写使用情况</span><br><span class="line">-B 报告附加的缓存的使用情况</span><br><span class="line">-b 报告缓存的使用情况</span><br><span class="line">-c 报告系统调用的使用情况</span><br><span class="line">-d 报告磁盘的使用情况</span><br><span class="line">-g 报告串口的使用情况</span><br><span class="line">-h 报告关于buffer使用的统计数据</span><br><span class="line">-m 报告IPC消息队列和信号量的使用情况</span><br><span class="line">-n 报告命名cache的使用情况</span><br><span class="line">-p 报告调页活动的使用情况</span><br><span class="line">-q 报告运行队列和交换队列的平均长度</span><br><span class="line">-R 报告进程的活动情况</span><br><span class="line">-r 报告没有使用的内存页面和硬盘块</span><br><span class="line">-u 报告CPU的利用率</span><br><span class="line">-v 报告进程、i节点、文件和锁表状态</span><br><span class="line">-w 报告系统交换活动状况</span><br><span class="line">-y 报告TTY设备活动状况</span><br></pre></td></tr></table></figure>
-<h6><span id="procpidmaps-虚拟内存地址">/proc/$pid/maps   虚拟内存地址</span></h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">address           perms offset  dev   inode   pathname</span><br><span class="line">08048000-08056000 r-xp 00000000 03:0c 64593   /usr/sbin/gpm</span><br><span class="line">```    </span><br><span class="line">对应内核的vm_area_struct项  </span><br><span class="line">* 地址 address [vm_start-vm_end]: 进程地址空间中区域的开始和结束地址  </span><br><span class="line">  </span><br><span class="line">* 权限 permissions [vm_flags]：虚拟内存的权限，</span><br><span class="line">  * [r=读] [w=写] [x=执行]  [s/p=共享/私有]     </span><br><span class="line">  * 禁用显示 - </span><br><span class="line">  * mprotect设置权限   </span><br><span class="line">  </span><br><span class="line">* 偏移量 offset [vm_pgoff]：映射开始的偏移量  </span><br><span class="line">  * 对于有名映射, 比如从文件使用mmap的映射, 表示此段虚拟内存起始地址在文件中以页为单位的偏移 .  </span><br><span class="line">    * 缺页异常时会根据这个找到文件对应地址的数据并加载上来  </span><br><span class="line">  * 对匿名映射 它等于0或者vm_start/PAGE_SIZE   </span><br><span class="line">  </span><br><span class="line">* 设备 device：映像文件的主设备号和次设备号</span><br><span class="line">  * 对匿名映射来说 因为没有文件在磁盘上 所以没有设备号 始终为00:00 </span><br><span class="line">  * 对有名映射来说 是映射的文件所在设备的设备号   </span><br><span class="line">* 节点 inode：映像文件的节点号</span><br><span class="line">  * 对有名映射来说 是映射的文件的节点号</span><br><span class="line">  * 对匿名映射来说 因为没有文件在磁盘上 所以没有节点号 始终为00:00  </span><br><span class="line">* 路径 pathname: 映像文件的路径  </span><br><span class="line">  * 对有名来说 是映射的文件名</span><br><span class="line">  * 对匿名映射来说 是此段虚拟内存在进程中的角色 </span><br><span class="line">    * [stack]表示在进程中作为栈使用 </span><br><span class="line">    * [heap]表示堆</span><br><span class="line">    * [vdso]表示虚拟动态共享对象 它被系统调用用于切换到内核模式   </span><br><span class="line">    *  其余情况则无显示</span><br><span class="line"></span><br><span class="line">###### pmap 虚拟内存地址  类似 /proc/$pid/maps   </span><br><span class="line">显示的数据更干净一些  还能显示出比如共享内存的shmid和起始位置 和大小    </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">###### gstack  脚本  拷贝自centos</span><br></pre></td></tr></table></figure>
+<p>-c 统计每一系统调用的所执行的时间,次数和出错的次数等.<br>-d 输出strace关于标准错误的调试信息.<br>-f 跟踪由fork调用所产生的子进程.<br>-ff 如果提供-o filename,则所有进程的跟踪结果输出到相应的filename.pid中,pid是各进程的进程号.<br>-F 尝试跟踪vfork调用.在-f时,vfork不被跟踪.<br>-h 输出简要的帮助信息.<br>-i 输出系统调用的入口指针.<br>-q 禁止输出关于脱离的消息.<br>-r 打印出相对时间关于,,每一个系统调用.<br>-t 在输出中的每一行前加上时间信息.<br>-tt 在输出中的每一行前加上时间信息,微秒级.<br>-ttt 微秒级输出,以秒了表示时间.<br>-T 显示每一调用所耗的时间.<br>-v 输出所有的系统调用.一些调用关于环境变量,状态,输入输出等调用由于使用频繁,默认不输出.<br>-V 输出strace的版本信息.<br>-x 以十六进制形式输出非标准字符串<br>-xx 所有字符串以十六进制形式输出.<br>-a column<br>设置返回值的输出位置.默认 为40.<br>-e expr<br>指定一个表达式,用来控制如何跟踪.格式如下:<br>[qualifier=][!]value1[,value2]…<br>qualifier只能是 trace,abbrev,verbose,raw,signal,read,write其中之一.value是用来限定的符号或数字.默认的 qualifier是 trace.感叹号是否定符号.例如:<br>-eopen等价于 -e trace=open,表示只跟踪open调用.而-etrace!=open表示跟踪除了open以外的其他调用.有两个特殊的符号 all 和 none.<br>注意有些shell使用!来执行历史记录里的命令,所以要使用\.<br>-e trace=set<br>只跟踪指定的系统 调用.例如:-e trace=open,close,rean,write表示只跟踪这四个系统调用.默认的为set=all.<br>-e trace=file<br>只跟踪有关文件操作的系统调用.<br>-e trace=process<br>只跟踪有关进程控制的系统调用.<br>-e trace=network<br>跟踪与网络有关的所有系统调用.<br>-e strace=signal<br>跟踪所有与系统信号有关的 系统调用<br>-e trace=ipc<br>跟踪所有与进程通讯有关的系统调用<br>-e abbrev=set<br>设定 strace输出的系统调用的结果集.-v 等与 abbrev=none.默认为abbrev=all.<br>-e raw=set<br>将指 定的系统调用的参数以十六进制显示.<br>-e signal=set<br>指定跟踪的系统信号.默认为all.如 signal=!SIGIO(或者signal=!io),表示不跟踪SIGIO信号.<br>-e read=set<br>输出从指定文件中读出 的数据.例如:<br>-e read=3,5<br>-e write=set<br>输出写入到指定文件中的数据.<br>-o filename<br>将strace的输出写入文件filename<br>-p pid<br>跟踪指定的进程pid.<br>-s strsize<br>指定输出的字符串的最大长度.默认为32.文件名一直全部输出.<br>-u username<br>以username 的UID和GID执行被跟踪的命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">###### vmstat</span><br></pre></td></tr></table></figure>
+<p>Procs（进程）:<br>  r: 运行队列中进程数量<br>  b: 等待IO的进程数量<br>Memory（内存）:<br>  swpd: 使用虚拟内存大小<br>  free: 可用内存大小<br>  buff: 用作缓冲的内存大小<br>  cache: 用作缓存的内存大小<br>Swap:<br>  si: 每秒从交换区写到内存的大小<br>  so: 每秒写入交换区的内存大小<br>  IO：（现在的Linux版本块的大小为1024bytes）<br>  bi: 每秒读取的块数<br>  bo: 每秒写入的块数<br>system：<br>  in: 每秒中断数，包括时钟中断<br>  cs: 每秒上下文切换数<br>  CPU（以百分比表示）<br>  us: 用户进程执行时间(user time)<br>  sy: 系统进程执行时间(system time)<br>  id: 空闲时间(包括IO等待时间)<br>  wa: 等待IO时间</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">###### sar</span><br></pre></td></tr></table></figure>
+<p>-A 汇总所有的报告<br>-a 报告文件读写使用情况<br>-B 报告附加的缓存的使用情况<br>-b 报告缓存的使用情况<br>-c 报告系统调用的使用情况<br>-d 报告磁盘的使用情况<br>-g 报告串口的使用情况<br>-h 报告关于buffer使用的统计数据<br>-m 报告IPC消息队列和信号量的使用情况<br>-n 报告命名cache的使用情况<br>-p 报告调页活动的使用情况<br>-q 报告运行队列和交换队列的平均长度<br>-R 报告进程的活动情况<br>-r 报告没有使用的内存页面和硬盘块<br>-u 报告CPU的利用率<br>-v 报告进程、i节点、文件和锁表状态<br>-w 报告系统交换活动状况<br>-y 报告TTY设备活动状况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">###### &#x2F;proc&#x2F;$pid&#x2F;maps   虚拟内存地址</span><br></pre></td></tr></table></figure>
+<p>address           perms offset  dev   inode   pathname<br>08048000-08056000 r-xp 00000000 03:0c 64593   /usr/sbin/gpm</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">对应内核的vm_area_struct项  </span><br><span class="line">* 地址 address [vm_start-vm_end]: 进程地址空间中区域的开始和结束地址  </span><br><span class="line">  </span><br><span class="line">* 权限 permissions [vm_flags]：虚拟内存的权限，</span><br><span class="line">  * [r&#x3D;读] [w&#x3D;写] [x&#x3D;执行]  [s&#x2F;p&#x3D;共享&#x2F;私有]     </span><br><span class="line">  * 禁用显示 - </span><br><span class="line">  * mprotect设置权限   </span><br><span class="line">  </span><br><span class="line">* 偏移量 offset [vm_pgoff]：映射开始的偏移量  </span><br><span class="line">  * 对于有名映射, 比如从文件使用mmap的映射, 表示此段虚拟内存起始地址在文件中以页为单位的偏移 .  </span><br><span class="line">    * 缺页异常时会根据这个找到文件对应地址的数据并加载上来  </span><br><span class="line">  * 对匿名映射 它等于0或者vm_start&#x2F;PAGE_SIZE   </span><br><span class="line">  </span><br><span class="line">* 设备 device：映像文件的主设备号和次设备号</span><br><span class="line">  * 对匿名映射来说 因为没有文件在磁盘上 所以没有设备号 始终为00:00 </span><br><span class="line">  * 对有名映射来说 是映射的文件所在设备的设备号   </span><br><span class="line">* 节点 inode：映像文件的节点号</span><br><span class="line">  * 对有名映射来说 是映射的文件的节点号</span><br><span class="line">  * 对匿名映射来说 因为没有文件在磁盘上 所以没有节点号 始终为00:00  </span><br><span class="line">* 路径 pathname: 映像文件的路径  </span><br><span class="line">  * 对有名来说 是映射的文件名</span><br><span class="line">  * 对匿名映射来说 是此段虚拟内存在进程中的角色 </span><br><span class="line">    * [stack]表示在进程中作为栈使用 </span><br><span class="line">    * [heap]表示堆</span><br><span class="line">    * [vdso]表示虚拟动态共享对象 它被系统调用用于切换到内核模式   </span><br><span class="line">    *  其余情况则无显示</span><br><span class="line"></span><br><span class="line">###### pmap 虚拟内存地址  类似 &#x2F;proc&#x2F;$pid&#x2F;maps   </span><br><span class="line">显示的数据更干净一些  还能显示出比如共享内存的shmid和起始位置 和大小    </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">###### gstack  脚本  拷贝自centos</span><br></pre></td></tr></table></figure>
 <p>#!/bin/sh</p>
 <p>if test $# -ne 1; then<br>    echo “Usage: <code>basename $0 .sh</code> <process-id>“ 1&gt;&amp;2<br>    exit 1<br>fi</process-id></p>
 <p>if test ! -r /proc/$1; then<br>    echo “Process $1 not found.” 1&gt;&amp;2<br>    exit 1<br>fi</p>
-<h1><span id="gdb-doesnt-allow-thread-apply-all-bt-when-the-process-isnt">GDB doesn’t allow “thread apply all bt” when the process isn’t</span></h1><h1><span id="threaded-need-to-peek-at-the-process-to-determine-if-that-or-the">threaded; need to peek at the process to determine if that or the</span></h1><h1><span id="simpler-bt-should-be-used">simpler “bt” should be used.</span></h1><p>backtrace=”bt”<br>if test -d /proc/$1/task ; then</p>
-<pre><code># Newer kernel; has a task/ directory.
-if test `/bin/ls /proc/$1/task | /usr/bin/wc -l` -gt 1 2&gt;/dev/null ; then
-    backtrace=&quot;thread apply all bt&quot;
-fi
-</code></pre><p>elif test -f /proc/$1/maps ; then</p>
-<pre><code># Older kernel; go by it loading libpthread.
-if /bin/grep -e libpthread /proc/$1/maps &gt; /dev/null 2&gt;&amp;1 ; then
-    backtrace=&quot;thread apply all bt&quot;
-fi
-</code></pre><p>fi</p>
+<h1><span id="gdb-doesnt-allow-thread-apply-all-bt-when-the-process-isnt">GDB doesn’t allow “thread apply all bt” when the process isn’t</span></h1><h1><span id="threaded-need-to-peek-at-the-process-to-determine-if-that-or-the">threaded; need to peek at the process to determine if that or the</span></h1><h1><span id="simpler-bt-should-be-used">simpler “bt” should be used.</span></h1><p>backtrace=”bt”<br>if test -d /proc/$1/task ; then<br>    # Newer kernel; has a task/ directory.<br>    if test <code>/bin/ls /proc/$1/task | /usr/bin/wc -l</code> -gt 1 2&gt;/dev/null ; then<br>        backtrace=”thread apply all bt”<br>    fi<br>elif test -f /proc/$1/maps ; then<br>    # Older kernel; go by it loading libpthread.<br>    if /bin/grep -e libpthread /proc/$1/maps &gt; /dev/null 2&gt;&amp;1 ; then<br>        backtrace=”thread apply all bt”<br>    fi<br>fi</p>
 <p>GDB=${GDB:-/usr/bin/gdb}</p>
 <p>if $GDB -nx –quiet –batch –readnever &gt; /dev/null 2&gt;&1; then<br>    readnever=–readnever<br>else<br>    readnever=<br>fi</p>
-<h1><span id="run-gdb-strip-out-unwanted-noise">Run GDB, strip out unwanted noise.</span></h1><p>$GDB –quiet $readnever -nx /proc/$1/exe $1 &lt;<eof 2="">&amp;1 |<br>set width 0<br>set height 0<br>set pagination no<br>$backtrace<br>EOF<br>/bin/sed -n \<br>    -e ‘s/^((gdb) )*//‘ \<br>    -e ‘/^#/p’ \<br>    -e ‘/^Thread/p’<br><code>`</code></eof></p>
-
+<h1><span id="run-gdb-strip-out-unwanted-noise">Run GDB, strip out unwanted noise.</span></h1><p>$GDB –quiet $readnever -nx /proc/$1/exe $1 &lt;&lt;EOF 2&gt;&amp;1 |<br>set width 0<br>set height 0<br>set pagination no<br>$backtrace<br>EOF<br>/bin/sed -n <br>    -e ‘s/^((gdb) )*//‘ <br>    -e ‘/^#/p’ <br>    -e ‘/^Thread/p’</p>
+<pre><code></code></pre>
       
     </div>
     
@@ -606,7 +567,7 @@ fi
 
       
         <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
             Table of Contents
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
@@ -616,8 +577,10 @@ fi
       
 
       <section class="site-overview sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="夏天">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="夏天" />
           <p class="site-author-name" itemprop="name">夏天</p>
            
               <p class="site-description motion-element" itemprop="description"></p>
@@ -676,7 +639,7 @@ fi
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">全局分析和统计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">2.</span> <span class="nav-text">进程分析和统计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">3.</span> <span class="nav-text">系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">4.</span> <span class="nav-text">调试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">5.</span> <span class="nav-text">其他手册/详细手册</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#null"><span class="nav-number">5.0.0.1.</span> <span class="nav-text">ldd   查看程序运行时库</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#null"><span class="nav-number">5.0.0.2.</span> <span class="nav-text">strace</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#null"><span class="nav-number">5.0.0.3.</span> <span class="nav-text">vmstat</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#null"><span class="nav-number">5.0.0.4.</span> <span class="nav-text">sar</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#null"><span class="nav-number">5.0.0.5.</span> <span class="nav-text">/proc/$pid/maps   虚拟内存地址</span></a></li></ol></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#null"><span class="nav-number"></span> <span class="nav-text">GDB doesn’t allow “thread apply all bt” when the process isn’t</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#null"><span class="nav-number"></span> <span class="nav-text">threaded; need to peek at the process to determine if that or the</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#null"><span class="nav-number"></span> <span class="nav-text">simpler “bt” should be used.</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#null"><span class="nav-number"></span> <span class="nav-text">Run GDB, strip out unwanted noise.</span></a></li></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">全局分析和统计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">2.</span> <span class="nav-text">进程分析和统计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">3.</span> <span class="nav-text">系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">4.</span> <span class="nav-text">调试</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#null"><span class="nav-number"></span> <span class="nav-text">GDB doesn’t allow “thread apply all bt” when the process isn’t</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#null"><span class="nav-number"></span> <span class="nav-text">threaded; need to peek at the process to determine if that or the</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#null"><span class="nav-number"></span> <span class="nav-text">simpler “bt” should be used.</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#null"><span class="nav-number"></span> <span class="nav-text">Run GDB, strip out unwanted noise.</span></a></div>
             
 
           </div>
@@ -696,7 +659,7 @@ fi
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">
+        <div class="copyright" >
   
   &copy; 
   <span itemprop="copyrightYear">2019</span>
@@ -708,12 +671,12 @@ fi
 
 
 <div class="powered-by">
-  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
 </div>
 
 <div class="theme-info">
   Theme -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
     NexT.Gemini
   </a>
 </div>

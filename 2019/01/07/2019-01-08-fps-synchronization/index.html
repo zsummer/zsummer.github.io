@@ -6,10 +6,10 @@
 
 
 <html class="theme-next gemini use-motion" lang="en">
-<head><meta name="generator" content="Hexo 3.9.0">
-  <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 <meta name="theme-color" content="#222">
 
 
@@ -20,8 +20,8 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
 
 
@@ -39,7 +39,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -73,38 +73,38 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
-
-
-  <meta name="keywords" content="Hexo, NexT">
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
 
 
 
 
 
 
-<meta name="description" content="在一个采用C/S架构的游戏中，客户端和服务端的游戏状态有差异是不可避免的。客户端和服务端各自都维护了一份游戏状态。这两份游戏状态依赖网络包通信保持同步。但由于各客户端到服务端的时延具有不确定性，游戏状态同步变得非常困难。通常服务端在游戏拓扑中承载的是状态仲裁者的角色，客户端玩家看到的“经验证”的有效游戏状态总是延后于服务端的游戏状态。   网络时延是必然存在的，所以游戏状态的不同步也是必然存在的。">
+<meta name="description" content="在一个采用C&#x2F;S架构的游戏中，客户端和服务端的游戏状态有差异是不可避免的。客户端和服务端各自都维护了一份游戏状态。这两份游戏状态依赖网络包通信保持同步。但由于各客户端到服务端的时延具有不确定性，游戏状态同步变得非常困难。通常服务端在游戏拓扑中承载的是状态仲裁者的角色，客户端玩家看到的“经验证”的有效游戏状态总是延后于服务端的游戏状态。   网络时延是必然存在的，所以游戏状态的不同步也是必然存在的。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="FPS游戏同步术语">
-<meta property="og:url" content="https://zsummer.github.io/2019/01/07/2019-01-08-fps-synchronization/index.html">
+<meta property="og:url" content="https:&#x2F;&#x2F;zsummer.github.io&#x2F;2019&#x2F;01&#x2F;07&#x2F;2019-01-08-fps-synchronization&#x2F;index.html">
 <meta property="og:site_name" content="关于夏天的一切">
-<meta property="og:description" content="在一个采用C/S架构的游戏中，客户端和服务端的游戏状态有差异是不可避免的。客户端和服务端各自都维护了一份游戏状态。这两份游戏状态依赖网络包通信保持同步。但由于各客户端到服务端的时延具有不确定性，游戏状态同步变得非常困难。通常服务端在游戏拓扑中承载的是状态仲裁者的角色，客户端玩家看到的“经验证”的有效游戏状态总是延后于服务端的游戏状态。   网络时延是必然存在的，所以游戏状态的不同步也是必然存在的。">
-<meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-01-17T14:04:29.967Z">
+<meta property="og:description" content="在一个采用C&#x2F;S架构的游戏中，客户端和服务端的游戏状态有差异是不可避免的。客户端和服务端各自都维护了一份游戏状态。这两份游戏状态依赖网络包通信保持同步。但由于各客户端到服务端的时延具有不确定性，游戏状态同步变得非常困难。通常服务端在游戏拓扑中承载的是状态仲裁者的角色，客户端玩家看到的“经验证”的有效游戏状态总是延后于服务端的游戏状态。   网络时延是必然存在的，所以游戏状态的不同步也是必然存在的。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-01-07T09:21:00.000Z">
+<meta property="article:modified_time" content="2019-01-17T14:04:29.967Z">
+<meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="FPS游戏同步术语">
-<meta name="twitter:description" content="在一个采用C/S架构的游戏中，客户端和服务端的游戏状态有差异是不可避免的。客户端和服务端各自都维护了一份游戏状态。这两份游戏状态依赖网络包通信保持同步。但由于各客户端到服务端的时延具有不确定性，游戏状态同步变得非常困难。通常服务端在游戏拓扑中承载的是状态仲裁者的角色，客户端玩家看到的“经验证”的有效游戏状态总是延后于服务端的游戏状态。   网络时延是必然存在的，所以游戏状态的不同步也是必然存在的。">
 
 
 
@@ -133,7 +133,7 @@
 
 
 
-  <link rel="canonical" href="https://zsummer.github.io/2019/01/07/2019-01-08-fps-synchronization/">
+  <link rel="canonical" href="https://zsummer.github.io/2019/01/07/2019-01-08-fps-synchronization/"/>
 
 
 
@@ -155,9 +155,9 @@
 
 
 
-</head>
+<meta name="generator" content="Hexo 4.1.1"></head>
 
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="en">
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
 
   
   
@@ -167,13 +167,13 @@
   <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
     
 
     <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
+      <a href="/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">关于夏天的一切</span>
         <span class="logo-line-after"><i></i></span>
@@ -203,7 +203,7 @@
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
             Home
           </a>
@@ -213,7 +213,7 @@
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
             Archives
           </a>
@@ -247,20 +247,20 @@
   
   
 
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
   
   
   
   <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/01/07/2019-01-08-fps-synchronization/">
 
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="夏天">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.png">
     </span>
 
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="关于夏天的一切">
     </span>
 
@@ -292,7 +292,7 @@
           </span>
 
           
-            <span class="post-category">
+            <span class="post-category" >
             
               <span class="post-meta-divider">|</span>
             
@@ -303,7 +303,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/develop/" itemprop="url" rel="index">
                     <span itemprop="name">develop</span>
                   </a>
@@ -361,7 +361,7 @@
 <li>Player A开枪，其客户端把这个操作发送给服务器</li>
 <li>假定A的延迟的一半是Xms，那么Xms后服务器将收到Player A的操作</li>
 <li>服务器从记录的历史信息中找到A开枪时B所在的位置。一般情况下，服务器应该往回看 (Xms + Player A’s interpolation delay) 来回滚到A开枪时的游戏状态。但是这个时间是可以调的，取决于开发者希望延迟补偿算法如何工作。</li>
-<li>服务器判定这次的开枪是否命中。如果子弹的轨迹和目标模型的hit box相交，就认为是命中了。在这个例子中，我们假定命中了。在Player B看来，他觉得自己已经躲到墙后面了。但是Player B看到的游戏状态所处的时间和Server认定的开枪时间是有差异的，可以表示为：<br>(1/2 <em> PlayerALatency + 1/2 </em> PlayerBLatency + TimeSinceLastTick)</li>
+<li>服务器判定这次的开枪是否命中。如果子弹的轨迹和目标模型的hit box相交，就认为是命中了。在这个例子中，我们假定命中了。在Player B看来，他觉得自己已经躲到墙后面了。但是Player B看到的游戏状态所处的时间和Server认定的开枪时间是有差异的，可以表示为：<br>(1/2 * PlayerALatency + 1/2 * PlayerBLatency + TimeSinceLastTick)</li>
 <li>在下一次tick中，服务器使用计算结果更新所有客户端：Player A看到自己命中了目标，Player B看到自己掉血或挂掉了。</li>
 </ol>
 <p>需要注意的是，如果两个玩家对射，而且都命中了，游戏如何处理就取决于实现了。比如说在CS:GO中，如果先收到的射击操作命中了目标玩家，那么后续收到的那个玩家的射击就会被丢弃。这样就避免了两个玩家的射击请求在同一帧，然后都命中，都挂掉。在Overwatch中，这种情况是可能的。这里是有取舍的。</p>
@@ -468,8 +468,10 @@
       
 
       <section class="site-overview sidebar-panel sidebar-panel-active">
-        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="夏天">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="夏天" />
           <p class="site-author-name" itemprop="name">夏天</p>
            
               <p class="site-description motion-element" itemprop="description"></p>
@@ -532,7 +534,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">
+        <div class="copyright" >
   
   &copy; 
   <span itemprop="copyrightYear">2019</span>
@@ -544,12 +546,12 @@
 
 
 <div class="powered-by">
-  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
 </div>
 
 <div class="theme-info">
   Theme -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
     NexT.Gemini
   </a>
 </div>

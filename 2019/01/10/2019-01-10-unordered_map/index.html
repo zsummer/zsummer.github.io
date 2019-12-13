@@ -6,10 +6,10 @@
 
 
 <html class="theme-next gemini use-motion" lang="en">
-<head><meta name="generator" content="Hexo 3.9.0">
-  <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 <meta name="theme-color" content="#222">
 
 
@@ -20,8 +20,8 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
 
 
@@ -39,7 +39,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -73,21 +73,21 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
-
-
-  <meta name="keywords" content="Hexo, NexT">
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
 
 
 
@@ -97,14 +97,14 @@
 <meta name="description" content="基本概念 哈希算法： 根据设定的哈希函数H（key）和处理冲突方法将一组关键字映象到一个有限的地址区间上的算法。也称为散列算法、杂凑算法。   哈希表： 数据经过哈希算法之后得到的集合。这样关键字和数据在集合中的位置存在一定的关系，可以根据这种关系快速查询。   非哈希表： 与哈希表相对应，集合中的 数据和其存放位置没任何关联关系的集合。 由此可见，哈希算法是一种特殊的算法，能将任意数据散列后映射">
 <meta property="og:type" content="article">
 <meta property="og:title" content="unordered_map">
-<meta property="og:url" content="https://zsummer.github.io/2019/01/10/2019-01-10-unordered_map/index.html">
+<meta property="og:url" content="https:&#x2F;&#x2F;zsummer.github.io&#x2F;2019&#x2F;01&#x2F;10&#x2F;2019-01-10-unordered_map&#x2F;index.html">
 <meta property="og:site_name" content="关于夏天的一切">
 <meta property="og:description" content="基本概念 哈希算法： 根据设定的哈希函数H（key）和处理冲突方法将一组关键字映象到一个有限的地址区间上的算法。也称为散列算法、杂凑算法。   哈希表： 数据经过哈希算法之后得到的集合。这样关键字和数据在集合中的位置存在一定的关系，可以根据这种关系快速查询。   非哈希表： 与哈希表相对应，集合中的 数据和其存放位置没任何关联关系的集合。 由此可见，哈希算法是一种特殊的算法，能将任意数据散列后映射">
-<meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-01-17T14:04:32.657Z">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-01-10T09:21:00.000Z">
+<meta property="article:modified_time" content="2019-01-17T14:04:32.657Z">
+<meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="unordered_map">
-<meta name="twitter:description" content="基本概念 哈希算法： 根据设定的哈希函数H（key）和处理冲突方法将一组关键字映象到一个有限的地址区间上的算法。也称为散列算法、杂凑算法。   哈希表： 数据经过哈希算法之后得到的集合。这样关键字和数据在集合中的位置存在一定的关系，可以根据这种关系快速查询。   非哈希表： 与哈希表相对应，集合中的 数据和其存放位置没任何关联关系的集合。 由此可见，哈希算法是一种特殊的算法，能将任意数据散列后映射">
 
 
 
@@ -133,7 +133,7 @@
 
 
 
-  <link rel="canonical" href="https://zsummer.github.io/2019/01/10/2019-01-10-unordered_map/">
+  <link rel="canonical" href="https://zsummer.github.io/2019/01/10/2019-01-10-unordered_map/"/>
 
 
 
@@ -155,9 +155,9 @@
 
 
 
-</head>
+<meta name="generator" content="Hexo 4.1.1"></head>
 
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="en">
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
 
   
   
@@ -167,13 +167,13 @@
   <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
     
 
     <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
+      <a href="/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">关于夏天的一切</span>
         <span class="logo-line-after"><i></i></span>
@@ -203,7 +203,7 @@
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
             Home
           </a>
@@ -213,7 +213,7 @@
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
             Archives
           </a>
@@ -247,20 +247,20 @@
   
   
 
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
   
   
   
   <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/01/10/2019-01-10-unordered_map/">
 
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="夏天">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.png">
     </span>
 
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="关于夏天的一切">
     </span>
 
@@ -292,7 +292,7 @@
           </span>
 
           
-            <span class="post-category">
+            <span class="post-category" >
             
               <span class="post-meta-divider">|</span>
             
@@ -303,7 +303,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/develop/" itemprop="url" rel="index">
                     <span itemprop="name">develop</span>
                   </a>
@@ -346,6 +346,7 @@
 <li><strong>哈希表：</strong> 数据经过哈希算法之后得到的集合。这样关键字和数据在集合中的位置存在一定的关系，可以根据这种关系快速查询。  </li>
 <li><strong>非哈希表：</strong> 与哈希表相对应，集合中的 数据和其存放位置没任何关联关系的集合。 由此可见，哈希算法是一种特殊的算法，能将任意数据散列后映射到有限的空间上，通常计算机软件中用作快速查找或加密使用。   </li>
 <li><strong>哈希冲突：</strong> 两个不同的输入值，根据同一散列函数计算出的散列值相同的现象叫做碰撞。    <a id="more"></a>  
+
 </li>
 </ul>
 <h3><span id="常见的hash函数">常见的Hash函数</span></h3><ul>
@@ -376,25 +377,23 @@
 <th>失效情况</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>所有只读操作 swap std::swap</td>
-<td>决不  </td>
+<td>决不</td>
 </tr>
 <tr>
 <td>clear  rehash  reserve operator=</td>
-<td>始终  </td>
+<td>始终</td>
 </tr>
 <tr>
 <td>insert  emplace  emplace_hint  operator[]</td>
-<td>仅若重哈希导致  </td>
+<td>仅若重哈希导致</td>
 </tr>
 <tr>
 <td>erase</td>
-<td>仅为指向被擦除元素者  </td>
+<td>仅为指向被擦除元素者</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <h5><span id="map-通常实现为红黑树非强制标准">map (通常实现为红黑树,非强制标准):</span></h5><table>
 <thead>
 <tr>
@@ -402,17 +401,15 @@
 <th>失效情况</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>insert  emplace  emplace_hint  operator[]</td>
-<td>没有失效情况  </td>
+<td>没有失效情况</td>
 </tr>
 <tr>
 <td>erase</td>
-<td>仅为指向被擦除元素者  </td>
+<td>仅为指向被擦除元素者</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <h5><span id="其他">其他</span></h5><ul>
 <li>map是有序的，unordered_map是无序的  </li>
 <li>两者之间的查找速度不同（log(N)和N）  </li>
@@ -512,7 +509,7 @@
 
       
         <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
             Table of Contents
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
@@ -522,8 +519,10 @@
       
 
       <section class="site-overview sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="夏天">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="夏天" />
           <p class="site-author-name" itemprop="name">夏天</p>
            
               <p class="site-description motion-element" itemprop="description"></p>
@@ -602,7 +601,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">
+        <div class="copyright" >
   
   &copy; 
   <span itemprop="copyrightYear">2019</span>
@@ -614,12 +613,12 @@
 
 
 <div class="powered-by">
-  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
 </div>
 
 <div class="theme-info">
   Theme -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
     NexT.Gemini
   </a>
 </div>

@@ -6,10 +6,10 @@
 
 
 <html class="theme-next gemini use-motion" lang="en">
-<head><meta name="generator" content="Hexo 3.9.0">
-  <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 <meta name="theme-color" content="#222">
 
 
@@ -20,8 +20,8 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
 
 
@@ -39,7 +39,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -73,38 +73,38 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
-
-
-  <meta name="keywords" content="Hexo, NexT">
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
 
 
 
 
 
 
-<meta name="description" content="目录   目录 ELF文件类型和描述 文件类型 链接器视图(编译器 汇编器 链接器) 加载器视图 (系统加载器) 基本测试命令 基础术语知识 目标文件格式的比较和说明 其他词汇说明     可重定位文件 lib.cpp片段分析 so.cpp片段分析     ELF文件类型和描述 (Executable and Linking Format) (可执行可链接格式) 文件     文件类型 可重定位文">
+<meta name="description" content="目录    目录 ELF文件类型和描述 文件类型 链接器视图(编译器 汇编器 链接器) 加载器视图 (系统加载器) 基本测试命令 基础术语知识 目标文件格式的比较和说明 其他词汇说明     可重定位文件 lib.cpp片段分析 so.cpp片段分析      ELF文件类型和描述 (Executable and Linking Format) (可执行可链接格式) 文件     文件类型 可重定">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ELF文件的SECTIO分析">
-<meta property="og:url" content="https://zsummer.github.io/2019/11/09/2019-11-12-elf-section-symbol/index.html">
+<meta property="og:url" content="https:&#x2F;&#x2F;zsummer.github.io&#x2F;2019&#x2F;11&#x2F;09&#x2F;2019-11-12-elf-section-symbol&#x2F;index.html">
 <meta property="og:site_name" content="关于夏天的一切">
-<meta property="og:description" content="目录   目录 ELF文件类型和描述 文件类型 链接器视图(编译器 汇编器 链接器) 加载器视图 (系统加载器) 基本测试命令 基础术语知识 目标文件格式的比较和说明 其他词汇说明     可重定位文件 lib.cpp片段分析 so.cpp片段分析     ELF文件类型和描述 (Executable and Linking Format) (可执行可链接格式) 文件     文件类型 可重定位文">
-<meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-12-03T09:09:07.333Z">
+<meta property="og:description" content="目录    目录 ELF文件类型和描述 文件类型 链接器视图(编译器 汇编器 链接器) 加载器视图 (系统加载器) 基本测试命令 基础术语知识 目标文件格式的比较和说明 其他词汇说明     可重定位文件 lib.cpp片段分析 so.cpp片段分析      ELF文件类型和描述 (Executable and Linking Format) (可执行可链接格式) 文件     文件类型 可重定">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-11-08T16:00:00.000Z">
+<meta property="article:modified_time" content="2019-12-03T09:09:07.333Z">
+<meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="ELF文件的SECTIO分析">
-<meta name="twitter:description" content="目录   目录 ELF文件类型和描述 文件类型 链接器视图(编译器 汇编器 链接器) 加载器视图 (系统加载器) 基本测试命令 基础术语知识 目标文件格式的比较和说明 其他词汇说明     可重定位文件 lib.cpp片段分析 so.cpp片段分析     ELF文件类型和描述 (Executable and Linking Format) (可执行可链接格式) 文件     文件类型 可重定位文">
 
 
 
@@ -133,7 +133,7 @@
 
 
 
-  <link rel="canonical" href="https://zsummer.github.io/2019/11/09/2019-11-12-elf-section-symbol/">
+  <link rel="canonical" href="https://zsummer.github.io/2019/11/09/2019-11-12-elf-section-symbol/"/>
 
 
 
@@ -155,9 +155,9 @@
 
 
 
-</head>
+<meta name="generator" content="Hexo 4.1.1"></head>
 
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="en">
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
 
   
   
@@ -167,13 +167,13 @@
   <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
     
 
     <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
+      <a href="/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">关于夏天的一切</span>
         <span class="logo-line-after"><i></i></span>
@@ -203,7 +203,7 @@
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
             Home
           </a>
@@ -213,7 +213,7 @@
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
             Archives
           </a>
@@ -247,20 +247,20 @@
   
   
 
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
   
   
   
   <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/09/2019-11-12-elf-section-symbol/">
 
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="夏天">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.png">
     </span>
 
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="关于夏天的一切">
     </span>
 
@@ -292,7 +292,7 @@
           </span>
 
           
-            <span class="post-category">
+            <span class="post-category" >
             
               <span class="post-meta-divider">|</span>
             
@@ -303,7 +303,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/develop/" itemprop="url" rel="index">
                     <span itemprop="name">develop</span>
                   </a>
@@ -343,6 +343,7 @@
       
         <h3><span id="目录">目录</span></h3><hr>
 <!-- TOC -->
+
 <ul>
 <li><a href="#目录">目录</a></li>
 <li><a href="#elf文件类型和描述">ELF文件类型和描述</a><ul>
@@ -364,6 +365,7 @@
 </li>
 </ul>
 <!-- /TOC -->
+
 <h3><span id="elf文件类型和描述">ELF文件类型和描述</span></h3><hr>
 <p>(Executable and Linking Format) (可执行可链接格式) 文件    </p>
 <h4><span id="文件类型">文件类型</span></h4><ul>
@@ -393,7 +395,8 @@
 <a id="more"></a>
 <h4><span id="链接器视图编译器-汇编器-链接器">链接器视图(编译器 汇编器 链接器)</span></h4><p>链接器关心的内容<br>| LINKING VIEW<br>| -<br>| ELF HEADER<br>| PROGRAM HEADER TABLE OPTIONAL<br>| SECTION 1  .text<br>| SECTION 2  .data<br>| SECTION n …<br>| SECTION HEADER TABLE  </p>
 <h4><span id="加载器视图-系统加载器">加载器视图 (系统加载器)</span></h4><p>加载器关心的内容<br>| EXECUTION VIEW<br>| -<br>| ELF HEADER<br>| PROGRAM HEADER TABLE<br>| SEGMENT 1<br>| SEGMENT 2<br>| SEGMENT N …<br>| SECTION HEADER TABLE OPTIONAL </p>
-<h4><span id="基本测试命令">基本测试命令</span></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">ldd - print shared library dependencies  </span><br><span class="line">readelf -a 查看elf文件</span><br><span class="line">objdump -S 查看汇编码</span><br><span class="line"></span><br><span class="line">gcc -g -c lib.cpp  编译目标文件  </span><br><span class="line">gcc -g -c -fpic lib.cpp  启用地址无关代码选项来编译目标文件   </span><br><span class="line">ar -cr liblib.a  lib.o  打包目标文件到静态库   </span><br><span class="line">g++ -g -fPIC -shared so.cpp -o so.so  启用地址无关代码的链接选项和编译选项来编译共享库   </span><br><span class="line">g++ -g -fpie -fPIE -pie -o main  lib.o libso.so </span><br><span class="line"></span><br><span class="line">export LD_LIBRARY_PATH=&quot;./&quot; 设置临时的共享库搜索路径  </span><br><span class="line"></span><br><span class="line">PIC和PIE都用于编译地址无关代码, PIE假定了最终链接的目标是可执行文件.  </span><br><span class="line">pie是链接选项 用于生成DYN类型的可执行文件.</span><br></pre></td></tr></table></figure>
+<h4><span id="基本测试命令">基本测试命令</span></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">ldd - print shared library dependencies  </span><br><span class="line">readelf -a 查看elf文件</span><br><span class="line">objdump -S 查看汇编码</span><br><span class="line"></span><br><span class="line">gcc -g -c lib.cpp  编译目标文件  </span><br><span class="line">gcc -g -c -fpic lib.cpp  启用地址无关代码选项来编译目标文件   </span><br><span class="line">ar -cr liblib.a  lib.o  打包目标文件到静态库   </span><br><span class="line">g++ -g -fPIC -shared so.cpp -o so.so  启用地址无关代码的链接选项和编译选项来编译共享库   </span><br><span class="line">g++ -g -fpie -fPIE -pie -o main  lib.o libso.so </span><br><span class="line"></span><br><span class="line">export LD_LIBRARY_PATH&#x3D;&quot;.&#x2F;&quot; 设置临时的共享库搜索路径  </span><br><span class="line"></span><br><span class="line">PIC和PIE都用于编译地址无关代码, PIE假定了最终链接的目标是可执行文件.  </span><br><span class="line">pie是链接选项 用于生成DYN类型的可执行文件.</span><br></pre></td></tr></table></figure>
+
 <h4><span id="基础术语知识">基础术语知识</span></h4><h5><span id="目标文件格式的比较和说明">目标文件格式的比较和说明</span></h5><ul>
 <li><p>a.out 文件格式  </p>
 <ul>
@@ -449,8 +452,7 @@
 <th>Can contain icon</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>格式名</td>
 <td>操作系统</td>
 <td>文件名扩展</td>
@@ -534,10 +536,10 @@
 <td>No</td>
 <td>Yes</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <h5><span id="其他词汇说明">其他词汇说明</span></h5><ul>
-<li>ELF header 文件头   <ul>
+<li><p>ELF header 文件头   </p>
+<ul>
 <li>ELF文件的组成描述</li>
 <li>结构<ul>
 <li>版本信息等    </li>
@@ -559,8 +561,10 @@
 </li>
 <li><p>section header SH 节头  </p>
 <ul>
-<li>.text section 里装载了可执行代码</li>
-<li>.data section 里面装载了被初始化的数据</li>
+<li><p>.text section 里装载了可执行代码</p>
+</li>
+<li><p>.data section 里面装载了被初始化的数据</p>
+</li>
 <li><p>.bss section 里面装载了未被初始化或者初始化为0的数据  </p>
 <ul>
 <li>bss 不占据ELF文件的空间 因为没有内容只有空间大小和类型信息  </li>
@@ -568,9 +572,12 @@
 </li>
 <li><p>.commont 开发环境的时候使用的GCC版本信息   </p>
 </li>
-<li>.shstrtab 指的是section header string table 保存了各个section的名字   </li>
-<li>.strtab 或者 .dynstr section 里面装载了字符串信息 字符串和符号的区别是 字符串是程序执行内容中, 符号是代码符号.  </li>
-<li>.rodata 字符串常量  </li>
+<li><p>.shstrtab 指的是section header string table 保存了各个section的名字   </p>
+</li>
+<li><p>.strtab 或者 .dynstr section 里面装载了字符串信息 字符串和符号的区别是 字符串是程序执行内容中, 符号是代码符号.  </p>
+</li>
+<li><p>.rodata 字符串常量  </p>
+</li>
 <li><p>.eh_frame 其内部存放了以DWARF格式保存的一些调试信息 格式与 .debug_frame 是很相似的（不完全相同）.  </p>
 </li>
 <li><p>.dynsym  动态库的符号表  </p>
@@ -639,8 +646,7 @@
   * R_386_JMP_SLOT：链接编辑器创建此重定位类型是用于动态链接的，它的偏移给出了过程链接表表项的位置。动态链接器通过修改过程链接表表项，把控制权传递给指定符号的地址，参见第二章“过程链接表”一节。（S）
   * R_386_RELATIVE：链接编辑器创建此重定位类型是用于动态链接的，它的偏移成员给出了共享目标中的一个位置，这个位置包含了一个表示相对地址的值。动态链接器通过把共享目标被加载的虚拟地址与相对地址相加，计算出对应的虚拟地址。此重定位类型的重定位表项必须把符号表索引置为0。（B+A）
   * R_386_GOTOFF：此类型的重定位计算符号值和全局偏移表地址的差值，并且通知链接编辑器构建全局偏移表。（S+A-GOT）
-  * R_386_GOTPC：此类型类似于R_386_PC32。只是它在计算中使用全局偏移表的地址。这种类型的重定位引用的通常是_GLOBAL_OFFSET_TABLE_DE类型的符号，并且通知链接编辑器构建全局偏移表。（GOT+A-P）****
-</code></pre><ul>
+  * R_386_GOTPC：此类型类似于R_386_PC32。只是它在计算中使用全局偏移表的地址。这种类型的重定位引用的通常是_GLOBAL_OFFSET_TABLE_DE类型的符号，并且通知链接编辑器构建全局偏移表。（GOT+A-P）****</code></pre><ul>
 <li>这些条目给链接的时候需要和其他可重定位文件或者库的对应的section合并时提供了必要的信息  </li>
 </ul>
 <ul>
@@ -674,21 +680,32 @@
 <ul>
 <li>注：各个段之间并未严格的首位相接，考虑到对齐的因素，他们之间会存在”空洞”（如图中.shstrtab段和Section Header Table之间的padding分区）；</li>
 </ul>
-<h4><span id="libcpp片段分析">lib.cpp片段分析</span></h4><p>lib.cpp<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">int g_static_lib_bss = 0;</span><br><span class="line">int g_static_lib_data = 0xff1234ff;</span><br><span class="line">int lib_func(int a, int b)</span><br><span class="line">&#123;</span><br><span class="line">  return a+b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>通过命令编译出目标文件lib.o和分析数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">g++ -c -fpic lib.cpp -o lib.pic.o</span><br><span class="line">g++ -c       lib.cpp -o lib.npic.o  </span><br><span class="line">g++ -c -fpie -pie lib.cpp -o lib.pie.o</span><br><span class="line">readelf -a lib.npic.o</span><br><span class="line">readelf -a lib.pic.o</span><br><span class="line">objdump -S lib.npic.o</span><br><span class="line">objdump -S lib.pic.o</span><br></pre></td></tr></table></figure></p>
+<h4><span id="libcpp片段分析">lib.cpp片段分析</span></h4><p>lib.cpp</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">int g_static_lib_bss &#x3D; 0;</span><br><span class="line">int g_static_lib_data &#x3D; 0xff1234ff;</span><br><span class="line">int lib_func(int a, int b)</span><br><span class="line">&#123;</span><br><span class="line">  return a+b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过命令编译出目标文件lib.o和分析数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">g++ -c -fpic lib.cpp -o lib.pic.o</span><br><span class="line">g++ -c       lib.cpp -o lib.npic.o  </span><br><span class="line">g++ -c -fpie -pie lib.cpp -o lib.pie.o</span><br><span class="line">readelf -a lib.npic.o</span><br><span class="line">readelf -a lib.pic.o</span><br><span class="line">objdump -S lib.npic.o</span><br><span class="line">objdump -S lib.pic.o</span><br></pre></td></tr></table></figure>
+
 <p>lib.cpp无论是pie选项还是pic, 编译的结果完全一致 </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">ELF 头：</span><br><span class="line">  ABI 版本:                          0</span><br><span class="line">  类型:                              REL (可重定位文件)</span><br><span class="line"></span><br><span class="line">重定位节 &apos;.rela.eh_frame&apos; 位于偏移量 0x1f0 含有 1 个条目：</span><br><span class="line">  偏移量          信息           类型           符号值        符号名称 + 加数</span><br><span class="line">000000000020  000200000002 R_X86_64_PC32     0000000000000000 .text + 0</span><br><span class="line"></span><br><span class="line">Symbol table &apos;.symtab&apos; contains 11 entries:</span><br><span class="line">   Num:    Value          Size Type    Bind   Vis      Ndx Name</span><br><span class="line">     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND </span><br><span class="line">     1: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS lib.cpp</span><br><span class="line">     8: 0000000000000000     4 OBJECT  GLOBAL DEFAULT    3 g_static_lib_bss</span><br><span class="line">     9: 0000000000000000     4 OBJECT  GLOBAL DEFAULT    2 g_static_lib_data</span><br><span class="line">    10: 0000000000000000    20 FUNC    GLOBAL DEFAULT    1 _Z8lib_funcii</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">0000000000000000 &lt;_Z8lib_funcii&gt;:</span><br><span class="line">   0:   55                      push   %rbp</span><br><span class="line">   1:   48 89 e5                mov    %rsp,%rbp</span><br><span class="line">   4:   89 7d fc                mov    %edi,-0x4(%rbp)</span><br><span class="line">   7:   89 75 f8                mov    %esi,-0x8(%rbp)</span><br><span class="line">   a:   8b 55 fc                mov    -0x4(%rbp),%edx</span><br><span class="line">   d:   8b 45 f8                mov    -0x8(%rbp),%eax</span><br><span class="line">  10:   01 d0                   add    %edx,%eax</span><br><span class="line">  12:   5d                      pop    %rbp</span><br><span class="line">  13:   c3                      retq</span><br></pre></td></tr></table></figure>
-<h4><span id="socpp片段分析">so.cpp片段分析</span></h4><p>so.cpp<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">int lib_func(int a, int b);</span><br><span class="line">int so_func(int a, int b)</span><br><span class="line">&#123;</span><br><span class="line">  int ret = lib_func(a, b);</span><br><span class="line">  return ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>通过命令编译出目标文件so.o和分析数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">g++ -c -fpic so.cpp -o so.pic.o</span><br><span class="line">g++ -c       so.cpp -o so.npic.o  </span><br><span class="line">readelf -a so.npic.o</span><br><span class="line">readelf -a so.pic.o</span><br><span class="line">objdump -S so.npic.o</span><br><span class="line">objdump -S so.pic.o</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">ELF 头：</span><br><span class="line">  ABI 版本:                          0</span><br><span class="line">  类型:                              REL (可重定位文件)</span><br><span class="line"></span><br><span class="line">重定位节 &#39;.rela.eh_frame&#39; 位于偏移量 0x1f0 含有 1 个条目：</span><br><span class="line">  偏移量          信息           类型           符号值        符号名称 + 加数</span><br><span class="line">000000000020  000200000002 R_X86_64_PC32     0000000000000000 .text + 0</span><br><span class="line"></span><br><span class="line">Symbol table &#39;.symtab&#39; contains 11 entries:</span><br><span class="line">   Num:    Value          Size Type    Bind   Vis      Ndx Name</span><br><span class="line">     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND </span><br><span class="line">     1: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS lib.cpp</span><br><span class="line">     8: 0000000000000000     4 OBJECT  GLOBAL DEFAULT    3 g_static_lib_bss</span><br><span class="line">     9: 0000000000000000     4 OBJECT  GLOBAL DEFAULT    2 g_static_lib_data</span><br><span class="line">    10: 0000000000000000    20 FUNC    GLOBAL DEFAULT    1 _Z8lib_funcii</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">0000000000000000 &lt;_Z8lib_funcii&gt;:</span><br><span class="line">   0:   55                      push   %rbp</span><br><span class="line">   1:   48 89 e5                mov    %rsp,%rbp</span><br><span class="line">   4:   89 7d fc                mov    %edi,-0x4(%rbp)</span><br><span class="line">   7:   89 75 f8                mov    %esi,-0x8(%rbp)</span><br><span class="line">   a:   8b 55 fc                mov    -0x4(%rbp),%edx</span><br><span class="line">   d:   8b 45 f8                mov    -0x8(%rbp),%eax</span><br><span class="line">  10:   01 d0                   add    %edx,%eax</span><br><span class="line">  12:   5d                      pop    %rbp</span><br><span class="line">  13:   c3                      retq</span><br></pre></td></tr></table></figure>
+
+
+<h4><span id="socpp片段分析">so.cpp片段分析</span></h4><p>so.cpp</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">int lib_func(int a, int b);</span><br><span class="line">int so_func(int a, int b)</span><br><span class="line">&#123;</span><br><span class="line">  int ret &#x3D; lib_func(a, b);</span><br><span class="line">  return ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过命令编译出目标文件so.o和分析数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">g++ -c -fpic so.cpp -o so.pic.o</span><br><span class="line">g++ -c       so.cpp -o so.npic.o  </span><br><span class="line">readelf -a so.npic.o</span><br><span class="line">readelf -a so.pic.o</span><br><span class="line">objdump -S so.npic.o</span><br><span class="line">objdump -S so.pic.o</span><br></pre></td></tr></table></figure>
+
 <p>so.cpp的两个object文件的汇编码一致, 但是readelf中的section不同 主要区别如下:</p>
 <ul>
-<li>no -fpic选项的目标文件中 .rela.text 的两个引用的符号类型是PC32  </li>
-<li>-fpic选项的目标文件中 .rela.text 的两个引用的符号类型是PLT32  </li>
-<li><p>-fpic选项的目标文件中 .symtab 的外部引用符号之前多了一个_GLOBAL_OFFSET_TABLE_  即GOT表的符号和地址信息</p>
+<li><p>no -fpic选项的目标文件中 .rela.text 的两个引用的符号类型是PC32  </p>
+</li>
+<li><p>-fpic选项的目标文件中 .rela.text 的两个引用的符号类型是PLT32  </p>
+</li>
+<li><p>-fpic选项的目标文件中 .symtab 的外部引用符号之前多了一个<em>GLOBAL_OFFSET_TABLE</em>  即GOT表的符号和地址信息</p>
 </li>
 <li><p>.got.plt .got在共享文件或者可执行文件中  </p>
 </li>
-<li>GOT是 GLOBAL_OFFSET_TABLE  全局偏移表  GOT用来做在链接时建立数据和地址的重定位<ul>
+<li><p>GOT是 GLOBAL_OFFSET_TABLE  全局偏移表  GOT用来做在链接时建立数据和地址的重定位</p>
+<ul>
 <li>ELF的数据段里面建立一个指向这些变量的指针数组 当指令中需要访问外部变量时 会先找到GOT 然后根据GOT中变量所对应的项找到变量的目标地址</li>
 <li>链接器在装载模块时会查找每个变量所在的地址 然后填充GOT中每个项 由于GOT是放在数据段的 所以每个进程可以有一个独立的副本  </li>
 <li>GOT的意义是访问数据的时候通过GOT读表获取目标数据的地址, 而不是在链接或者加载时对目标代码进行修改(重定向)   </li>
@@ -697,8 +714,10 @@
 <li>通过GOT可实现修改符号绑定顺序的能力  </li>
 </ul>
 </li>
-<li>PLT 小型过程链接表存根(stub)进行, 如果plt有则直接使用没有则去找, 有的话则用存根ID去GOT中查找记录的地址 <ul>
+<li><p>PLT 小型过程链接表存根(stub)进行, 如果plt有则直接使用没有则去找, 有的话则用存根ID去GOT中查找记录的地址 </p>
+<ul>
 <li>每个函数对应一个小的过程类似如下: <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0000000000000690 &lt;_Z13so_inner_funcii@plt&gt;:</span><br><span class="line">690:   ff 25 8a 09 20 00       jmpq   *0x20098a(%rip)        # 201020 &lt;_Z13so_inner_funcii@@Base+0x200870&gt;</span><br><span class="line">696:   68 01 00 00 00          pushq  $0x1</span><br><span class="line">69b:   e9 d0 ff ff ff          jmpq   670 &lt;.plt&gt;</span><br></pre></td></tr></table></figure>
+
 </li>
 </ul>
 </li>
@@ -799,7 +818,7 @@
 
       
         <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
             Table of Contents
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
@@ -809,8 +828,10 @@
       
 
       <section class="site-overview sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="夏天">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="夏天" />
           <p class="site-author-name" itemprop="name">夏天</p>
            
               <p class="site-description motion-element" itemprop="description"></p>
@@ -889,7 +910,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">
+        <div class="copyright" >
   
   &copy; 
   <span itemprop="copyrightYear">2019</span>
@@ -901,12 +922,12 @@
 
 
 <div class="powered-by">
-  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
 </div>
 
 <div class="theme-info">
   Theme -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
     NexT.Gemini
   </a>
 </div>

@@ -6,10 +6,10 @@
 
 
 <html class="theme-next gemini use-motion" lang="en">
-<head><meta name="generator" content="Hexo 3.9.0">
-  <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 <meta name="theme-color" content="#222">
 
 
@@ -20,8 +20,8 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
 
 
@@ -39,7 +39,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -73,38 +73,38 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
-
-
-  <meta name="keywords" content="Hexo, NexT">
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
 
 
 
 
 
 
-<meta name="description" content="目录  目录 调测工具 PEDA插件   汇编和寄存器说明 PLT基本定义和流程说明 GOT数据部分- [缺点](#缺点) - [优点](#优点)  测试代码 elf文件和指令分析   调测工具 readelf -a  查看elf信息   objdump -S 查看汇编指令   ldd 查看动态加载    gdb   gdb 通过regs  ```打开寄存器显示, 通过```set disasse">
+<meta name="description" content="目录  目录 调测工具 PEDA插件   汇编和寄存器说明 PLT基本定义和流程说明 GOT数据部分- [缺点](#缺点) - [优点](#优点) 测试代码 elf文件和指令分析     调测工具 readelf -a  查看elf信息   objdump -S 查看汇编指令   ldd 查看动态加载    gdb   gdb 通过layout regs打开寄存器显示, 通过set disasse">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PLT procedure linkage table  过程链接表">
-<meta property="og:url" content="https://zsummer.github.io/2019/11/25/2019-11-25-link-plt/index.html">
+<meta property="og:url" content="https:&#x2F;&#x2F;zsummer.github.io&#x2F;2019&#x2F;11&#x2F;25&#x2F;2019-11-25-link-plt&#x2F;index.html">
 <meta property="og:site_name" content="关于夏天的一切">
-<meta property="og:description" content="目录  目录 调测工具 PEDA插件   汇编和寄存器说明 PLT基本定义和流程说明 GOT数据部分- [缺点](#缺点) - [优点](#优点)  测试代码 elf文件和指令分析   调测工具 readelf -a  查看elf信息   objdump -S 查看汇编指令   ldd 查看动态加载    gdb   gdb 通过regs  ```打开寄存器显示, 通过```set disasse">
-<meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-12-06T07:41:45.131Z">
+<meta property="og:description" content="目录  目录 调测工具 PEDA插件   汇编和寄存器说明 PLT基本定义和流程说明 GOT数据部分- [缺点](#缺点) - [优点](#优点) 测试代码 elf文件和指令分析     调测工具 readelf -a  查看elf信息   objdump -S 查看汇编指令   ldd 查看动态加载    gdb   gdb 通过layout regs打开寄存器显示, 通过set disasse">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-11-24T16:00:00.000Z">
+<meta property="article:modified_time" content="2019-12-06T07:41:45.131Z">
+<meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="PLT procedure linkage table  过程链接表">
-<meta name="twitter:description" content="目录  目录 调测工具 PEDA插件   汇编和寄存器说明 PLT基本定义和流程说明 GOT数据部分- [缺点](#缺点) - [优点](#优点)  测试代码 elf文件和指令分析   调测工具 readelf -a  查看elf信息   objdump -S 查看汇编指令   ldd 查看动态加载    gdb   gdb 通过regs  ```打开寄存器显示, 通过```set disasse">
 
 
 
@@ -133,7 +133,7 @@
 
 
 
-  <link rel="canonical" href="https://zsummer.github.io/2019/11/25/2019-11-25-link-plt/">
+  <link rel="canonical" href="https://zsummer.github.io/2019/11/25/2019-11-25-link-plt/"/>
 
 
 
@@ -155,9 +155,9 @@
 
 
 
-</head>
+<meta name="generator" content="Hexo 4.1.1"></head>
 
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="en">
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
 
   
   
@@ -167,13 +167,13 @@
   <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
     
 
     <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
+      <a href="/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">关于夏天的一切</span>
         <span class="logo-line-after"><i></i></span>
@@ -203,7 +203,7 @@
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
             Home
           </a>
@@ -213,7 +213,7 @@
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
             Archives
           </a>
@@ -247,20 +247,20 @@
   
   
 
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
   
   
   
   <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/25/2019-11-25-link-plt/">
 
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="夏天">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.png">
     </span>
 
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="关于夏天的一切">
     </span>
 
@@ -292,7 +292,7 @@
           </span>
 
           
-            <span class="post-category">
+            <span class="post-category" >
             
               <span class="post-meta-divider">|</span>
             
@@ -303,7 +303,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/develop/" itemprop="url" rel="index">
                     <span itemprop="name">develop</span>
                   </a>
@@ -351,10 +351,11 @@
 <li><a href="#汇编和寄存器说明">汇编和寄存器说明</a></li>
 <li><a href="#plt基本定义和流程说明">PLT基本定义和流程说明</a></li>
 <li><a href="#got数据部分">GOT数据部分</a><pre><code>- [缺点](#缺点)
-- [优点](#优点)
-</code></pre></li>
+- [优点](#优点)</code></pre></li>
 <li><a href="#测试代码">测试代码</a></li>
 <li><a href="#elf文件和指令分析">elf文件和指令分析</a><!-- /TOC -->
+
+
 </li>
 </ul>
 <h3><span id="调测工具">调测工具</span></h3><ul>
@@ -362,12 +363,38 @@
 <li>objdump -S 查看汇编指令  </li>
 <li>ldd 查看动态加载   </li>
 <li>gdb  <ul>
-<li>gdb 通过<figure class="highlight plain"><figcaption><span>regs  ```打开寄存器显示, 通过```set disassemble-next-line on```打开汇编  </span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">  * gdb 通过peda插件字节显示汇编和寄存器  和上面的原生方式选择一个即可    </span><br><span class="line">  * gdb关闭ASLR：</span><br><span class="line">    * set disable-randomization on</span><br><span class="line">  * 开启ASLR：</span><br><span class="line">    * set disable-randomization off</span><br><span class="line">  * 查看ASLR状态：</span><br><span class="line">    * show disable-randomization</span><br><span class="line">  * disas反汇编命令，直接disas是反汇编当前函数</span><br><span class="line">    * disas /r (显示汇编指令对应十六进制值)   </span><br><span class="line">    * disas /m (如果有源码，显示对应行源码)   </span><br><span class="line">  * intel语法</span><br><span class="line">    * set disassembly-flavor intel</span><br><span class="line">    * set disassembly-flavor att</span><br><span class="line"></span><br><span class="line">&lt;!-- more --&gt;</span><br><span class="line">#### PEDA插件  </span><br><span class="line">peda默认设置的是intel的语法风格</span><br></pre></td></tr></table></figure></li>
+<li>gdb 通过<code>layout regs</code>打开寄存器显示, 通过<code>set disassemble-next-line on</code>打开汇编  </li>
+<li>gdb 通过peda插件字节显示汇编和寄存器  和上面的原生方式选择一个即可    </li>
+<li>gdb关闭ASLR：<ul>
+<li>set disable-randomization on</li>
+</ul>
+</li>
+<li>开启ASLR：<ul>
+<li>set disable-randomization off</li>
+</ul>
+</li>
+<li>查看ASLR状态：<ul>
+<li>show disable-randomization</li>
+</ul>
+</li>
+<li>disas反汇编命令，直接disas是反汇编当前函数<ul>
+<li>disas /r (显示汇编指令对应十六进制值)   </li>
+<li>disas /m (如果有源码，显示对应行源码)   </li>
+</ul>
+</li>
+<li>intel语法<ul>
+<li>set disassembly-flavor intel</li>
+<li>set disassembly-flavor att</li>
 </ul>
 </li>
 </ul>
-<p>git clone <a href="https://github.com/longld/peda.git" target="_blank" rel="noopener">https://github.com/longld/peda.git</a> ~/peda<br>echo “source ~/peda/peda.py” &gt;&gt; ~/.gdbinit<br>echo “DONE! debug your program with gdb and enjoy”<br><code>`</code>  </p>
-<ul>
+</li>
+</ul>
+<a id="more"></a>
+<h4><span id="peda插件">PEDA插件</span></h4><p>peda默认设置的是intel的语法风格</p>
+<pre><code>git clone https://github.com/longld/peda.git ~/peda
+echo &quot;source ~/peda/peda.py&quot; &gt;&gt; ~/.gdbinit
+echo &quot;DONE! debug your program with gdb and enjoy&quot;</code></pre><ul>
 <li>aslr – Show/set ASLR setting of GDB</li>
 <li>checksec – Check for various security options of binary</li>
 <li>dumpargs – Display arguments passed to a function when stopped at a call instruction</li>
@@ -543,7 +570,7 @@
 
       
         <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
             Table of Contents
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
@@ -553,8 +580,10 @@
       
 
       <section class="site-overview sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="夏天">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="夏天" />
           <p class="site-author-name" itemprop="name">夏天</p>
            
               <p class="site-description motion-element" itemprop="description"></p>
@@ -613,7 +642,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">2.</span> <span class="nav-text">调测工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">3.</span> <span class="nav-text">汇编和寄存器说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">4.</span> <span class="nav-text">PLT基本定义和流程说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">5.</span> <span class="nav-text">GOT数据部分</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#null"><span class="nav-number">5.0.0.1.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#null"><span class="nav-number">5.0.0.2.</span> <span class="nav-text">优点</span></a></li></ol></li></ol><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">6.</span> <span class="nav-text">测试代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">7.</span> <span class="nav-text">elf文件和指令分析</span></a></li></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">2.</span> <span class="nav-text">调测工具</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">2.1.</span> <span class="nav-text">PEDA插件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">3.</span> <span class="nav-text">汇编和寄存器说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">4.</span> <span class="nav-text">PLT基本定义和流程说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">5.</span> <span class="nav-text">GOT数据部分</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#null"><span class="nav-number">5.0.0.1.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#null"><span class="nav-number">5.0.0.2.</span> <span class="nav-text">优点</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">6.</span> <span class="nav-text">测试代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">7.</span> <span class="nav-text">elf文件和指令分析</span></a></li></ol></div>
             
 
           </div>
@@ -633,7 +662,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">
+        <div class="copyright" >
   
   &copy; 
   <span itemprop="copyrightYear">2019</span>
@@ -645,12 +674,12 @@
 
 
 <div class="powered-by">
-  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
 </div>
 
 <div class="theme-info">
   Theme -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
     NexT.Gemini
   </a>
 </div>

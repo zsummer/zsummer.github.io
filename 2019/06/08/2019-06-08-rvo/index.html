@@ -6,10 +6,10 @@
 
 
 <html class="theme-next gemini use-motion" lang="en">
-<head><meta name="generator" content="Hexo 3.9.0">
-  <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 <meta name="theme-color" content="#222">
 
 
@@ -20,8 +20,8 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
 
 
@@ -39,7 +39,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -73,21 +73,21 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
-
-
-  <meta name="keywords" content="Hexo, NexT">
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
 
 
 
@@ -97,14 +97,14 @@
 <meta name="description" content="KDTREE空间K维划分, 用来快速寻找距离最近的障碍(指定数量)  优化RVO的资源消耗.   路径规划高级规划DIJKSTRA 最短路径  等寻路方法   底层规划VO RVO ORCA等Obstacle Avoidance避障算法   KDTREE这个是一个简单的KDTREE实现 用来寻找距离最近的障碍(指定数量)  优化RVO的资源消耗.   VO  Velocity Obstacles">
 <meta property="og:type" content="article">
 <meta property="og:title" content="RVO源码阅读笔记">
-<meta property="og:url" content="https://zsummer.github.io/2019/06/08/2019-06-08-rvo/index.html">
+<meta property="og:url" content="https:&#x2F;&#x2F;zsummer.github.io&#x2F;2019&#x2F;06&#x2F;08&#x2F;2019-06-08-rvo&#x2F;index.html">
 <meta property="og:site_name" content="关于夏天的一切">
 <meta property="og:description" content="KDTREE空间K维划分, 用来快速寻找距离最近的障碍(指定数量)  优化RVO的资源消耗.   路径规划高级规划DIJKSTRA 最短路径  等寻路方法   底层规划VO RVO ORCA等Obstacle Avoidance避障算法   KDTREE这个是一个简单的KDTREE实现 用来寻找距离最近的障碍(指定数量)  优化RVO的资源消耗.   VO  Velocity Obstacles">
-<meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-06-08T10:38:30.899Z">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-06-08T10:37:00.000Z">
+<meta property="article:modified_time" content="2019-06-08T10:38:30.899Z">
+<meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="RVO源码阅读笔记">
-<meta name="twitter:description" content="KDTREE空间K维划分, 用来快速寻找距离最近的障碍(指定数量)  优化RVO的资源消耗.   路径规划高级规划DIJKSTRA 最短路径  等寻路方法   底层规划VO RVO ORCA等Obstacle Avoidance避障算法   KDTREE这个是一个简单的KDTREE实现 用来寻找距离最近的障碍(指定数量)  优化RVO的资源消耗.   VO  Velocity Obstacles">
 
 
 
@@ -133,7 +133,7 @@
 
 
 
-  <link rel="canonical" href="https://zsummer.github.io/2019/06/08/2019-06-08-rvo/">
+  <link rel="canonical" href="https://zsummer.github.io/2019/06/08/2019-06-08-rvo/"/>
 
 
 
@@ -155,9 +155,9 @@
 
 
 
-</head>
+<meta name="generator" content="Hexo 4.1.1"></head>
 
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="en">
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
 
   
   
@@ -167,13 +167,13 @@
   <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
     
 
     <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
+      <a href="/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">关于夏天的一切</span>
         <span class="logo-line-after"><i></i></span>
@@ -203,7 +203,7 @@
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
             Home
           </a>
@@ -213,7 +213,7 @@
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
             Archives
           </a>
@@ -247,20 +247,20 @@
   
   
 
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
   
   
   
   <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/06/08/2019-06-08-rvo/">
 
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="夏天">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.png">
     </span>
 
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="关于夏天的一切">
     </span>
 
@@ -292,7 +292,7 @@
           </span>
 
           
-            <span class="post-category">
+            <span class="post-category" >
             
               <span class="post-meta-divider">|</span>
             
@@ -303,7 +303,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/develop/" itemprop="url" rel="index">
                     <span itemprop="name">develop</span>
                   </a>
@@ -355,8 +355,9 @@
 <a id="more"></a> 
 <h5><span id="computenewvelocity">computeNewVelocity</span></h5><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Search for the best new velocity. */</span></span><br><span class="line"><span class="keyword">void</span> Agent::computeNewVelocity()</span><br><span class="line">&#123;</span><br><span class="line">    orcaLines_.clear();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">size_t</span> numObstLines = orcaLines_.size();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">float</span> invTimeHorizon = <span class="number">1.0f</span> / timeHorizon_;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Create agent ORCA lines. */</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; agentNeighbors_.size(); ++i) &#123;</span><br><span class="line">        <span class="keyword">const</span> Agent *<span class="keyword">const</span> other = agentNeighbors_[i].second;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">const</span> Vector2 relativePosition = other-&gt;position_ - position_;</span><br><span class="line">        <span class="keyword">const</span> Vector2 relativeVelocity = velocity_ - other-&gt;velocity_;</span><br><span class="line">        <span class="keyword">const</span> <span class="keyword">float</span> distSq = absSq(relativePosition);</span><br><span class="line">        <span class="keyword">const</span> <span class="keyword">float</span> combinedRadius = radius_ + other-&gt;radius_;</span><br><span class="line">        <span class="keyword">const</span> <span class="keyword">float</span> combinedRadiusSq = sqr(combinedRadius);</span><br><span class="line"></span><br><span class="line">        Line line;</span><br><span class="line">        Vector2 u;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (distSq &gt; combinedRadiusSq) &#123;</span><br><span class="line">            <span class="comment">/* No collision. */</span></span><br><span class="line">            <span class="keyword">const</span> Vector2 w = relativeVelocity - invTimeHorizon * relativePosition;</span><br><span class="line">            <span class="comment">/* Vector from cutoff center to relative velocity. */</span></span><br><span class="line">            <span class="keyword">const</span> <span class="keyword">float</span> wLengthSq = absSq(w);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">const</span> <span class="keyword">float</span> dotProduct1 = w * relativePosition;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (dotProduct1 &lt; <span class="number">0.0f</span> &amp;&amp; sqr(dotProduct1) &gt; combinedRadiusSq * wLengthSq) &#123;</span><br><span class="line">                <span class="comment">/* Project on cut-off circle. */</span></span><br><span class="line">                <span class="keyword">const</span> <span class="keyword">float</span> wLength = <span class="built_in">std</span>::<span class="built_in">sqrt</span>(wLengthSq);</span><br><span class="line">                <span class="keyword">const</span> Vector2 unitW = w / wLength;</span><br><span class="line"></span><br><span class="line">                line.direction = Vector2(unitW.y(), -unitW.x());</span><br><span class="line">                u = (combinedRadius * invTimeHorizon - wLength) * unitW;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">/* Project on legs. */</span></span><br><span class="line">                <span class="keyword">const</span> <span class="keyword">float</span> leg = <span class="built_in">std</span>::<span class="built_in">sqrt</span>(distSq - combinedRadiusSq);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (det(relativePosition, w) &gt; <span class="number">0.0f</span>) &#123;</span><br><span class="line">                    <span class="comment">/* Project on left leg. */</span></span><br><span class="line">                    line.direction = Vector2(relativePosition.x() * leg - relativePosition.y() * combinedRadius, relativePosition.x() * combinedRadius + relativePosition.y() * leg) / distSq;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">/* Project on right leg. */</span></span><br><span class="line">                    line.direction = -Vector2(relativePosition.x() * leg + relativePosition.y() * combinedRadius, -relativePosition.x() * combinedRadius + relativePosition.y() * leg) / distSq;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">const</span> <span class="keyword">float</span> dotProduct2 = relativeVelocity * line.direction;</span><br><span class="line"></span><br><span class="line">                u = dotProduct2 * line.direction - relativeVelocity;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">/* Collision. Project on cut-off circle of time timeStep. */</span></span><br><span class="line">            <span class="keyword">const</span> <span class="keyword">float</span> invTimeStep = <span class="number">1.0f</span> / sim_-&gt;timeStep_;</span><br><span class="line"></span><br><span class="line">            <span class="comment">/* Vector from cutoff center to relative velocity. */</span></span><br><span class="line">            <span class="keyword">const</span> Vector2 w = relativeVelocity - invTimeStep * relativePosition;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">const</span> <span class="keyword">float</span> wLength = <span class="built_in">abs</span>(w);</span><br><span class="line">            <span class="keyword">const</span> Vector2 unitW = w / wLength;</span><br><span class="line"></span><br><span class="line">            line.direction = Vector2(unitW.y(), -unitW.x());</span><br><span class="line">            u = (combinedRadius * invTimeStep - wLength) * unitW;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        line.point = velocity_ + <span class="number">0.5f</span> * u;</span><br><span class="line">        orcaLines_.push_back(line);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">size_t</span> lineFail = linearProgram2(orcaLines_, maxSpeed_, prefVelocity_, <span class="literal">false</span>, newVelocity_);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (lineFail &lt; orcaLines_.size()) &#123;</span><br><span class="line">        <span class="comment">//linearProgram3(orcaLines_, numObstLines, lineFail, maxSpeed_, newVelocity_);</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h5><span id="linearprogram2">linearProgram2</span></h5><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">size_t</span> linearProgram2(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;Line&gt; &amp;lines, <span class="keyword">float</span> radius, <span class="keyword">const</span> Vector2 &amp;optVelocity, <span class="keyword">bool</span> directionOpt, Vector2 &amp;result)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (directionOpt) &#123;</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">            * Optimize direction. Note that the optimization velocity is of unit</span></span><br><span class="line"><span class="comment">            * length in this case.</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line">        result = optVelocity * radius;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (absSq(optVelocity) &gt; sqr(radius)) &#123;</span><br><span class="line">        <span class="comment">/* Optimize closest point and outside circle. */</span></span><br><span class="line">        result = normalize(optVelocity) * radius;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">/* Optimize closest point and inside circle. */</span></span><br><span class="line">        result = optVelocity;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; lines.size(); ++i) &#123;</span><br><span class="line">        <span class="keyword">if</span> (det(lines[i].direction, lines[i].point - result) &gt; <span class="number">0.0f</span>) &#123;</span><br><span class="line">            <span class="comment">/* Result does not satisfy constraint i. Compute new optimal result. */</span></span><br><span class="line">            <span class="keyword">const</span> Vector2 tempResult = result;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (!linearProgram1(lines, i, radius, optVelocity, directionOpt, result)) &#123;</span><br><span class="line">                result = tempResult;</span><br><span class="line">                <span class="keyword">return</span> i;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> lines.size();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5><span id="linearprogram1">linearProgram1</span></h5><pre><code class="cpp"><span class="function"><span class="keyword">bool</span> <span class="title">linearProgram1</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;Line&gt; &amp;lines, <span class="keyword">size_t</span> lineNo, <span class="keyword">float</span> radius, <span class="keyword">const</span> Vector2 &amp;optVelocity, <span class="keyword">bool</span> directionOpt, Vector2 &amp;result)</span>
-</span>{
+
+<h5><span id="linearprogram1">linearProgram1</span></h5><pre><code class="cpp"><span class="function"><span class="keyword">bool</span> <span class="title">linearProgram1</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;Line&gt; &amp;lines, <span class="keyword">size_t</span> lineNo, <span class="keyword">float</span> radius, <span class="keyword">const</span> Vector2 &amp;optVelocity, <span class="keyword">bool</span> directionOpt, Vector2 &amp;result)</span></span>
+<span class="function"></span>{
     <span class="keyword">const</span> <span class="keyword">float</span> dotProduct = lines[lineNo].point * lines[lineNo].direction;
     <span class="keyword">const</span> <span class="keyword">float</span> discriminant = sqr(dotProduct) + sqr(radius) - absSq(lines[lineNo].point);
 
@@ -426,8 +427,7 @@
     }
 
     <span class="keyword">return</span> <span class="literal">true</span>;
-}
-</code></pre>
+}</code></pre>
 
       
     </div>
@@ -517,7 +517,7 @@
 
       
         <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
             Table of Contents
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
@@ -527,8 +527,10 @@
       
 
       <section class="site-overview sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="夏天">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="夏天" />
           <p class="site-author-name" itemprop="name">夏天</p>
            
               <p class="site-description motion-element" itemprop="description"></p>
@@ -587,7 +589,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">KDTREE</span></a></li></ol><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number"></span> <span class="nav-text">路径规划</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">高级规划</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">2.</span> <span class="nav-text">底层规划</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number"></span> <span class="nav-text">KDTREE</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number"></span> <span class="nav-text">VO  Velocity Obstacles  速度障碍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number"></span> <span class="nav-text">RVO Reciprocal Velocity Obstacles  互惠的速度障碍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number"></span> <span class="nav-text">ORCA  Optimal Reciprocal Collision Avoidance  最优互惠碰撞避免</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">computeNewVelocity</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">2.</span> <span class="nav-text">linearProgram2</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.</span> <span class="nav-text">linearProgram1</span></a></li></ol></li></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">KDTREE</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number"></span> <span class="nav-text">路径规划</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">高级规划</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">2.</span> <span class="nav-text">底层规划</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number"></span> <span class="nav-text">KDTREE</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number"></span> <span class="nav-text">VO  Velocity Obstacles  速度障碍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number"></span> <span class="nav-text">RVO Reciprocal Velocity Obstacles  互惠的速度障碍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number"></span> <span class="nav-text">ORCA  Optimal Reciprocal Collision Avoidance  最优互惠碰撞避免</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">computeNewVelocity</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">2.</span> <span class="nav-text">linearProgram2</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.</span> <span class="nav-text">linearProgram1</span></a></li></ol></div>
             
 
           </div>
@@ -607,7 +609,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">
+        <div class="copyright" >
   
   &copy; 
   <span itemprop="copyrightYear">2019</span>
@@ -619,12 +621,12 @@
 
 
 <div class="powered-by">
-  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
 </div>
 
 <div class="theme-info">
   Theme -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
     NexT.Gemini
   </a>
 </div>

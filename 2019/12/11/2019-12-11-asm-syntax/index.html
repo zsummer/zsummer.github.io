@@ -6,10 +6,10 @@
 
 
 <html class="theme-next gemini use-motion" lang="en">
-<head><meta name="generator" content="Hexo 3.9.0">
-  <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 <meta name="theme-color" content="#222">
 
 
@@ -20,8 +20,8 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
 
 
@@ -39,7 +39,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -73,38 +73,38 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
-
-
-  <meta name="keywords" content="Hexo, NexT">
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
 
 
 
 
 
 
-<meta name="description" content="目录  目录 基础语法格式 常见寄存器以及作用 通用寄存器 寄存器使用惯例 原文 中文对照   专用寄存器 标志寄存器 RFLAGS 程序计数器(PC)(Relative Instruction-Pointer)(IP) 指令寄存器     汇编语法 汇编指令 操作数格式与寻址 内存操作数 寻址模式 large code mode: 备注说明       基础语法格式GAS汇编的格式阅读起来很自然">
+<meta name="description" content="目录   目录 基础语法格式 常见寄存器以及作用 通用寄存器 寄存器使用惯例 原文 中文对照   专用寄存器 标志寄存器 RFLAGS 程序计数器(PC)(Relative Instruction-Pointer)(IP) 指令寄存器     汇编语法 汇编指令 操作数格式与寻址 内存操作数 寻址模式 large code mode: 共享库中对g_static_so_data的访问 small">
 <meta property="og:type" content="article">
 <meta property="og:title" content="汇编语法&#x2F;寻址&#x2F;寄存器&#x2F;代码模型(GNU assembler)">
-<meta property="og:url" content="https://zsummer.github.io/2019/12/11/2019-12-11-asm-syntax/index.html">
+<meta property="og:url" content="https:&#x2F;&#x2F;zsummer.github.io&#x2F;2019&#x2F;12&#x2F;11&#x2F;2019-12-11-asm-syntax&#x2F;index.html">
 <meta property="og:site_name" content="关于夏天的一切">
-<meta property="og:description" content="目录  目录 基础语法格式 常见寄存器以及作用 通用寄存器 寄存器使用惯例 原文 中文对照   专用寄存器 标志寄存器 RFLAGS 程序计数器(PC)(Relative Instruction-Pointer)(IP) 指令寄存器     汇编语法 汇编指令 操作数格式与寻址 内存操作数 寻址模式 large code mode: 备注说明       基础语法格式GAS汇编的格式阅读起来很自然">
-<meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-12-13T16:30:06.054Z">
+<meta property="og:description" content="目录   目录 基础语法格式 常见寄存器以及作用 通用寄存器 寄存器使用惯例 原文 中文对照   专用寄存器 标志寄存器 RFLAGS 程序计数器(PC)(Relative Instruction-Pointer)(IP) 指令寄存器     汇编语法 汇编指令 操作数格式与寻址 内存操作数 寻址模式 large code mode: 共享库中对g_static_so_data的访问 small">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-12-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2019-12-13T17:13:08.584Z">
+<meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="汇编语法&#x2F;寻址&#x2F;寄存器&#x2F;代码模型(GNU assembler)">
-<meta name="twitter:description" content="目录  目录 基础语法格式 常见寄存器以及作用 通用寄存器 寄存器使用惯例 原文 中文对照   专用寄存器 标志寄存器 RFLAGS 程序计数器(PC)(Relative Instruction-Pointer)(IP) 指令寄存器     汇编语法 汇编指令 操作数格式与寻址 内存操作数 寻址模式 large code mode: 备注说明       基础语法格式GAS汇编的格式阅读起来很自然">
 
 
 
@@ -133,7 +133,7 @@
 
 
 
-  <link rel="canonical" href="https://zsummer.github.io/2019/12/11/2019-12-11-asm-syntax/">
+  <link rel="canonical" href="https://zsummer.github.io/2019/12/11/2019-12-11-asm-syntax/"/>
 
 
 
@@ -155,9 +155,9 @@
 
 
 
-</head>
+<meta name="generator" content="Hexo 4.1.1"></head>
 
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="en">
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
 
   
   
@@ -167,13 +167,13 @@
   <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
     
 
     <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
+      <a href="/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">关于夏天的一切</span>
         <span class="logo-line-after"><i></i></span>
@@ -203,7 +203,7 @@
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
             Home
           </a>
@@ -213,7 +213,7 @@
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
             Archives
           </a>
@@ -247,20 +247,20 @@
   
   
 
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
   
   
   
   <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/12/11/2019-12-11-asm-syntax/">
 
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="夏天">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.png">
     </span>
 
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="关于夏天的一切">
     </span>
 
@@ -292,7 +292,7 @@
           </span>
 
           
-            <span class="post-category">
+            <span class="post-category" >
             
               <span class="post-meta-divider">|</span>
             
@@ -303,7 +303,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/develop/" itemprop="url" rel="index">
                     <span itemprop="name">develop</span>
                   </a>
@@ -342,6 +342,7 @@
 
       
         <h3><span id="目录">目录</span></h3><!-- TOC -->
+
 <ul>
 <li><a href="#目录">目录</a></li>
 <li><a href="#基础语法格式">基础语法格式</a></li>
@@ -365,23 +366,45 @@
 <li><a href="#内存操作数">内存操作数</a></li>
 <li><a href="#寻址模式">寻址模式</a></li>
 <li><a href="#large-code-mode">large code mode:</a></li>
+<li><a href="#共享库中对g_static_so_data的访问">共享库中对g_static_so_data的访问</a></li>
+<li><a href="#small-code-mode">small code mode:</a></li>
 <li><a href="#备注说明">备注说明</a></li>
+<li><a href="#relro--relocation-read-only">RELRO  Relocation Read Only</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li><a href="#调用惯例calling-conventions">调用惯例Calling Conventions</a><pre><code>- [参数压栈顺序](#参数压栈顺序)
+    - [Caller Save和Callee Save](#caller-save和callee-save)</code></pre></li>
+<li><a href="#工具">工具</a><ul>
+<li><a href="#peda插件">PEDA插件</a></li>
 </ul>
 </li>
 </ul>
 <!-- /TOC -->
+
 <h3><span id="基础语法格式">基础语法格式</span></h3><p>GAS汇编的格式阅读起来很自然 如下   </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[操作符]    [源]      [目标] </span><br><span class="line">movl        $0,      -4(%rbp)</span><br><span class="line">```  </span><br><span class="line">  </span><br><span class="line">但是INTEL格式更贴近C语言的书写风格   </span><br><span class="line">   </span><br><span class="line">```assembly</span><br><span class="line">[操作符]   [目标]    [源]  </span><br><span class="line">mov        esi,     DWORD PTR [rbp-0x4]</span><br><span class="line"></span><br><span class="line">```   </span><br><span class="line">  </span><br><span class="line">很像C语言的代码   </span><br><span class="line">   </span><br><span class="line">``` </span><br><span class="line">int esi = *(rbp-0x4);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[操作符]    [源]      [目标]   </span><br><span class="line">movl        $0,      -4(%rbp)</span><br></pre></td></tr></table></figure>
+
+
+<p>但是INTEL格式更贴近C语言的书写风格   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[操作符]   [目标]    [源]  </span><br><span class="line">mov        esi,     DWORD PTR [rbp-0x4]</span><br></pre></td></tr></table></figure>
+
+<p>很像C语言的代码   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int esi &#x3D; *(rbp-0x4);</span><br></pre></td></tr></table></figure>
+
 <blockquote>
 <p>本文基于X86-64架构体系整理了GAS风格的汇编语法, 如无特殊说明后续内容皆以环境为准.    </p>
 </blockquote>
 <p>“@”符号表示“将符号左边的变量钳制在符号右边的地址   </p>
 <a id="more"></a>   
+
 <h3><span id="常见寄存器以及作用">常见寄存器以及作用</span></h3><p>16bit寄存器一般没有前缀  例如ax   bx   ds<br>32bit寄存器前缀一般为e   例如eax  ebx  eds<br>64bit寄存器前缀一般为r   例如rax  rbx  rds</p>
-<h4><span id="通用寄存器">通用寄存器</span></h4><p>X86-64体系下有16个通用寄存器 分别为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rax    rbx    rcx    rdx    rdi    rsi    rbp    rsp    r8 – r15</span><br></pre></td></tr></table></figure></p>
-<p>兼容32位模式, 对应为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">eax    ebx    ecx    edx    edi    esi    ebp    esp    e8d – e15d</span><br></pre></td></tr></table></figure></p>
+<h4><span id="通用寄存器">通用寄存器</span></h4><p>X86-64体系下有16个通用寄存器 分别为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rax    rbx    rcx    rdx    rdi    rsi    rbp    rsp    r8 – r15</span><br></pre></td></tr></table></figure>
+<p>兼容32位模式, 对应为: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">eax    ebx    ecx    edx    edi    esi    ebp    esp    e8d – e15d</span><br></pre></td></tr></table></figure>
+
 <p>在所有CPU的架构体系中, 每个寄存器通常都是有其建议的使用用途的, X86-64架构下其用途如下:  </p>
 <h5><span id="寄存器使用惯例-原文">寄存器使用惯例 原文</span></h5><p><a href="https://cons.mit.edu/sp17/x86-64-architecture-guide.html" target="_blank" rel="noopener">X86-64 Registers</a></p>
 <table>
@@ -392,8 +415,7 @@
 <th>Saved across calls</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>%rax</td>
 <td>temp register; return value</td>
 <td>No</td>
@@ -453,8 +475,7 @@
 <td>callee-saved registers</td>
 <td>Yes</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <h5><span id="中文对照">中文对照</span></h5><table>
 <thead>
 <tr>
@@ -463,8 +484,7 @@
 <th>跨调用过程保存</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>%rax</td>
 <td>保存函数/计算的返回值</td>
 <td>No</td>
@@ -483,7 +503,6 @@
 <td>%rdx</td>
 <td>函数的第3个参数</td>
 <td>乘法余数</td>
-<td>No</td>
 </tr>
 <tr>
 <td>%rsp</td>
@@ -499,13 +518,11 @@
 <td>%rsi</td>
 <td>函数的第2个参数</td>
 <td>字符串源串</td>
-<td>No</td>
 </tr>
 <tr>
 <td>%rdi</td>
 <td>函数的第1个参数</td>
 <td>字符串目标串</td>
-<td>No</td>
 </tr>
 <tr>
 <td>%r8</td>
@@ -527,8 +544,7 @@
 <td>callee-saved registers</td>
 <td>Yes</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <h4><span id="专用寄存器">专用寄存器</span></h4><p>标志寄存器和程序计数器可能为同一个寄存器实现  </p>
 <h5><span id="标志寄存器-rflags">标志寄存器 RFLAGS</span></h5><p>NV UP EI PL NZ NA PO NC表示标志寄存器的值  </p>
 <table>
@@ -539,8 +555,7 @@
 <th>0</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>溢出标志OF(Over flow flag)</td>
 <td>OV(1)</td>
 <td>NV(0)</td>
@@ -583,14 +598,16 @@
 <tr>
 <td>TF(TrapFlag)</td>
 <td></td>
+<td></td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <h5><span id="程序计数器pcrelative-instruction-pointerip">程序计数器(PC)(Relative Instruction-Pointer)(IP)</span></h5><p>保存下一行要执行的指令位置<br>Intel的实现叫RIP  </p>
 <blockquote>
 <p>The 64-bit instruction pointer RIP points to the next instruction to be executed, and supports a 64-bit flat memory model.<br>64位指令指针 RIP 指向预期要执行的下一行指令(位置), 并且支持64位平坦内存模型<br>RIP-relative addressing: this is new for x64 and allows accessing data tables and such in the code relative to the current instruction pointer, making position independent code easier to implement.<br>PIC提供了相对于当前指令位置访问数据表这样新的支持, 从而让PIC更容易实现   </p>
 </blockquote>
-<p>例如PLC表在RIP下的应用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0000000000000570 &lt;foo@plt&gt;:</span><br><span class="line"> 570:    ff 25 a2 0a 20 00        jmpq   *0x200aa2(%rip)        # 201018 &lt;_GLOBAL_OFFSET_TABLE_+0x18&gt;</span><br><span class="line"> 576:    68 00 00 00 00           pushq  $0x0</span><br><span class="line"> 57b:    e9 e0 ff ff ff           jmpq   560 &lt;_init+0x20&gt;</span><br></pre></td></tr></table></figure></p>
+<p>例如PLC表在RIP下的应用  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0000000000000570 &lt;foo@plt&gt;:</span><br><span class="line"> 570:    ff 25 a2 0a 20 00        jmpq   *0x200aa2(%rip)        # 201018 &lt;_GLOBAL_OFFSET_TABLE_+0x18&gt;</span><br><span class="line"> 576:    68 00 00 00 00           pushq  $0x0</span><br><span class="line"> 57b:    e9 e0 ff ff ff           jmpq   560 &lt;_init+0x20&gt;</span><br></pre></td></tr></table></figure>
+
 <p>在没有RIP的情况下需要通过函数调用来实现PLC  会消耗较多的性能<br>windows则直接采用了’重定位基址’的方式实现非PLC的装载.  </p>
 <h5><span id="指令寄存器">指令寄存器</span></h5><p>当前正在执行的指令, 简单CPU会预读 但复杂的CPU有流水线/指令级并行计算等    </p>
 <h3><span id="汇编语法">汇编语法</span></h3><h4><span id="汇编指令">汇编指令</span></h4><table>
@@ -600,8 +617,7 @@
 <th>描述</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>复制值</td>
 <td>_</td>
 </tr>
@@ -719,25 +735,395 @@
 </tr>
 <tr>
 <td>test src, dest</td>
-<td>执行and操作只设置标志寄存器而不存储结果,其中是否为0的判断一般类似 <figure class="highlight plain"><figcaption><span>rax,rax```       |</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">| and src, dest              | 执行按位的与操作并保存到dest                                                               |</span><br><span class="line">| xor src, dest              | 执行按位的异或操作并保存到dest                                                             |</span><br><span class="line"></span><br><span class="line">#### 操作数格式与寻址   </span><br><span class="line"></span><br><span class="line">M[xx]表示在存储器中xx地址的值   </span><br><span class="line">R[xx]表示寄存器xx的值   </span><br><span class="line">这种表示方法将寄存器 内存都看出一个大数组的形式    </span><br><span class="line"></span><br><span class="line">| 格式         | 操作数值             | 名称              | 样例(GAS = C语言)               |</span><br><span class="line">| ------------ | -------------------- | ----------------- | ------------------------------- |</span><br><span class="line">| %reg         |                      |                   | 寄存器名字前都加 %              |</span><br><span class="line">| $Imm         | Imm                  | 立即数寻址        | $1 = 1                          |</span><br><span class="line">| Ea           | R[Ea]                | 寄存器寻址        | %eax = eax                      |</span><br><span class="line">| Imm          | M[Imm]               | 绝对寻址          | 0x104 = *0x104                  |</span><br><span class="line">| (Ea)         | M[R[Ea]]             | 间接寻址          | (%eax)= *eax                    |</span><br><span class="line">| Imm(Ea)      | M[Imm+R[Ea]]         | (基址+偏移量)寻址 | 4(%eax) = *(4+eax)              |</span><br><span class="line">| (Ea,Eb)      | M[R[Ea]+R[Eb]]       | 变址              | (%eax,%ebx) = *(eax+ebx)        |</span><br><span class="line">| Imm(Ea,Eb)   | M[Imm+R[Ea]+R[Eb]]   | 寻址              | 9(%eax,%ebx)= *(9+eax+ebx)      |</span><br><span class="line">| (,Ea,s)      | M[R[Ea]*s]           | 伸缩化变址寻址    | (,%eax,4)= *(eax*4)             |</span><br><span class="line">| Imm(,Ea,s)   | M[Imm+R[Ea]*s]       | 伸缩化变址寻址    | 0xfc(,%eax,4)= *(0xfc+eax*4)    |</span><br><span class="line">| (Ea,Eb,s)    | M(R[Ea]+R[Eb]*s)     | 伸缩化变址寻址    | (%eax,%ebx,4) = *(eax+ebx*4)    |</span><br><span class="line">| Imm(Ea,Eb,s) | M(Imm+R[Ea]+R[Eb]*s) | 伸缩化变址寻址    | 8(%eax,%ebx,4) = *(8+eax+ebx*4) |</span><br><span class="line"></span><br><span class="line">##### 内存操作数  </span><br><span class="line"></span><br><span class="line">操作数语法:</span><br></pre></td></tr></table></figure></td>
+<td>执行and操作只设置标志寄存器而不存储结果,其中是否为0的判断一般类似 <code>test rax,rax</code></td>
 </tr>
-</tbody>
-</table>
-<p>segment:displacement(base register, index register, scale factor)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">等效intel语法</span><br></pre></td></tr></table></figure></p>
-<p>segment:[base register + displacement + index register * scale factor]<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">&gt; 如果segment未指定，则几乎总是假定为ds，除非base register为esp或ebp；否则为。在这种情况下，假定地址是相对于ss  </span><br><span class="line">  </span><br><span class="line">&gt; If segment is not specified, as almost always, it is assumed to be ds, unless base register is esp or ebp; in this case, the address is assumed to be relative to ss  </span><br><span class="line">快速参考  </span><br><span class="line"></span><br><span class="line">| 指令                   | 含义                                             |</span><br><span class="line">| ---------------------- | ------------------------------------------------ |</span><br><span class="line">| movq %rax, %rbx        | rbx = rax                                        |</span><br><span class="line">| movq $123, %rax        | rax = 123                                        |</span><br><span class="line">| movq %rsi, -16（%rbp） | mem [rbp-16] = rsi                               |</span><br><span class="line">| subq $10, %rbp         | rbp = rbp -10                                    |</span><br><span class="line">| cmpl %eax %ebx         | 比较然后设置标志。如果eax == ebx, 则设置零标志。 |</span><br><span class="line">| leal (%ebx),  %eax     | movl %ebx,  %eax                                 |</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">##### 寻址模式    </span><br><span class="line"></span><br><span class="line">&gt; References to both code and data on x64 are done with instruction-relative (RIP-relative in x64 parlance) addressing modes. The offset from RIP in these instructions is limited to 32 bits.     </span><br><span class="line">&gt; X64体系下的寻址是建立在相对寻址(RIP-RELATIVE)之上的, RIP的偏移大小最大为32bits  </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[x64 code mode](https://eli.thegreenplace.net/2012/01/03/understanding-the-x64-code-models)    </span><br><span class="line"></span><br><span class="line">&gt; Default operand size in 64-bit mode is still 32-bit and 64-bit immediates are allowed only with mov instruction.  </span><br><span class="line">&gt; movabs is just AT&amp;T syntax for a mov with a 64-bit immediate operand.    </span><br><span class="line">&gt; 只有mov操作可以填写8字节的立即数  movabs是AT&amp;T语法中mov的(别名)    </span><br><span class="line"></span><br><span class="line">| 指令 | 同义名   | 跳转条件 | 描述     |</span><br><span class="line">| ---- | -------- | -------- | -------- |</span><br><span class="line">| jmp  | Label    | 1        | 直接跳转 |</span><br><span class="line">| jmp  | *Operand | 1        | 间接跳转 |</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">绝对寻址/直接寻址(Absolute or direct):  </span><br><span class="line">```jump    address   ```   </span><br><span class="line">&gt; (有效PC地址=address)  </span><br><span class="line">&gt; Effective PC address = address  </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">相对寻址(PC-relative):  </span><br><span class="line">```jump    offset    ```  </span><br><span class="line">&gt; (有效PC地址=rip+offset = 下一个指令的地址 + offset)  </span><br><span class="line">&gt; Effective PC address = next instruction address + offset, offset may be negative  </span><br><span class="line"></span><br><span class="line">快速分析:</span><br></pre></td></tr></table></figure></p>
-<p>00000000000007e0 &lt;.plt&gt;:<br> 7e0:   ff 35 22 08 20 00       pushq  0x200822(%rip)        # 201008 &lt;_GLOBAL_OFFSET_TABLE_+0x8&gt;<br> 7e6:   ff 25 24 08 20 00       jmpq   <em>0x200824(%rip)        # 201010 &lt;_GLOBAL_OFFSET_TABLE_+0x10&gt;<br> 7ec:   0f 1f 40 00             nopl   0x0(%rax)<br>0000000000000810 &lt;_Z12so_func_baseii@plt&gt;:<br> 810:   ff 25 12 08 20 00       jmpq   </em>0x200812(%rip)        # 201028 &lt;_Z12so_func_baseii&gt;<br> 816:   68 02 00 00 00          pushq  $0x2<br> 81b:   e9 c0 ff ff ff          jmpq   7e0 &lt;.plt&gt;<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">* jmpq   7e0  跳转到 CS:7e0 这个位置  </span><br><span class="line">  &gt; 实际上二进制的内容仍然是相对寻址(81b+5 + -40) ==  7e0  等同 jumpq * -0x40(%rip) 但省了一个字节的指令   </span><br><span class="line"></span><br><span class="line">* jmpq   *0x200812(%rip)  跳转到 816 + 0x200812 这个位置 (rip是一个指针 需要解引用获得目标地址)</span><br></pre></td></tr></table></figure></p>
-<p> a84:   74 20                   je     aa6 &lt;__libc_csu_init+0x56&gt;<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"> * 这里跳转指令则只用了两个字节  </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">##### large code mode:  </span><br><span class="line"></span><br><span class="line">&gt; In the small code model all addresses (including GOT entries) are accessible via the IP-relative addressing provided by the AMD64 architecture. Hence there is no need for an explicit GOT pointer and therefore no function prologue for setting it up is necessary. In the medium and large code models a register has to be allocated to hold the address of the GOT in position-independent objects, because the AMD64 ISA does not support an immediate displacement larger than 32 bits.  </span><br><span class="line">&gt; 在一个小型代码模型中, 所有的地址(包括GOT入口地址) 都是可以通过IP-RELATIVE访问到.  因此不需要显示声明额外的GOT指针 也不需要设置函数的开始语.  但在一个中型或者大型代码模型中, 必须分配一个寄存器去持有位置无关对象在GOT的地址  (AMD64不支持大于32位的立即跳转)  </span><br><span class="line"> </span><br><span class="line">``` g++-6 -O0 so.so main.cpp lib.cpp -pie -fPIE  -mcmodel=large  ```   </span><br><span class="line"> </span><br><span class="line"> 举例一个通过.GOT表访问的全局变量代码如下:</span><br></pre></td></tr></table></figure></p>
-<p> a40:   48 8d 1d f9 ff ff ff    lea    -0x7(%rip),%rbx        # a40 &lt;main+0xb&gt;<br> a47:   49 bb c0 05 20 00 00    movabs $0x2005c0,%r11<br> a4e:   00 00 00<br> a51:   4c 01 db                add    %r11,%rbx<br> a54:   89 7d dc                mov    %edi,-0x24(%rbp)<br> a57:   48 89 75 d0             mov    %rsi,-0x30(%rbp)<br> a5b:   c7 45 ec 00 00 00 00    movl   $0x0,-0x14(%rbp)<br> a62:   48 b8 d0 ff ff ff ff    movabs $0xffffffffffffffd0,%rax<br> a69:   ff ff ff<br> a6c:   48 8b 04 03             mov    (%rbx,%rax,1),%rax<br> a70:   c7 00 e8 03 00 00       movl   $0x3e8,(%rax)<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">a4e为8字节的操作数剩余部分</span><br><span class="line"></span><br><span class="line">a40行取得当前行的地址 </span><br><span class="line">a51行通过偏移量获得.got表的end 地址 =  a40 + 0x2005c0 =   201000   =.plt.got   (.got表在本测试中大小是0x40)  </span><br><span class="line">a6c行把RBX + 0xffffffffffffffd0 (= -0x30) 得到GOT表中存放全局变量的地址 *(.plt.got -0x30) = got[g_static_so_data]   </span><br><span class="line">a70赋值立即数0x3e8 给全局变量 g_static_so_data = *(got[g_static_so_data])  </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">节点偏移和大小如下    </span><br><span class="line">| [号] | 名称     | 类型     | 地址     | 偏移量 | 大小  | 全体大小 | 旗标 | 链接 | 信息 | 对齐 |</span><br><span class="line">| ---- | -------- | -------- | -------- | ------ | ----- | -------- | ---- | ---- | ---- | ---- |</span><br><span class="line">| [23] | .got     | PROGBITS | 00200fc0 | 000fc0 | 00040 | 0008     | WA   | 0    | 0    | 8    |</span><br><span class="line">| [24] | .got.plt | PROGBITS | 00201000 | 001000 | 00030 | 0008     | WA   | 0    | 0    | 8    |</span><br><span class="line">| [25] | .data    | PROGBITS | 00201030 | 001030 | 00014 | 0000     | WA   | 0    | 0    | 8    |</span><br><span class="line">| [26] | .bss     | NOBITS   | 00201044 | 001044 | 0000c | 0000     | WA   | 0    | 0    | 4    |</span><br><span class="line"></span><br><span class="line">程序声明如下:</span><br></pre></td></tr></table></figure></p>
-<p>extern int g_static_so_bss;<br>extern int g_static_so_data;<br>extern int errno;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">当前汇编访问的是:g_static_so_data   </span><br><span class="line">.dyn global data如下</span><br></pre></td></tr></table></figure></p>
-<p>000000200fc0  000100000006 R_X86_64_GLOB_DAT 0000000000000000 <strong>cxa_finalize@GLIBC_2.2.5 + 0<br>000000200fc8  000300000006 R_X86_64_GLOB_DAT 0000000000000000 _Jv_RegisterClasses + 0<br>000000200fd0  000400000006 R_X86_64_GLOB_DAT 0000000000000000 g_static_so_data + 0<br>000000200fd8  000500000006 R_X86_64_GLOB_DAT 0000000000000000 g_static_so_bss + 0<br>000000200fe0  000800000006 R_X86_64_GLOB_DAT 0000000000000000 _ITM_deregisterTMClone + 0<br>000000200fe8  000900000006 R_X86_64_GLOB_DAT 0000000000000000 </strong>libc_start_main@GLIBC_2.2.5 + 0<br>000000200ff0  000a00000006 R_X86_64_GLOB_DAT 0000000000000000 <strong>gmon_start</strong> + 0<br>000000200ff8  000b00000006 R_X86_64_GLOB_DAT 0000000000000000 _ITM_registerTMCloneTa + 0<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">##### 共享库中对g_static_so_data的访问   </span><br><span class="line">如果代码模型为大型 则和可执行程序中的代码段一致 如果是small或者median 共享库仍然会对全局变量走GOT表  </span><br><span class="line">汇编如下:</span><br></pre></td></tr></table></figure></p>
-<p> 894:   48 8b 05 45 07 20 00    mov    0x200745(%rip),%rax        # 200fe0 &lt;g_static_so_bss@@Base-0x60&gt;<br> 89b:   48 8b 00                mov    (%rax),%rax<br> 89e:   01 c2                   add    %eax,%edx<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">894: 取GOT中存储 g_static_so_bss 的项地址 并把内容(g_static_so_bss的地址)存放到%rax中    </span><br><span class="line">89b: 取 g_static_so_bss 的内容  </span><br><span class="line">89e: 加到%edx上  </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">##### small code mode:  </span><br><span class="line">``` g++-6 -O0 so.so main.cpp lib.cpp -pie -fPIE  -mcmodel=small ```   </span><br><span class="line"></span><br><span class="line">假设了全局变量的存储位置在低端内存, 因此该全局变量直接定义在主程序的data段, 在so文件中仍然通过.got找到真实地址.    </span><br><span class="line">其类型R_X86_64_COPY  </span><br><span class="line">在主程序的汇编代码只有一行</span><br></pre></td></tr></table></figure></p>
-<p> 9f0:   c7 05 4e 06 20 00 e8    movl   $0x3e8,0x20064e(%rip)        # 201048 &lt;g_static_so_data&gt;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.dyn global</span><br></pre></td></tr></table></figure></p>
-<p>偏移量          信息           类型           符号值        符号名称 + 加数<br>000000201048  001200000005 R_X86_64_COPY     0000000000201048 g_static_so_data + 0<br>000000201050  001000000005 R_X86_64_COPY     0000000000201050 g_static_so_bss + 0<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">.dyn so</span><br></pre></td></tr></table></figure></p>
-<p>000000200fd8  001300000006 R_X86_64_GLOB_DAT 0000000000201030 g_static_so_data + 0<br>000000200fe0  001000000006 R_X86_64_GLOB_DAT 0000000000201040 g_static_so_bss + 0<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">.symver指令</span><br><span class="line">&gt; g_static_so_data@@Base-0x58  的意思是: g_static_so_data的符号值-0x58 也就是g_static_so_data的偏移量</span><br></pre></td></tr></table></figure></p>
-<p>0000000000201030 - 000000200fd8 = 0x58<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">##### 备注说明  </span><br><span class="line">共享库中 无论是large还是small, 都会走so的got表, 区别在于会不会使用movabs进行64位的偏移计算  </span><br><span class="line">got表的位置可能紧接着.text并且设置为只读  </span><br><span class="line">[RELRO](https://systemoverlord.com/2017/03/19/got-and-plt-for-pwning.html)   </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">通过got表访问全局变量:  </span><br><span class="line">1. 通过RIP-R找到GOT表的位置.   相对于.text固定的偏移量 (large不假定大小)     </span><br><span class="line">2. 通过项索引偏移找到存储该变量地址的地址并解引用得到 变量地址  </span><br><span class="line">   1. (large不假定大小, medium会区分把&lt;64k的数据链接到低内存中 多个数据段.ldata(largedata))  </span><br><span class="line">3. 解引用并使用</span><br></pre></td></tr></table></figure></p>
-<p>mov  (%rbx,%rax,1),%rax<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line">这行代码可以优化为一个立即数偏移寻址  即</span><br><span class="line">```mov    0x200745(%rip),%rax  ```  </span><br><span class="line"></span><br><span class="line">当前代码段到GOT表的偏移</span><br><span class="line"></span><br><span class="line">但是在large模型中 </span><br><span class="line"></span><br><span class="line">通过rip寻址的指令中 偏移量不是64位的  因此需要先算一个小的偏移量 再通过支持64bit的 movabs(mov) 添加上一个64bit的偏移</span><br><span class="line"></span><br><span class="line">##### RELRO  Relocation Read Only   </span><br><span class="line">重定位只读技术  </span><br><span class="line">动态链接器在处理完GOT表后将其设为只读以提高安全性.  </span><br><span class="line"></span><br><span class="line">本文测试环境中只读. (实际上这是一个可以成为较为古老的技术了)  </span><br><span class="line">&gt; Linux version 4.9.0-4-amd64 (debian-kernel@lists.debian.org) </span><br><span class="line">&gt; (gcc version 6.3.0 20170516 (Debian 6.3.0-18) )  </span><br><span class="line">&gt; #1 SMP Debian 4.9.65-3+deb9u1 (2017-12-23)   </span><br><span class="line">&gt; .zsummer  </span><br><span class="line"></span><br><span class="line">GOT表为R  只读段.   </span><br><span class="line">.got.plt存储plt的got仍然是读写段 (惰性加载机制决定, 可以选择非惰性+ro来完成全只读化)  </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">### 调用惯例Calling Conventions </span><br><span class="line">计算机中Corotine分两种 Coroutine和Subroutine 前者对应协程 后者对应函数  </span><br><span class="line"></span><br><span class="line">* call a routine (trasfer control to procedure)  跳转到目标routine  </span><br><span class="line">* pass arguments  传递参数  </span><br><span class="line">  * fixed length</span><br><span class="line">  * variable length</span><br><span class="line">  * recursively  </span><br><span class="line">* return to the caller  返回调用者地址  </span><br><span class="line">  * putting results in a place where caller an find them  </span><br><span class="line">* manage register  管理寄存器 </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">##### 参数压栈顺序  </span><br><span class="line">标准的linux ABI调用约定中</span><br><span class="line">[System V Application Binary Interface—AMD64 Architecture Processor Supplement]()   </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">###### Caller Save和Callee Save   </span><br><span class="line">当产生函数调用时 子函数内通常也会使用到通用寄存器 那么这些寄存器中之前保存的调用者(父函数)的值就会被覆盖   </span><br><span class="line">为了避免数据覆盖而导致从子函数返回时寄存器中的数据不可恢复 CPU 体系结构中就规定了通用寄存器的保存方式   </span><br><span class="line"></span><br><span class="line">* Casller Save &apos;调用者保存&apos; 在发起一个调用前需要保存(子例程直接覆盖使用) </span><br><span class="line">  * 在进入子函数调用前, 调用者需要保存这些寄存器的值.   </span><br><span class="line">    * 一般做法是进入子函数调用前把这些寄存器压入栈中    </span><br><span class="line">* Callee Save &apos;被调用者保存&apos; (子例程使用前需要先保存)   </span><br><span class="line">  * 在进入子函数调用后, 在使用这些寄存器前, 被调用者会保存这些寄存器的内容,并在使用后恢复  </span><br><span class="line">  * 这种比较特殊也比较麻烦, 因为一旦接受这个设定, 那么所有subroutine都要进行合适的push并保证pop恢复.     </span><br><span class="line">  * </span><br><span class="line"></span><br><span class="line">* cross</span><br><span class="line"></span><br><span class="line">### 工具   </span><br><span class="line"></span><br><span class="line">* objdump -S 查看汇编指令  </span><br><span class="line">* gdb  </span><br><span class="line">  * gdb 通过```  layout regs  ```打开寄存器显示, 通过```set disassemble-next-line on```打开汇编  </span><br><span class="line">  * gdb 通过peda插件字节显示汇编和寄存器  和上面的原生方式选择一个即可, peda默认显示是intex语法    </span><br><span class="line">  * disas反汇编命令,直接disas是反汇编当前函数</span><br><span class="line">    * disas /r (显示汇编指令对应十六进制值)   </span><br><span class="line">    * disas /m (如果有源码,显示对应行源码)   </span><br><span class="line">  * intel语法</span><br><span class="line">    * set disassembly-flavor intel</span><br><span class="line">    * set disassembly-flavor att</span><br><span class="line">  * gdb关闭ASLR：</span><br><span class="line">    * set disable-randomization on</span><br><span class="line">  * 开启ASLR：</span><br><span class="line">    * set disable-randomization off</span><br><span class="line">  * 查看ASLR状态：</span><br><span class="line">    * show disable-randomization</span><br><span class="line">  * 查看二进制  </span><br><span class="line">    * ```x /1ag addr```   </span><br><span class="line">&lt;!-- more --&gt;</span><br><span class="line">#### PEDA插件  </span><br><span class="line">peda默认设置的是intel的语法风格</span><br></pre></td></tr></table></figure></p>
-<p>git clone <a href="https://github.com/longld/peda.git" target="_blank" rel="noopener">https://github.com/longld/peda.git</a> ~/peda<br>echo “source ~/peda/peda.py” &gt;&gt; ~/.gdbinit<br>echo “DONE! debug your program with gdb and enjoy”<br><code>`</code>  </p>
+<tr>
+<td>and src, dest</td>
+<td>执行按位的与操作并保存到dest</td>
+</tr>
+<tr>
+<td>xor src, dest</td>
+<td>执行按位的异或操作并保存到dest</td>
+</tr>
+</tbody></table>
+<h4><span id="操作数格式与寻址">操作数格式与寻址</span></h4><p>M[xx]表示在存储器中xx地址的值<br>R[xx]表示寄存器xx的值<br>这种表示方法将寄存器 内存都看出一个大数组的形式    </p>
+<table>
+<thead>
+<tr>
+<th>格式</th>
+<th>操作数值</th>
+<th>名称</th>
+<th>样例(GAS = C语言)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>%reg</td>
+<td></td>
+<td></td>
+<td>寄存器名字前都加 %</td>
+</tr>
+<tr>
+<td>$Imm</td>
+<td>Imm</td>
+<td>立即数寻址</td>
+<td>$1 = 1</td>
+</tr>
+<tr>
+<td>Ea</td>
+<td>R[Ea]</td>
+<td>寄存器寻址</td>
+<td>%eax = eax</td>
+</tr>
+<tr>
+<td>Imm</td>
+<td>M[Imm]</td>
+<td>绝对寻址</td>
+<td>0x104 = *0x104</td>
+</tr>
+<tr>
+<td>(Ea)</td>
+<td>M[R[Ea]]</td>
+<td>间接寻址</td>
+<td>(%eax)= *eax</td>
+</tr>
+<tr>
+<td>Imm(Ea)</td>
+<td>M[Imm+R[Ea]]</td>
+<td>(基址+偏移量)寻址</td>
+<td>4(%eax) = *(4+eax)</td>
+</tr>
+<tr>
+<td>(Ea,Eb)</td>
+<td>M[R[Ea]+R[Eb]]</td>
+<td>变址</td>
+<td>(%eax,%ebx) = *(eax+ebx)</td>
+</tr>
+<tr>
+<td>Imm(Ea,Eb)</td>
+<td>M[Imm+R[Ea]+R[Eb]]</td>
+<td>寻址</td>
+<td>9(%eax,%ebx)= *(9+eax+ebx)</td>
+</tr>
+<tr>
+<td>(,Ea,s)</td>
+<td>M[R[Ea]*s]</td>
+<td>伸缩化变址寻址</td>
+<td>(,%eax,4)= <em>(eax</em>4)</td>
+</tr>
+<tr>
+<td>Imm(,Ea,s)</td>
+<td>M[Imm+R[Ea]*s]</td>
+<td>伸缩化变址寻址</td>
+<td>0xfc(,%eax,4)= <em>(0xfc+eax</em>4)</td>
+</tr>
+<tr>
+<td>(Ea,Eb,s)</td>
+<td>M(R[Ea]+R[Eb]*s)</td>
+<td>伸缩化变址寻址</td>
+<td>(%eax,%ebx,4) = <em>(eax+ebx</em>4)</td>
+</tr>
+<tr>
+<td>Imm(Ea,Eb,s)</td>
+<td>M(Imm+R[Ea]+R[Eb]*s)</td>
+<td>伸缩化变址寻址</td>
+<td>8(%eax,%ebx,4) = <em>(8+eax+ebx</em>4)</td>
+</tr>
+</tbody></table>
+<h5><span id="内存操作数">内存操作数</span></h5><p>操作数语法:    </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">segment:displacement(base register, index register, scale factor)</span><br></pre></td></tr></table></figure>
+<p>等效intel语法   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">segment:[base register + displacement + index register * scale factor]</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>如果segment未指定，则几乎总是假定为ds，除非base register为esp或ebp；否则为。在这种情况下，假定地址是相对于ss  </p>
+</blockquote>
+<blockquote>
+<p>If segment is not specified, as almost always, it is assumed to be ds, unless base register is esp or ebp; in this case, the address is assumed to be relative to ss<br>快速参考  </p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>movq %rax, %rbx</td>
+<td>rbx = rax</td>
+</tr>
+<tr>
+<td>movq $123, %rax</td>
+<td>rax = 123</td>
+</tr>
+<tr>
+<td>movq %rsi, -16（%rbp）</td>
+<td>mem [rbp-16] = rsi</td>
+</tr>
+<tr>
+<td>subq $10, %rbp</td>
+<td>rbp = rbp -10</td>
+</tr>
+<tr>
+<td>cmpl %eax %ebx</td>
+<td>比较然后设置标志。如果eax == ebx, 则设置零标志。</td>
+</tr>
+<tr>
+<td>leal (%ebx),  %eax</td>
+<td>movl %ebx,  %eax</td>
+</tr>
+</tbody></table>
+<h5><span id="寻址模式">寻址模式</span></h5><blockquote>
+<p>References to both code and data on x64 are done with instruction-relative (RIP-relative in x64 parlance) addressing modes. The offset from RIP in these instructions is limited to 32 bits.<br>X64体系下的寻址是建立在相对寻址(RIP-RELATIVE)之上的, RIP的偏移大小最大为32bits  </p>
+</blockquote>
+<p><a href="https://eli.thegreenplace.net/2012/01/03/understanding-the-x64-code-models" target="_blank" rel="noopener">x64 code mode</a>    </p>
+<blockquote>
+<p>Default operand size in 64-bit mode is still 32-bit and 64-bit immediates are allowed only with mov instruction.<br>movabs is just AT&amp;T syntax for a mov with a 64-bit immediate operand.<br>只有mov操作可以填写8字节的立即数  movabs是AT&amp;T语法中mov的(别名)    </p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>同义名</th>
+<th>跳转条件</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>jmp</td>
+<td>Label</td>
+<td>1</td>
+<td>直接跳转</td>
+</tr>
+<tr>
+<td>jmp</td>
+<td>*Operand</td>
+<td>1</td>
+<td>间接跳转</td>
+</tr>
+</tbody></table>
+<p>绝对寻址/直接寻址(Absolute or direct):  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jump    address</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>(有效PC地址=address)<br>Effective PC address = address  </p>
+</blockquote>
+<p>相对寻址(PC-relative):  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jump    offset</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>(有效PC地址=rip+offset = 下一个指令的地址 + offset)<br>Effective PC address = next instruction address + offset, offset may be negative  </p>
+</blockquote>
+<p>快速分析:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">00000000000007e0 &lt;.plt&gt;:</span><br><span class="line"> 7e0:   ff 35 22 08 20 00       pushq  0x200822(%rip)        # 201008 &lt;_GLOBAL_OFFSET_TABLE_+0x8&gt;</span><br><span class="line"> 7e6:   ff 25 24 08 20 00       jmpq   *0x200824(%rip)        # 201010 &lt;_GLOBAL_OFFSET_TABLE_+0x10&gt;</span><br><span class="line"> 7ec:   0f 1f 40 00             nopl   0x0(%rax)</span><br><span class="line">0000000000000810 &lt;_Z12so_func_baseii@plt&gt;:</span><br><span class="line"> 810:   ff 25 12 08 20 00       jmpq   *0x200812(%rip)        # 201028 &lt;_Z12so_func_baseii&gt;</span><br><span class="line"> 816:   68 02 00 00 00          pushq  $0x2</span><br><span class="line"> 81b:   e9 c0 ff ff ff          jmpq   7e0 &lt;.plt&gt;</span><br></pre></td></tr></table></figure>
+
 <ul>
+<li><p>jmpq   7e0  跳转到 CS:7e0 这个位置  </p>
+<blockquote>
+<p>实际上二进制的内容仍然是相对寻址(81b+5 + -40) ==  7e0  等同 jumpq * -0x40(%rip) 但省了一个字节的指令   </p>
+</blockquote>
+</li>
+<li><p>jmpq   *0x200812(%rip)  跳转到 816 + 0x200812 这个位置 (rip是一个指针 需要解引用获得目标地址)   </p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a84:   74 20                   je     aa6 &lt;__libc_csu_init+0x56&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>这里跳转指令则只用了两个字节  </li>
+</ul>
+<h5><span id="large-code-mode">large code mode:</span></h5><blockquote>
+<p>In the small code model all addresses (including GOT entries) are accessible via the IP-relative addressing provided by the AMD64 architecture. Hence there is no need for an explicit GOT pointer and therefore no function prologue for setting it up is necessary. In the medium and large code models a register has to be allocated to hold the address of the GOT in position-independent objects, because the AMD64 ISA does not support an immediate displacement larger than 32 bits.<br>在一个小型代码模型中, 所有的地址(包括GOT入口地址) 都是可以通过IP-RELATIVE访问到.  因此不需要显示声明额外的GOT指针 也不需要设置函数的开始语.  但在一个中型或者大型代码模型中, 必须分配一个寄存器去持有位置无关对象在GOT的地址  (AMD64不支持大于32位的立即跳转)  </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++-6 -O0 so.so main.cpp lib.cpp -pie -fPIE  -mcmodel&#x3D;large</span><br></pre></td></tr></table></figure>
+
+<p> 举例一个通过.GOT表访问的全局变量代码如下:<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">a40:   48 8d 1d f9 ff ff ff    lea    -0x7(%rip),%rbx        # a40 &lt;main+0xb&gt;</span><br><span class="line">a47:   49 bb c0 05 20 00 00    movabs $0x2005c0,%r11</span><br><span class="line">a4e:   00 00 00 </span><br><span class="line">a51:   4c 01 db                add    %r11,%rbx</span><br><span class="line">a54:   89 7d dc                mov    %edi,-0x24(%rbp)</span><br><span class="line">a57:   48 89 75 d0             mov    %rsi,-0x30(%rbp)</span><br><span class="line">a5b:   c7 45 ec 00 00 00 00    movl   $0x0,-0x14(%rbp)</span><br><span class="line">a62:   48 b8 d0 ff ff ff ff    movabs $0xffffffffffffffd0,%rax</span><br><span class="line">a69:   ff ff ff </span><br><span class="line">a6c:   48 8b 04 03             mov    (%rbx,%rax,1),%rax</span><br><span class="line">a70:   c7 00 e8 03 00 00       movl   $0x3e8,(%rax)</span><br></pre></td></tr></table></figure></p>
+<p>a4e为8字节的操作数剩余部分</p>
+<p>a40行取得当前行的地址<br>a51行通过偏移量获得.got表的end 地址 =  a40 + 0x2005c0 =   201000   =.plt.got   (.got表在本测试中大小是0x40)<br>a6c行把RBX + 0xffffffffffffffd0 (= -0x30) 得到GOT表中存放全局变量的地址 *(.plt.got -0x30) = got[g_static_so_data]<br>a70赋值立即数0x3e8 给全局变量 g_static_so_data = *(got[g_static_so_data])  </p>
+<p>节点偏移和大小如下    </p>
+<table>
+<thead>
+<tr>
+<th>[号]</th>
+<th>名称</th>
+<th>类型</th>
+<th>地址</th>
+<th>偏移量</th>
+<th>大小</th>
+<th>全体大小</th>
+<th>旗标</th>
+<th>链接</th>
+<th>信息</th>
+<th>对齐</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>[23]</td>
+<td>.got</td>
+<td>PROGBITS</td>
+<td>00200fc0</td>
+<td>000fc0</td>
+<td>00040</td>
+<td>0008</td>
+<td>WA</td>
+<td>0</td>
+<td>0</td>
+<td>8</td>
+</tr>
+<tr>
+<td>[24]</td>
+<td>.got.plt</td>
+<td>PROGBITS</td>
+<td>00201000</td>
+<td>001000</td>
+<td>00030</td>
+<td>0008</td>
+<td>WA</td>
+<td>0</td>
+<td>0</td>
+<td>8</td>
+</tr>
+<tr>
+<td>[25]</td>
+<td>.data</td>
+<td>PROGBITS</td>
+<td>00201030</td>
+<td>001030</td>
+<td>00014</td>
+<td>0000</td>
+<td>WA</td>
+<td>0</td>
+<td>0</td>
+<td>8</td>
+</tr>
+<tr>
+<td>[26]</td>
+<td>.bss</td>
+<td>NOBITS</td>
+<td>00201044</td>
+<td>001044</td>
+<td>0000c</td>
+<td>0000</td>
+<td>WA</td>
+<td>0</td>
+<td>0</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<p>程序声明如下:   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">extern int g_static_so_bss;</span><br><span class="line">extern int g_static_so_data;</span><br><span class="line">extern int errno;</span><br></pre></td></tr></table></figure>
+<p>当前汇编访问的是:g_static_so_data<br>.dyn global data如下  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">000000200fc0  000100000006 R_X86_64_GLOB_DAT 0000000000000000 __cxa_finalize@GLIBC_2.2.5 + 0</span><br><span class="line">000000200fc8  000300000006 R_X86_64_GLOB_DAT 0000000000000000 _Jv_RegisterClasses + 0</span><br><span class="line">000000200fd0  000400000006 R_X86_64_GLOB_DAT 0000000000000000 g_static_so_data + 0</span><br><span class="line">000000200fd8  000500000006 R_X86_64_GLOB_DAT 0000000000000000 g_static_so_bss + 0</span><br><span class="line">000000200fe0  000800000006 R_X86_64_GLOB_DAT 0000000000000000 _ITM_deregisterTMClone + 0</span><br><span class="line">000000200fe8  000900000006 R_X86_64_GLOB_DAT 0000000000000000 __libc_start_main@GLIBC_2.2.5 + 0</span><br><span class="line">000000200ff0  000a00000006 R_X86_64_GLOB_DAT 0000000000000000 __gmon_start__ + 0</span><br><span class="line">000000200ff8  000b00000006 R_X86_64_GLOB_DAT 0000000000000000 _ITM_registerTMCloneTa + 0</span><br></pre></td></tr></table></figure>
+
+<h5><span id="共享库中对g_static_so_data的访问">共享库中对g_static_so_data的访问</span></h5><p>如果代码模型为大型 则和可执行程序中的代码段一致 如果是small或者median 共享库仍然会对全局变量走GOT表<br>汇编如下:    </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">894:   48 8b 05 45 07 20 00    mov    0x200745(%rip),%rax        # 200fe0 &lt;g_static_so_bss@@Base-0x60&gt;</span><br><span class="line">89b:   48 8b 00                mov    (%rax),%rax</span><br><span class="line">89e:   01 c2                   add    %eax,%edx</span><br></pre></td></tr></table></figure>
+<p>894: 取GOT中存储 g_static_so_bss 的项地址 并把内容(g_static_so_bss的地址)存放到%rax中<br>89b: 取 g_static_so_bss 的内容<br>89e: 加到%edx上  </p>
+<h5><span id="small-code-mode">small code mode:</span></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++-6 -O0 so.so main.cpp lib.cpp -pie -fPIE  -mcmodel&#x3D;small</span><br></pre></td></tr></table></figure>
+
+<p>假设了全局变量的存储位置在低端内存, 因此该全局变量直接定义在主程序的data段, 在so文件中仍然通过.got找到真实地址.<br>其类型R_X86_64_COPY<br>在主程序的汇编代码只有一行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">9f0:   c7 05 4e 06 20 00 e8    movl   $0x3e8,0x20064e(%rip)        # 201048 &lt;g_static_so_data&gt;</span><br></pre></td></tr></table></figure>
+<p>.dyn global</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">偏移量          信息           类型           符号值        符号名称 + 加数</span><br><span class="line">000000201048  001200000005 R_X86_64_COPY     0000000000201048 g_static_so_data + 0</span><br><span class="line">000000201050  001000000005 R_X86_64_COPY     0000000000201050 g_static_so_bss + 0</span><br></pre></td></tr></table></figure>
+
+<p>.dyn so </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">000000200fd8  001300000006 R_X86_64_GLOB_DAT 0000000000201030 g_static_so_data + 0</span><br><span class="line">000000200fe0  001000000006 R_X86_64_GLOB_DAT 0000000000201040 g_static_so_bss + 0</span><br></pre></td></tr></table></figure>
+
+<p>.symver指令</p>
+<blockquote>
+<p>g_static_so_data@@Base-0x58  的意思是: g_static_so_data的符号值-0x58 也就是g_static_so_data的偏移量  </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0000000000201030 - 000000200fd8 &#x3D; 0x58</span><br></pre></td></tr></table></figure>
+
+
+<h5><span id="备注说明">备注说明</span></h5><p>共享库中 无论是large还是small, 都会走so的got表, 区别在于会不会使用movabs进行64位的偏移计算<br>got表的位置可能紧接着.text并且设置为只读<br><a href="https://systemoverlord.com/2017/03/19/got-and-plt-for-pwning.html" target="_blank" rel="noopener">RELRO</a>   </p>
+<p>通过got表访问全局变量:  </p>
+<ol>
+<li>通过RIP-R找到GOT表的位置.   相对于.text固定的偏移量 (large不假定大小)     </li>
+<li>通过项索引偏移找到存储该变量地址的地址并解引用得到 变量地址  <ol>
+<li>(large不假定大小, medium会区分把&lt;64k的数据链接到低内存中 多个数据段.ldata(largedata))  </li>
+</ol>
+</li>
+<li>解引用并使用  </li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mov  (%rbx,%rax,1),%rax</span><br></pre></td></tr></table></figure>
+<p>这行代码可以优化为一个立即数偏移寻址  即</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mov    0x200745(%rip),%rax</span><br></pre></td></tr></table></figure>
+
+<p>当前代码段到GOT表的偏移</p>
+<p>但是在large模型中 </p>
+<p>通过rip寻址的指令中 偏移量不是64位的  因此需要先算一个小的偏移量 再通过支持64bit的 movabs(mov) 添加上一个64bit的偏移</p>
+<h5><span id="relro-relocation-read-only">RELRO  Relocation Read Only</span></h5><p>重定位只读技术<br>动态链接器在处理完GOT表后将其设为只读以提高安全性.  </p>
+<p>本文测试环境中只读. (实际上这是一个可以成为较为古老的技术了)  </p>
+<blockquote>
+<p>Linux version 4.9.0-4-amd64 (<a href="mailto:debian-kernel@lists.debian.org">debian-kernel@lists.debian.org</a>)<br>(gcc version 6.3.0 20170516 (Debian 6.3.0-18) )<br>#1 SMP Debian 4.9.65-3+deb9u1 (2017-12-23)<br>.zsummer  </p>
+</blockquote>
+<p>GOT表为R  只读段.<br>.got.plt存储plt的got仍然是读写段 (惰性加载机制决定, 可以选择非惰性+ro来完成全只读化)  </p>
+<h3><span id="调用惯例calling-conventions">调用惯例Calling Conventions</span></h3><p>计算机中Corotine分两种 Coroutine和Subroutine 前者对应协程 后者对应函数  </p>
+<ul>
+<li>call a routine (trasfer control to procedure)  跳转到目标routine  </li>
+<li>pass arguments  传递参数  <ul>
+<li>fixed length</li>
+<li>variable length</li>
+<li>recursively  </li>
+</ul>
+</li>
+<li>return to the caller  返回调用者地址  <ul>
+<li>putting results in a place where caller an find them  </li>
+</ul>
+</li>
+<li>manage register  管理寄存器 </li>
+</ul>
+<h5><span id="参数压栈顺序">参数压栈顺序</span></h5><p>标准的linux ABI调用约定中<br><a href="">System V Application Binary Interface—AMD64 Architecture Processor Supplement</a>   </p>
+<h6><span id="caller-save和callee-save">Caller Save和Callee Save</span></h6><p>当产生函数调用时 子函数内通常也会使用到通用寄存器 那么这些寄存器中之前保存的调用者(父函数)的值就会被覆盖<br>为了避免数据覆盖而导致从子函数返回时寄存器中的数据不可恢复 CPU 体系结构中就规定了通用寄存器的保存方式   </p>
+<ul>
+<li><p>Casller Save ‘调用者保存’ 在发起一个调用前需要保存(子例程直接覆盖使用) </p>
+<ul>
+<li>在进入子函数调用前, 调用者需要保存这些寄存器的值.   <ul>
+<li>一般做法是进入子函数调用前把这些寄存器压入栈中    </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Callee Save ‘被调用者保存’ (子例程使用前需要先保存)   </p>
+<ul>
+<li>在进入子函数调用后, 在使用这些寄存器前, 被调用者会保存这些寄存器的内容,并在使用后恢复  </li>
+<li>这种比较特殊也比较麻烦, 因为一旦接受这个设定, 那么所有subroutine都要进行合适的push并保证pop恢复.     </li>
+<li></li>
+</ul>
+</li>
+<li><p>cross</p>
+</li>
+</ul>
+<h3><span id="工具">工具</span></h3><ul>
+<li>objdump -S 查看汇编指令  </li>
+<li>gdb  <ul>
+<li>gdb 通过<code>layout regs</code>打开寄存器显示, 通过<code>set disassemble-next-line on</code>打开汇编  </li>
+<li>gdb 通过peda插件字节显示汇编和寄存器  和上面的原生方式选择一个即可, peda默认显示是intex语法    </li>
+<li>disas反汇编命令,直接disas是反汇编当前函数<ul>
+<li>disas /r (显示汇编指令对应十六进制值)   </li>
+<li>disas /m (如果有源码,显示对应行源码)   </li>
+</ul>
+</li>
+<li>intel语法<ul>
+<li>set disassembly-flavor intel</li>
+<li>set disassembly-flavor att</li>
+</ul>
+</li>
+<li>gdb关闭ASLR：<ul>
+<li>set disable-randomization on</li>
+</ul>
+</li>
+<li>开启ASLR：<ul>
+<li>set disable-randomization off</li>
+</ul>
+</li>
+<li>查看ASLR状态：<ul>
+<li>show disable-randomization</li>
+</ul>
+</li>
+<li>查看二进制  <ul>
+<li><code>x /1ag addr</code><!-- more -->
+<h4><span id="peda插件">PEDA插件</span></h4>peda默认设置的是intel的语法风格<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;longld&#x2F;peda.git ~&#x2F;peda</span><br><span class="line">echo &quot;source ~&#x2F;peda&#x2F;peda.py&quot; &gt;&gt; ~&#x2F;.gdbinit</span><br><span class="line">echo &quot;DONE! debug your program with gdb and enjoy&quot;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+</li>
 <li>aslr – Show/set ASLR setting of GDB</li>
 <li>checksec – Check for various security options of binary</li>
 <li>dumpargs – Display arguments passed to a function when stopped at a call instruction</li>
@@ -844,7 +1230,7 @@
 
       
         <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
             Table of Contents
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
@@ -854,8 +1240,10 @@
       
 
       <section class="site-overview sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="夏天">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="夏天" />
           <p class="site-author-name" itemprop="name">夏天</p>
            
               <p class="site-description motion-element" itemprop="description"></p>
@@ -914,7 +1302,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">2.</span> <span class="nav-text">基础语法格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">3.</span> <span class="nav-text">常见寄存器以及作用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.1.</span> <span class="nav-text">通用寄存器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.1.1.</span> <span class="nav-text">寄存器使用惯例 原文</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.1.2.</span> <span class="nav-text">中文对照</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.2.</span> <span class="nav-text">专用寄存器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.2.1.</span> <span class="nav-text">标志寄存器 RFLAGS</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.2.2.</span> <span class="nav-text">程序计数器(PC)(Relative Instruction-Pointer)(IP)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.2.3.</span> <span class="nav-text">指令寄存器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">4.</span> <span class="nav-text">汇编语法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.1.</span> <span class="nav-text">汇编指令</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">2.</span> <span class="nav-text">基础语法格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">3.</span> <span class="nav-text">常见寄存器以及作用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.1.</span> <span class="nav-text">通用寄存器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.1.1.</span> <span class="nav-text">寄存器使用惯例 原文</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.1.2.</span> <span class="nav-text">中文对照</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.2.</span> <span class="nav-text">专用寄存器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.2.1.</span> <span class="nav-text">标志寄存器 RFLAGS</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.2.2.</span> <span class="nav-text">程序计数器(PC)(Relative Instruction-Pointer)(IP)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.2.3.</span> <span class="nav-text">指令寄存器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">4.</span> <span class="nav-text">汇编语法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.1.</span> <span class="nav-text">汇编指令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.2.</span> <span class="nav-text">操作数格式与寻址</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.1.</span> <span class="nav-text">内存操作数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.2.</span> <span class="nav-text">寻址模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.3.</span> <span class="nav-text">large code mode:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.4.</span> <span class="nav-text">共享库中对g_static_so_data的访问</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.5.</span> <span class="nav-text">small code mode:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.6.</span> <span class="nav-text">备注说明</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.7.</span> <span class="nav-text">RELRO  Relocation Read Only</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">5.</span> <span class="nav-text">调用惯例Calling Conventions</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">5.0.1.</span> <span class="nav-text">参数压栈顺序</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#null"><span class="nav-number">5.0.1.1.</span> <span class="nav-text">Caller Save和Callee Save</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">6.</span> <span class="nav-text">工具</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">6.1.</span> <span class="nav-text">PEDA插件</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -934,7 +1322,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">
+        <div class="copyright" >
   
   &copy; 
   <span itemprop="copyrightYear">2019</span>
@@ -946,12 +1334,12 @@
 
 
 <div class="powered-by">
-  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
 </div>
 
 <div class="theme-info">
   Theme -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
     NexT.Gemini
   </a>
 </div>
