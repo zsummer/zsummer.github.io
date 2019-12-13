@@ -25,7 +25,15 @@ author: yawei.zhang
         - [内存操作数](#内存操作数)
         - [寻址模式](#寻址模式)
         - [large code mode:](#large-code-mode)
+        - [共享库中对g_static_so_data的访问](#共享库中对g_static_so_data的访问)
+        - [small code mode:](#small-code-mode)
         - [备注说明](#备注说明)
+        - [RELRO  Relocation Read Only](#relro--relocation-read-only)
+- [调用惯例Calling Conventions](#调用惯例calling-conventions)
+        - [参数压栈顺序](#参数压栈顺序)
+            - [Caller Save和Callee Save](#caller-save和callee-save)
+- [工具](#工具)
+    - [PEDA插件](#peda插件)
 
 <!-- /TOC -->
 
@@ -33,22 +41,22 @@ author: yawei.zhang
 
 GAS汇编的格式阅读起来很自然 如下   
   
-```assembly
-[操作符]    [源]      [目标] 
-movl        $0,      -4(%rbp)
-```  
-  
+```
+[操作符]    [源]      [目标]   
+movl        $0,      -4(%rbp)  
+```
+
+
 但是INTEL格式更贴近C语言的书写风格   
    
-```assembly
+```
 [操作符]   [目标]    [源]  
 mov        esi,     DWORD PTR [rbp-0x4]
-
-```   
+```
   
 很像C语言的代码   
    
-``` 
+``` assembly
 int esi = *(rbp-0x4);
 ```
 
@@ -258,13 +266,20 @@ segment:[base register + displacement + index register * scale factor]
 
 
 绝对寻址/直接寻址(Absolute or direct):  
-```jump    address   ```   
+
+```
+jump    address   
+```
+
 > (有效PC地址=address)  
 > Effective PC address = address  
 
 
 相对寻址(PC-relative):  
-```jump    offset    ```  
+```
+jump    offset    
+```
+
 > (有效PC地址=rip+offset = 下一个指令的地址 + offset)  
 > Effective PC address = next instruction address + offset, offset may be negative  
 
@@ -278,7 +293,7 @@ segment:[base register + displacement + index register * scale factor]
  810:   ff 25 12 08 20 00       jmpq   *0x200812(%rip)        # 201028 <_Z12so_func_baseii>
  816:   68 02 00 00 00          pushq  $0x2
  81b:   e9 c0 ff ff ff          jmpq   7e0 <.plt>  
- ```   
+ ```
 
 * jmpq   7e0  跳转到 CS:7e0 这个位置  
   > 实际上二进制的内容仍然是相对寻址(81b+5 + -40) ==  7e0  等同 jumpq * -0x40(%rip) 但省了一个字节的指令   
@@ -298,7 +313,9 @@ segment:[base register + displacement + index register * scale factor]
 > In the small code model all addresses (including GOT entries) are accessible via the IP-relative addressing provided by the AMD64 architecture. Hence there is no need for an explicit GOT pointer and therefore no function prologue for setting it up is necessary. In the medium and large code models a register has to be allocated to hold the address of the GOT in position-independent objects, because the AMD64 ISA does not support an immediate displacement larger than 32 bits.  
 > 在一个小型代码模型中, 所有的地址(包括GOT入口地址) 都是可以通过IP-RELATIVE访问到.  因此不需要显示声明额外的GOT指针 也不需要设置函数的开始语.  但在一个中型或者大型代码模型中, 必须分配一个寄存器去持有位置无关对象在GOT的地址  (AMD64不支持大于32位的立即跳转)  
  
-``` g++-6 -O0 so.so main.cpp lib.cpp -pie -fPIE  -mcmodel=large  ```   
+```
+g++-6 -O0 so.so main.cpp lib.cpp -pie -fPIE  -mcmodel=large 
+```
  
  举例一个通过.GOT表访问的全局变量代码如下:   
  ```
@@ -324,6 +341,7 @@ a70赋值立即数0x3e8 给全局变量 g_static_so_data = *(got[g_static_so_dat
 
 
 节点偏移和大小如下    
+
 | [号] | 名称     | 类型     | 地址     | 偏移量 | 大小  | 全体大小 | 旗标 | 链接 | 信息 | 对齐 |
 | ---- | -------- | -------- | -------- | ------ | ----- | -------- | ---- | ---- | ---- | ---- |
 | [23] | .got     | PROGBITS | 00200fc0 | 000fc0 | 00040 | 0008     | WA   | 0    | 0    | 8    |
@@ -364,7 +382,9 @@ extern int errno;
 
 
 ##### small code mode:  
-``` g++-6 -O0 so.so main.cpp lib.cpp -pie -fPIE  -mcmodel=small ```   
+```
+g++-6 -O0 so.so main.cpp lib.cpp -pie -fPIE  -mcmodel=small 
+```
 
 假设了全局变量的存储位置在低端内存, 因此该全局变量直接定义在主程序的data段, 在so文件中仍然通过.got找到真实地址.    
 其类型R_X86_64_COPY  
@@ -407,9 +427,11 @@ got表的位置可能紧接着.text并且设置为只读
 
 ```
 mov  (%rbx,%rax,1),%rax  
-```  
+```
 这行代码可以优化为一个立即数偏移寻址  即
-```mov    0x200745(%rip),%rax  ```  
+```
+mov    0x200745(%rip),%rax  
+```
 
 当前代码段到GOT表的偏移
 
@@ -484,7 +506,7 @@ GOT表为R  只读段.
   * 查看ASLR状态：
     * show disable-randomization
   * 查看二进制  
-    * ```x /1ag addr```   
+    * ```x /1ag addr```
 <!-- more -->
 #### PEDA插件  
 peda默认设置的是intel的语法风格
@@ -492,7 +514,7 @@ peda默认设置的是intel的语法风格
 git clone https://github.com/longld/peda.git ~/peda
 echo "source ~/peda/peda.py" >> ~/.gdbinit
 echo "DONE! debug your program with gdb and enjoy"
-```  
+```
 * aslr -- Show/set ASLR setting of GDB
 * checksec -- Check for various security options of binary
 * dumpargs -- Display arguments passed to a function when stopped at a call instruction
