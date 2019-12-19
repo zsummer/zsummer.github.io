@@ -25,6 +25,9 @@ author: yawei.zhang
   * 在编译和链接时都需要指定    
 
 
+> -fpic与-fpie的差别很细微,当使用-fpie时编译器知道当前的编译会生成一个PIC模式的 main executable(也就是有main入口的可执行文件),这样对于内部定义的global符号,就不 要考虑全局符号介入(global symbol interpose)的问题,对于这样的globals直接产生 PC-relative方式的代码而不需要通过GOT/PLT. –Ian Lance Taylor  
+
+
 * -fPIE  编译选项 
   * 编译位置无关代码, 和PIC相同, 但是PIE假定了编译出的目标文件用于链接成可执行文件  
   * 主要是访问外部符号时是否使用PLT/GOT  

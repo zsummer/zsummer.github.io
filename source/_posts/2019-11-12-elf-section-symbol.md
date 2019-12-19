@@ -13,16 +13,13 @@ author: yawei.zhang
 
 - [目录](#目录)
 - [ELF文件类型和描述](#elf文件类型和描述)
-  - [文件类型](#文件类型)
-  - [链接器视图(编译器 汇编器 链接器)](#链接器视图编译器-汇编器-链接器)
-  - [加载器视图 (系统加载器)](#加载器视图-系统加载器)
-  - [基本测试命令](#基本测试命令)
-  - [基础术语知识](#基础术语知识)
-    - [目标文件格式的比较和说明](#目标文件格式的比较和说明)
-    - [其他词汇说明](#其他词汇说明)
-- [可重定位文件](#可重定位文件)
-  - [lib.cpp片段分析](#libcpp片段分析)
-  - [so.cpp片段分析](#socpp片段分析)
+    - [文件类型](#文件类型)
+    - [链接器视图(编译器 汇编器 链接器)](#链接器视图编译器-汇编器-链接器)
+    - [加载器视图 (系统加载器)](#加载器视图-系统加载器)
+    - [基本测试命令](#基本测试命令)
+    - [基础术语知识](#基础术语知识)
+        - [目标文件格式的比较和说明](#目标文件格式的比较和说明)
+        - [其他词汇说明](#其他词汇说明)
 
 <!-- /TOC -->
 
@@ -209,7 +206,9 @@ pie是链接选项 用于生成DYN类型的可执行文件.
       * R_386_GOTPC：此类型类似于R_386_PC32。只是它在计算中使用全局偏移表的地址。这种类型的重定位引用的通常是_GLOBAL_OFFSET_TABLE_DE类型的符号，并且通知链接编辑器构建全局偏移表。（GOT+A-P）****
 
   * 这些条目给链接的时候需要和其他可重定位文件或者库的对应的section合并时提供了必要的信息  
-
+R_386_32/R_386_PC32/ R_386_RELATIVE,这三种类型的重定位目标都可以位于.text(代码段).  
+这样如果linker解决 了重定位的问题,那么这个.text里面的数据已经经过了修改,那么这个.text就不可能在多 个GNU/Linux运行的进程之间共享,相对于shared library来说这样对整个系统的RAM很浪费.   
+但是相应地相对于shared library有一个优点,那就是因为启动快,因为基本上动态连接 器不需要reslove什么符号,而且代码中R_386_32/R_386_RELATIVE方式的重定位目标已经被 修改成了绝对地址,相对于需要运行时全部做间接调用的shared library来说少了很多个指令周期.   
 
 * program header PH 程序头
   * segment信息
@@ -234,134 +233,6 @@ pie是链接选项 用于生成DYN类型的可执行文件.
 * string table             字符串表     
 * symbol table             符号表       
 * termination function     终止函数     
-
-
-
-
-### 可重定位文件    
-
----  
- 
-
-
-
-
-* 注：各个段之间并未严格的首位相接，考虑到对齐的因素，他们之间会存在”空洞”（如图中.shstrtab段和Section Header Table之间的padding分区）；
-
-
-#### lib.cpp片段分析  
-
-lib.cpp
-```
-int g_static_lib_bss = 0;
-int g_static_lib_data = 0xff1234ff;
-int lib_func(int a, int b)
-{
-  return a+b;
-}
-```
-通过命令编译出目标文件lib.o和分析数据
-```
-g++ -c -fpic lib.cpp -o lib.pic.o
-g++ -c       lib.cpp -o lib.npic.o  
-g++ -c -fpie -pie lib.cpp -o lib.pie.o
-readelf -a lib.npic.o
-readelf -a lib.pic.o
-objdump -S lib.npic.o
-objdump -S lib.pic.o
-```
-
-lib.cpp无论是pie选项还是pic, 编译的结果完全一致 
-
-```
-ELF 头：
-  ABI 版本:                          0
-  类型:                              REL (可重定位文件)
-
-重定位节 '.rela.eh_frame' 位于偏移量 0x1f0 含有 1 个条目：
-  偏移量          信息           类型           符号值        符号名称 + 加数
-000000000020  000200000002 R_X86_64_PC32     0000000000000000 .text + 0
-
-Symbol table '.symtab' contains 11 entries:
-   Num:    Value          Size Type    Bind   Vis      Ndx Name
-     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND 
-     1: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS lib.cpp
-     8: 0000000000000000     4 OBJECT  GLOBAL DEFAULT    3 g_static_lib_bss
-     9: 0000000000000000     4 OBJECT  GLOBAL DEFAULT    2 g_static_lib_data
-    10: 0000000000000000    20 FUNC    GLOBAL DEFAULT    1 _Z8lib_funcii
-
-
-0000000000000000 <_Z8lib_funcii>:
-   0:   55                      push   %rbp
-   1:   48 89 e5                mov    %rsp,%rbp
-   4:   89 7d fc                mov    %edi,-0x4(%rbp)
-   7:   89 75 f8                mov    %esi,-0x8(%rbp)
-   a:   8b 55 fc                mov    -0x4(%rbp),%edx
-   d:   8b 45 f8                mov    -0x8(%rbp),%eax
-  10:   01 d0                   add    %edx,%eax
-  12:   5d                      pop    %rbp
-  13:   c3                      retq   
-```
-
-
-#### so.cpp片段分析  
-so.cpp
-```
-int lib_func(int a, int b);
-int so_func(int a, int b)
-{
-  int ret = lib_func(a, b);
-  return ret;
-}
-```
-通过命令编译出目标文件so.o和分析数据
-```
-g++ -c -fpic so.cpp -o so.pic.o
-g++ -c       so.cpp -o so.npic.o  
-readelf -a so.npic.o
-readelf -a so.pic.o
-objdump -S so.npic.o
-objdump -S so.pic.o
-```
-
-so.cpp的两个object文件的汇编码一致, 但是readelf中的section不同 主要区别如下:
-* no -fpic选项的目标文件中 .rela.text 的两个引用的符号类型是PC32  
-*    -fpic选项的目标文件中 .rela.text 的两个引用的符号类型是PLT32  
-*    -fpic选项的目标文件中 .symtab 的外部引用符号之前多了一个_GLOBAL_OFFSET_TABLE_  即GOT表的符号和地址信息
-
-* .got.plt .got在共享文件或者可执行文件中  
-* GOT是 GLOBAL_OFFSET_TABLE  全局偏移表  GOT用来做在链接时建立数据和地址的重定位
-  * ELF的数据段里面建立一个指向这些变量的指针数组 当指令中需要访问外部变量时 会先找到GOT 然后根据GOT中变量所对应的项找到变量的目标地址
-  * 链接器在装载模块时会查找每个变量所在的地址 然后填充GOT中每个项 由于GOT是放在数据段的 所以每个进程可以有一个独立的副本  
-  * GOT的意义是访问数据的时候通过GOT读表获取目标数据的地址, 而不是在链接或者加载时对目标代码进行修改(重定向)   
-  * GOT延迟绑定 而不是load的时候一次性全部做好地址的绑定 减少加载时候的工作量
-  * 通过GOT实现 代码应该始终是只读的 
-  * 通过GOT可实现修改符号绑定顺序的能力  
-* PLT 小型过程链接表存根(stub)进行, 如果plt有则直接使用没有则去找, 有的话则用存根ID去GOT中查找记录的地址 
-  * 每个函数对应一个小的过程类似如下: 
-    ```
-    0000000000000690 <_Z13so_inner_funcii@plt>:
-    690:   ff 25 8a 09 20 00       jmpq   *0x20098a(%rip)        # 201020 <_Z13so_inner_funcii@@Base+0x200870>
-    696:   68 01 00 00 00          pushq  $0x1
-    69b:   e9 d0 ff ff ff          jmpq   670 <.plt>
-    ```
-
-```
-全局偏移量表(global offset table)在私有数据中包含绝对地址
-出于方便共享和重用的考虑，目标文件中的很多内容是“位置无关”的，其映射到进程内存中的什么位置是不一定的，所以只适合使用相对地址，全局偏移量表是一个例外
-在UNIX System V 环境下的动态连接过程中，got 表是必须的，它的实际内容和格式依处理器不同而不同。
-总的来说，位置独立的代码不能含有绝对的虚拟地址。全局偏移量表选择了在私有数据中含有绝对地址，这种办法在没有牺牲位置独立性和可共享性的前提下保存了绝对地址。引用全局偏移量表的程序可以同时使用位置独立的地址和绝对地址，把位置无关的引用重定向到绝对地址上去。
-一开始，全局偏移量表只包含其重定位项所要求的信息。当系统为可装载的目标文件创建了内存段之后，动态连接器处理重定位项，有些重定位项的类型为R_386_GLOB_DAT，它们指向全局偏移量表。动态连接器决定相应的符号值，计算其绝对地址，并且为内存段设置适当的值。尽管在连接编辑器创建目标文件的时候绝对地址还是未知的，但是动态连接器却知道所有内存段的地址，因此它可以计算所含有的所有符号的绝对地址。
-如果一个程序要求直接访问符号的绝对地址，那么这个符号在全局偏移量表中就必须有一个对应的项。可执行文件和共享目标文件有各自的全局偏移量表，所以一个符号的地址可能会出现在多个表中。动态连接器会在程序开始执行之前，处理好所有全局偏移量表的重定位工作，所以在程序执行的时候，可以保证所有这些符号都有正确的绝对地址。
-全局偏移量表的第 0 项是保留的，它用于持有动态结构的地址，由符号_DYNAMIC 引用。这样，其它程序，比如动态连接器就可以直接找到其动态结构，而不用借助重定位项。这对于动态连接器来说尤为重要，因为它必须在不依赖于其它程序重定位其内存镜像的情况下初始化自己。前面提到过，在 Intel 架构中，全局偏移量表中的第 1 项和第 2 项也是保留的，它们持有函数连接表的信息。
-系统可能为同一个共享目标在不同的程序中选择不同的段地址；甚至也可能每次为同一个程序选择不同的地址。但是，在单次执行中，一旦一个进程的镜像建立起来之后，直到程序退出，内存段的地址都不会再改变了。
-全局偏移量表的格式和解析方法是依处理器而不同的，就 Intel 架构而言，符号_GLOBAL_OFFSET_TABLE_会被用来访问此表。
-
-extern Elf32_Addr _GLOBAL_OFFSET_TABLE_[];
-符号_GLOBAL_OFFSET_TABLE_可能位于.got 节中部，所以它也接受负的数组索引值。
-```
-* PLT是 Procedure Link Table 程序链接表  PLT用来做在链接时建立符号和地址的重定位  
-  * PLT的实现是延迟查找  
 
 
 

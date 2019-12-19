@@ -5,7 +5,7 @@ categories: develop
 author: yawei.zhang 
 ---
 
-### 目录  
+### 0.0.1. 目录  
 
 <!-- TOC -->
 
@@ -37,7 +37,10 @@ author: yawei.zhang
 
 <!-- /TOC -->
 
-### 基础语法格式
+
+
+
+### 0.0.2. 基础语法格式
 
 GAS汇编的格式阅读起来很自然 如下   
   
@@ -66,12 +69,12 @@ int esi = *(rbp-0x4);
 
 <!-- more -->   
 
-### 常见寄存器以及作用   
+### 0.0.3. 常见寄存器以及作用   
 16bit寄存器一般没有前缀  例如ax   bx   ds   
 32bit寄存器前缀一般为e   例如eax  ebx  eds   
 64bit寄存器前缀一般为r   例如rax  rbx  rds
 
-#### 通用寄存器   
+#### 0.0.3.1. 通用寄存器   
 
 X86-64体系下有16个通用寄存器 分别为:
 ```
@@ -84,7 +87,7 @@ eax    ebx    ecx    edx    edi    esi    ebp    esp    e8d – e15d
 
 在所有CPU的架构体系中, 每个寄存器通常都是有其建议的使用用途的, X86-64架构下其用途如下:  
 
-##### 寄存器使用惯例 原文  
+##### 0.0.3.1.1. 寄存器使用惯例 原文  
 [X86-64 Registers](https://cons.mit.edu/sp17/x86-64-architecture-guide.html)
 
 | Register | Purpose                                | Saved across calls |
@@ -102,7 +105,7 @@ eax    ebx    ecx    edx    edi    esi    ebp    esp    e8d – e15d
 | %r10-r11 | temporary                              | No                 |
 | %r12-r15 | callee-saved registers                 | Yes                |
 
-##### 中文对照  
+##### 0.0.3.1.2. 中文对照  
 | 寄存器   | 推荐用途                                   | 跨调用过程保存 |
 | -------- | ------------------------------------------ | -------------- |
 | %rax     | 保存函数/计算的返回值                      | No             |
@@ -118,10 +121,10 @@ eax    ebx    ecx    edx    edi    esi    ebp    esp    e8d – e15d
 | %r10-r11 | temporary                                  | No             |
 | %r12-r15 | callee-saved registers                     | Yes            |
 
-#### 专用寄存器  
+#### 0.0.3.2. 专用寄存器  
 标志寄存器和程序计数器可能为同一个寄存器实现  
 
-##### 标志寄存器 RFLAGS  
+##### 0.0.3.2.1. 标志寄存器 RFLAGS  
 
 NV UP EI PL NZ NA PO NC表示标志寄存器的值  
 
@@ -137,7 +140,7 @@ NV UP EI PL NZ NA PO NC表示标志寄存器的值
 | 进位标志CF(Carry flag)           | CY(1) | NC(0) |
 | TF(TrapFlag)                     |       |       |
 
-##### 程序计数器(PC)(Relative Instruction-Pointer)(IP)  
+##### 0.0.3.2.2. 程序计数器(PC)(Relative Instruction-Pointer)(IP)  
 保存下一行要执行的指令位置  
 Intel的实现叫RIP  
 > The 64-bit instruction pointer RIP points to the next instruction to be executed, and supports a 64-bit flat memory model.  
@@ -156,14 +159,14 @@ Intel的实现叫RIP
 在没有RIP的情况下需要通过函数调用来实现PLC  会消耗较多的性能     
 windows则直接采用了'重定位基址'的方式实现非PLC的装载.  
 
-##### 指令寄存器  
+##### 0.0.3.2.3. 指令寄存器  
 当前正在执行的指令, 简单CPU会预读 但复杂的CPU有流水线/指令级并行计算等    
  
 
 
 
-### 汇编语法   
-#### 汇编指令   
+### 0.0.4. 汇编语法   
+#### 0.0.4.1. 汇编指令   
  
 | 操作码                     | 描述                                                                                       |
 | -------------------------- | ------------------------------------------------------------------------------------------ |
@@ -200,7 +203,7 @@ windows则直接采用了'重定位基址'的方式实现非PLC的装载.
 | and src, dest              | 执行按位的与操作并保存到dest                                                               |
 | xor src, dest              | 执行按位的异或操作并保存到dest                                                             |
 
-#### 操作数格式与寻址   
+#### 0.0.4.2. 操作数格式与寻址   
 
 M[xx]表示在存储器中xx地址的值   
 R[xx]表示寄存器xx的值   
@@ -221,7 +224,7 @@ R[xx]表示寄存器xx的值
 | (Ea,Eb,s)    | M(R[Ea]+R[Eb]*s)     | 伸缩化变址寻址    | (%eax,%ebx,4) = *(eax+ebx*4)    |
 | Imm(Ea,Eb,s) | M(Imm+R[Ea]+R[Eb]*s) | 伸缩化变址寻址    | 8(%eax,%ebx,4) = *(8+eax+ebx*4) |
 
-##### 内存操作数  
+##### 0.0.4.2.1. 内存操作数  
 
 操作数语法:    
 ```
@@ -247,7 +250,7 @@ segment:[base register + displacement + index register * scale factor]
 
 
 
-##### 寻址模式    
+##### 0.0.4.2.2. 寻址模式    
 
 > References to both code and data on x64 are done with instruction-relative (RIP-relative in x64 parlance) addressing modes. The offset from RIP in these instructions is limited to 32 bits.     
 > X64体系下的寻址是建立在相对寻址(RIP-RELATIVE)之上的, RIP的偏移大小最大为32bits  
@@ -308,7 +311,7 @@ jump    offset
 
 
 
-##### large code mode:  
+##### 0.0.4.2.3. large code mode:  
 
 > In the small code model all addresses (including GOT entries) are accessible via the IP-relative addressing provided by the AMD64 architecture. Hence there is no need for an explicit GOT pointer and therefore no function prologue for setting it up is necessary. In the medium and large code models a register has to be allocated to hold the address of the GOT in position-independent objects, because the AMD64 ISA does not support an immediate displacement larger than 32 bits.  
 > 在一个小型代码模型中, 所有的地址(包括GOT入口地址) 都是可以通过IP-RELATIVE访问到.  因此不需要显示声明额外的GOT指针 也不需要设置函数的开始语.  但在一个中型或者大型代码模型中, 必须分配一个寄存器去持有位置无关对象在GOT的地址  (AMD64不支持大于32位的立即跳转)  
@@ -368,7 +371,7 @@ extern int errno;
 000000200ff8  000b00000006 R_X86_64_GLOB_DAT 0000000000000000 _ITM_registerTMCloneTa + 0
 ```
 
-##### 共享库中对g_static_so_data的访问   
+##### 0.0.4.2.4. 共享库中对g_static_so_data的访问   
 如果代码模型为大型 则和可执行程序中的代码段一致 如果是small或者median 共享库仍然会对全局变量走GOT表  
 汇编如下:    
 ```
@@ -381,7 +384,7 @@ extern int errno;
 89e: 加到%edx上  
 
 
-##### small code mode:  
+##### 0.0.4.2.5. small code mode:  
 ```
 g++-6 -O0 so.so main.cpp lib.cpp -pie -fPIE  -mcmodel=small 
 ```
@@ -412,7 +415,7 @@ g++-6 -O0 so.so main.cpp lib.cpp -pie -fPIE  -mcmodel=small
 ```
 
 
-##### 备注说明  
+##### 0.0.4.2.6. 备注说明  
 共享库中 无论是large还是small, 都会走so的got表, 区别在于会不会使用movabs进行64位的偏移计算  
 got表的位置可能紧接着.text并且设置为只读  
 [RELRO](https://systemoverlord.com/2017/03/19/got-and-plt-for-pwning.html)   
@@ -439,7 +442,7 @@ mov    0x200745(%rip),%rax
 
 通过rip寻址的指令中 偏移量不是64位的  因此需要先算一个小的偏移量 再通过支持64bit的 movabs(mov) 添加上一个64bit的偏移
 
-##### RELRO  Relocation Read Only   
+##### 0.0.4.2.7. RELRO  Relocation Read Only   
 重定位只读技术  
 动态链接器在处理完GOT表后将其设为只读以提高安全性.  
 
@@ -455,7 +458,7 @@ GOT表为R  只读段.
 
 
 
-### 调用惯例Calling Conventions 
+### 0.0.5. 调用惯例Calling Conventions 
 计算机中Corotine分两种 Coroutine和Subroutine 前者对应协程 后者对应函数  
 
 * call a routine (trasfer control to procedure)  跳转到目标routine  
@@ -468,12 +471,12 @@ GOT表为R  只读段.
 * manage register  管理寄存器 
 
 
-##### 参数压栈顺序  
+##### 0.0.5.0.8. 参数压栈顺序  
 标准的linux ABI调用约定中
 [System V Application Binary Interface—AMD64 Architecture Processor Supplement]()   
 
 
-###### Caller Save和Callee Save   
+###### 0.0.5.0.8.1. Caller Save和Callee Save   
 当产生函数调用时 子函数内通常也会使用到通用寄存器 那么这些寄存器中之前保存的调用者(父函数)的值就会被覆盖   
 为了避免数据覆盖而导致从子函数返回时寄存器中的数据不可恢复 CPU 体系结构中就规定了通用寄存器的保存方式   
 
@@ -487,7 +490,7 @@ GOT表为R  只读段.
 
 * cross
 
-### 工具   
+### 0.0.6. 工具   
 
 * objdump -S 查看汇编指令  
 * gdb  
@@ -507,8 +510,8 @@ GOT表为R  只读段.
     * show disable-randomization
   * 查看二进制  
     * ```x /1ag addr```
-<!-- more -->
-#### PEDA插件  
+
+#### 0.0.6.1. PEDA插件  
 peda默认设置的是intel的语法风格
 ```
 git clone https://github.com/longld/peda.git ~/peda
