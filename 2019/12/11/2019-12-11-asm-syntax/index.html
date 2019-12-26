@@ -94,15 +94,15 @@
 
 
 
-<meta name="description" content="目录   目录 基础语法格式 常见寄存器以及作用 通用寄存器 寄存器使用惯例 原文 中文对照   专用寄存器 标志寄存器 RFLAGS 程序计数器(PC)(Relative Instruction-Pointer)(IP) 指令寄存器     汇编语法 汇编指令 操作数格式与寻址 内存操作数 寻址模式 large code mode: 共享库中对g_static_so_data的访问 small">
+<meta name="description" content="0.0.1. 目录   目录 基础语法格式 常见寄存器以及作用 通用寄存器 寄存器使用惯例 原文 中文对照   专用寄存器 标志寄存器 RFLAGS 程序计数器(PC)(Relative Instruction-Pointer)(IP) 指令寄存器     汇编语法 汇编指令 操作数格式与寻址 内存操作数 寻址模式 large code mode: 共享库中对g_static_so_data的访问">
 <meta property="og:type" content="article">
 <meta property="og:title" content="汇编语法&#x2F;寻址&#x2F;寄存器&#x2F;代码模型(GNU assembler)">
 <meta property="og:url" content="https:&#x2F;&#x2F;zsummer.github.io&#x2F;2019&#x2F;12&#x2F;11&#x2F;2019-12-11-asm-syntax&#x2F;index.html">
 <meta property="og:site_name" content="关于夏天的一切">
-<meta property="og:description" content="目录   目录 基础语法格式 常见寄存器以及作用 通用寄存器 寄存器使用惯例 原文 中文对照   专用寄存器 标志寄存器 RFLAGS 程序计数器(PC)(Relative Instruction-Pointer)(IP) 指令寄存器     汇编语法 汇编指令 操作数格式与寻址 内存操作数 寻址模式 large code mode: 共享库中对g_static_so_data的访问 small">
+<meta property="og:description" content="0.0.1. 目录   目录 基础语法格式 常见寄存器以及作用 通用寄存器 寄存器使用惯例 原文 中文对照   专用寄存器 标志寄存器 RFLAGS 程序计数器(PC)(Relative Instruction-Pointer)(IP) 指令寄存器     汇编语法 汇编指令 操作数格式与寻址 内存操作数 寻址模式 large code mode: 共享库中对g_static_so_data的访问">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2019-12-10T16:00:00.000Z">
-<meta property="article:modified_time" content="2019-12-13T17:13:08.584Z">
+<meta property="article:modified_time" content="2019-12-16T08:34:37.003Z">
 <meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
 
@@ -341,7 +341,7 @@
       
 
       
-        <h3><span id="目录">目录</span></h3><!-- TOC -->
+        <h3><span id="001-目录">0.0.1. 目录</span></h3><!-- TOC -->
 
 <ul>
 <li><a href="#目录">目录</a></li>
@@ -383,7 +383,10 @@
 </ul>
 <!-- /TOC -->
 
-<h3><span id="基础语法格式">基础语法格式</span></h3><p>GAS汇编的格式阅读起来很自然 如下   </p>
+
+
+
+<h3><span id="002-基础语法格式">0.0.2. 基础语法格式</span></h3><p>GAS汇编的格式阅读起来很自然 如下   </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[操作符]    [源]      [目标]   </span><br><span class="line">movl        $0,      -4(%rbp)</span><br></pre></td></tr></table></figure>
 
 
@@ -399,14 +402,14 @@
 <p>“@”符号表示“将符号左边的变量钳制在符号右边的地址   </p>
 <a id="more"></a>   
 
-<h3><span id="常见寄存器以及作用">常见寄存器以及作用</span></h3><p>16bit寄存器一般没有前缀  例如ax   bx   ds<br>32bit寄存器前缀一般为e   例如eax  ebx  eds<br>64bit寄存器前缀一般为r   例如rax  rbx  rds</p>
-<h4><span id="通用寄存器">通用寄存器</span></h4><p>X86-64体系下有16个通用寄存器 分别为:</p>
+<h3><span id="003-常见寄存器以及作用">0.0.3. 常见寄存器以及作用</span></h3><p>16bit寄存器一般没有前缀  例如ax   bx   ds<br>32bit寄存器前缀一般为e   例如eax  ebx  eds<br>64bit寄存器前缀一般为r   例如rax  rbx  rds</p>
+<h4><span id="0031-通用寄存器">0.0.3.1. 通用寄存器</span></h4><p>X86-64体系下有16个通用寄存器 分别为:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rax    rbx    rcx    rdx    rdi    rsi    rbp    rsp    r8 – r15</span><br></pre></td></tr></table></figure>
 <p>兼容32位模式, 对应为: </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">eax    ebx    ecx    edx    edi    esi    ebp    esp    e8d – e15d</span><br></pre></td></tr></table></figure>
 
 <p>在所有CPU的架构体系中, 每个寄存器通常都是有其建议的使用用途的, X86-64架构下其用途如下:  </p>
-<h5><span id="寄存器使用惯例-原文">寄存器使用惯例 原文</span></h5><p><a href="https://cons.mit.edu/sp17/x86-64-architecture-guide.html" target="_blank" rel="noopener">X86-64 Registers</a></p>
+<h5><span id="00311-寄存器使用惯例-原文">0.0.3.1.1. 寄存器使用惯例 原文</span></h5><p><a href="https://cons.mit.edu/sp17/x86-64-architecture-guide.html" target="_blank" rel="noopener">X86-64 Registers</a></p>
 <table>
 <thead>
 <tr>
@@ -476,7 +479,7 @@
 <td>Yes</td>
 </tr>
 </tbody></table>
-<h5><span id="中文对照">中文对照</span></h5><table>
+<h5><span id="00312-中文对照">0.0.3.1.2. 中文对照</span></h5><table>
 <thead>
 <tr>
 <th>寄存器</th>
@@ -545,8 +548,8 @@
 <td>Yes</td>
 </tr>
 </tbody></table>
-<h4><span id="专用寄存器">专用寄存器</span></h4><p>标志寄存器和程序计数器可能为同一个寄存器实现  </p>
-<h5><span id="标志寄存器-rflags">标志寄存器 RFLAGS</span></h5><p>NV UP EI PL NZ NA PO NC表示标志寄存器的值  </p>
+<h4><span id="0032-专用寄存器">0.0.3.2. 专用寄存器</span></h4><p>标志寄存器和程序计数器可能为同一个寄存器实现  </p>
+<h5><span id="00321-标志寄存器-rflags">0.0.3.2.1. 标志寄存器 RFLAGS</span></h5><p>NV UP EI PL NZ NA PO NC表示标志寄存器的值  </p>
 <table>
 <thead>
 <tr>
@@ -601,7 +604,7 @@
 <td></td>
 </tr>
 </tbody></table>
-<h5><span id="程序计数器pcrelative-instruction-pointerip">程序计数器(PC)(Relative Instruction-Pointer)(IP)</span></h5><p>保存下一行要执行的指令位置<br>Intel的实现叫RIP  </p>
+<h5><span id="00322-程序计数器pcrelative-instruction-pointerip">0.0.3.2.2. 程序计数器(PC)(Relative Instruction-Pointer)(IP)</span></h5><p>保存下一行要执行的指令位置<br>Intel的实现叫RIP  </p>
 <blockquote>
 <p>The 64-bit instruction pointer RIP points to the next instruction to be executed, and supports a 64-bit flat memory model.<br>64位指令指针 RIP 指向预期要执行的下一行指令(位置), 并且支持64位平坦内存模型<br>RIP-relative addressing: this is new for x64 and allows accessing data tables and such in the code relative to the current instruction pointer, making position independent code easier to implement.<br>PIC提供了相对于当前指令位置访问数据表这样新的支持, 从而让PIC更容易实现   </p>
 </blockquote>
@@ -609,8 +612,8 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0000000000000570 &lt;foo@plt&gt;:</span><br><span class="line"> 570:    ff 25 a2 0a 20 00        jmpq   *0x200aa2(%rip)        # 201018 &lt;_GLOBAL_OFFSET_TABLE_+0x18&gt;</span><br><span class="line"> 576:    68 00 00 00 00           pushq  $0x0</span><br><span class="line"> 57b:    e9 e0 ff ff ff           jmpq   560 &lt;_init+0x20&gt;</span><br></pre></td></tr></table></figure>
 
 <p>在没有RIP的情况下需要通过函数调用来实现PLC  会消耗较多的性能<br>windows则直接采用了’重定位基址’的方式实现非PLC的装载.  </p>
-<h5><span id="指令寄存器">指令寄存器</span></h5><p>当前正在执行的指令, 简单CPU会预读 但复杂的CPU有流水线/指令级并行计算等    </p>
-<h3><span id="汇编语法">汇编语法</span></h3><h4><span id="汇编指令">汇编指令</span></h4><table>
+<h5><span id="00323-指令寄存器">0.0.3.2.3. 指令寄存器</span></h5><p>当前正在执行的指令, 简单CPU会预读 但复杂的CPU有流水线/指令级并行计算等    </p>
+<h3><span id="004-汇编语法">0.0.4. 汇编语法</span></h3><h4><span id="0041-汇编指令">0.0.4.1. 汇编指令</span></h4><table>
 <thead>
 <tr>
 <th>操作码</th>
@@ -746,7 +749,7 @@
 <td>执行按位的异或操作并保存到dest</td>
 </tr>
 </tbody></table>
-<h4><span id="操作数格式与寻址">操作数格式与寻址</span></h4><p>M[xx]表示在存储器中xx地址的值<br>R[xx]表示寄存器xx的值<br>这种表示方法将寄存器 内存都看出一个大数组的形式    </p>
+<h4><span id="0042-操作数格式与寻址">0.0.4.2. 操作数格式与寻址</span></h4><p>M[xx]表示在存储器中xx地址的值<br>R[xx]表示寄存器xx的值<br>这种表示方法将寄存器 内存都看出一个大数组的形式    </p>
 <table>
 <thead>
 <tr>
@@ -829,7 +832,7 @@
 <td>8(%eax,%ebx,4) = <em>(8+eax+ebx</em>4)</td>
 </tr>
 </tbody></table>
-<h5><span id="内存操作数">内存操作数</span></h5><p>操作数语法:    </p>
+<h5><span id="00421-内存操作数">0.0.4.2.1. 内存操作数</span></h5><p>操作数语法:    </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">segment:displacement(base register, index register, scale factor)</span><br></pre></td></tr></table></figure>
 <p>等效intel语法   </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">segment:[base register + displacement + index register * scale factor]</span><br></pre></td></tr></table></figure>
@@ -871,7 +874,7 @@
 <td>movl %ebx,  %eax</td>
 </tr>
 </tbody></table>
-<h5><span id="寻址模式">寻址模式</span></h5><blockquote>
+<h5><span id="00422-寻址模式">0.0.4.2.2. 寻址模式</span></h5><blockquote>
 <p>References to both code and data on x64 are done with instruction-relative (RIP-relative in x64 parlance) addressing modes. The offset from RIP in these instructions is limited to 32 bits.<br>X64体系下的寻址是建立在相对寻址(RIP-RELATIVE)之上的, RIP的偏移大小最大为32bits  </p>
 </blockquote>
 <p><a href="https://eli.thegreenplace.net/2012/01/03/understanding-the-x64-code-models" target="_blank" rel="noopener">x64 code mode</a>    </p>
@@ -928,7 +931,7 @@
 <ul>
 <li>这里跳转指令则只用了两个字节  </li>
 </ul>
-<h5><span id="large-code-mode">large code mode:</span></h5><blockquote>
+<h5><span id="00423-large-code-mode">0.0.4.2.3. large code mode:</span></h5><blockquote>
 <p>In the small code model all addresses (including GOT entries) are accessible via the IP-relative addressing provided by the AMD64 architecture. Hence there is no need for an explicit GOT pointer and therefore no function prologue for setting it up is necessary. In the medium and large code models a register has to be allocated to hold the address of the GOT in position-independent objects, because the AMD64 ISA does not support an immediate displacement larger than 32 bits.<br>在一个小型代码模型中, 所有的地址(包括GOT入口地址) 都是可以通过IP-RELATIVE访问到.  因此不需要显示声明额外的GOT指针 也不需要设置函数的开始语.  但在一个中型或者大型代码模型中, 必须分配一个寄存器去持有位置无关对象在GOT的地址  (AMD64不支持大于32位的立即跳转)  </p>
 </blockquote>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++-6 -O0 so.so main.cpp lib.cpp -pie -fPIE  -mcmodel&#x3D;large</span><br></pre></td></tr></table></figure>
@@ -1011,10 +1014,10 @@
 <p>当前汇编访问的是:g_static_so_data<br>.dyn global data如下  </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">000000200fc0  000100000006 R_X86_64_GLOB_DAT 0000000000000000 __cxa_finalize@GLIBC_2.2.5 + 0</span><br><span class="line">000000200fc8  000300000006 R_X86_64_GLOB_DAT 0000000000000000 _Jv_RegisterClasses + 0</span><br><span class="line">000000200fd0  000400000006 R_X86_64_GLOB_DAT 0000000000000000 g_static_so_data + 0</span><br><span class="line">000000200fd8  000500000006 R_X86_64_GLOB_DAT 0000000000000000 g_static_so_bss + 0</span><br><span class="line">000000200fe0  000800000006 R_X86_64_GLOB_DAT 0000000000000000 _ITM_deregisterTMClone + 0</span><br><span class="line">000000200fe8  000900000006 R_X86_64_GLOB_DAT 0000000000000000 __libc_start_main@GLIBC_2.2.5 + 0</span><br><span class="line">000000200ff0  000a00000006 R_X86_64_GLOB_DAT 0000000000000000 __gmon_start__ + 0</span><br><span class="line">000000200ff8  000b00000006 R_X86_64_GLOB_DAT 0000000000000000 _ITM_registerTMCloneTa + 0</span><br></pre></td></tr></table></figure>
 
-<h5><span id="共享库中对g_static_so_data的访问">共享库中对g_static_so_data的访问</span></h5><p>如果代码模型为大型 则和可执行程序中的代码段一致 如果是small或者median 共享库仍然会对全局变量走GOT表<br>汇编如下:    </p>
+<h5><span id="00424-共享库中对g_static_so_data的访问">0.0.4.2.4. 共享库中对g_static_so_data的访问</span></h5><p>如果代码模型为大型 则和可执行程序中的代码段一致 如果是small或者median 共享库仍然会对全局变量走GOT表<br>汇编如下:    </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">894:   48 8b 05 45 07 20 00    mov    0x200745(%rip),%rax        # 200fe0 &lt;g_static_so_bss@@Base-0x60&gt;</span><br><span class="line">89b:   48 8b 00                mov    (%rax),%rax</span><br><span class="line">89e:   01 c2                   add    %eax,%edx</span><br></pre></td></tr></table></figure>
 <p>894: 取GOT中存储 g_static_so_bss 的项地址 并把内容(g_static_so_bss的地址)存放到%rax中<br>89b: 取 g_static_so_bss 的内容<br>89e: 加到%edx上  </p>
-<h5><span id="small-code-mode">small code mode:</span></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++-6 -O0 so.so main.cpp lib.cpp -pie -fPIE  -mcmodel&#x3D;small</span><br></pre></td></tr></table></figure>
+<h5><span id="00425-small-code-mode">0.0.4.2.5. small code mode:</span></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++-6 -O0 so.so main.cpp lib.cpp -pie -fPIE  -mcmodel&#x3D;small</span><br></pre></td></tr></table></figure>
 
 <p>假设了全局变量的存储位置在低端内存, 因此该全局变量直接定义在主程序的data段, 在so文件中仍然通过.got找到真实地址.<br>其类型R_X86_64_COPY<br>在主程序的汇编代码只有一行</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">9f0:   c7 05 4e 06 20 00 e8    movl   $0x3e8,0x20064e(%rip)        # 201048 &lt;g_static_so_data&gt;</span><br></pre></td></tr></table></figure>
@@ -1031,7 +1034,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0000000000201030 - 000000200fd8 &#x3D; 0x58</span><br></pre></td></tr></table></figure>
 
 
-<h5><span id="备注说明">备注说明</span></h5><p>共享库中 无论是large还是small, 都会走so的got表, 区别在于会不会使用movabs进行64位的偏移计算<br>got表的位置可能紧接着.text并且设置为只读<br><a href="https://systemoverlord.com/2017/03/19/got-and-plt-for-pwning.html" target="_blank" rel="noopener">RELRO</a>   </p>
+<h5><span id="00426-备注说明">0.0.4.2.6. 备注说明</span></h5><p>共享库中 无论是large还是small, 都会走so的got表, 区别在于会不会使用movabs进行64位的偏移计算<br>got表的位置可能紧接着.text并且设置为只读<br><a href="https://systemoverlord.com/2017/03/19/got-and-plt-for-pwning.html" target="_blank" rel="noopener">RELRO</a>   </p>
 <p>通过got表访问全局变量:  </p>
 <ol>
 <li>通过RIP-R找到GOT表的位置.   相对于.text固定的偏移量 (large不假定大小)     </li>
@@ -1048,13 +1051,13 @@
 <p>当前代码段到GOT表的偏移</p>
 <p>但是在large模型中 </p>
 <p>通过rip寻址的指令中 偏移量不是64位的  因此需要先算一个小的偏移量 再通过支持64bit的 movabs(mov) 添加上一个64bit的偏移</p>
-<h5><span id="relro-relocation-read-only">RELRO  Relocation Read Only</span></h5><p>重定位只读技术<br>动态链接器在处理完GOT表后将其设为只读以提高安全性.  </p>
+<h5><span id="00427-relro-relocation-read-only">0.0.4.2.7. RELRO  Relocation Read Only</span></h5><p>重定位只读技术<br>动态链接器在处理完GOT表后将其设为只读以提高安全性.  </p>
 <p>本文测试环境中只读. (实际上这是一个可以成为较为古老的技术了)  </p>
 <blockquote>
 <p>Linux version 4.9.0-4-amd64 (<a href="mailto:debian-kernel@lists.debian.org">debian-kernel@lists.debian.org</a>)<br>(gcc version 6.3.0 20170516 (Debian 6.3.0-18) )<br>#1 SMP Debian 4.9.65-3+deb9u1 (2017-12-23)<br>.zsummer  </p>
 </blockquote>
 <p>GOT表为R  只读段.<br>.got.plt存储plt的got仍然是读写段 (惰性加载机制决定, 可以选择非惰性+ro来完成全只读化)  </p>
-<h3><span id="调用惯例calling-conventions">调用惯例Calling Conventions</span></h3><p>计算机中Corotine分两种 Coroutine和Subroutine 前者对应协程 后者对应函数  </p>
+<h3><span id="005-调用惯例calling-conventions">0.0.5. 调用惯例Calling Conventions</span></h3><p>计算机中Corotine分两种 Coroutine和Subroutine 前者对应协程 后者对应函数  </p>
 <ul>
 <li>call a routine (trasfer control to procedure)  跳转到目标routine  </li>
 <li>pass arguments  传递参数  <ul>
@@ -1069,8 +1072,8 @@
 </li>
 <li>manage register  管理寄存器 </li>
 </ul>
-<h5><span id="参数压栈顺序">参数压栈顺序</span></h5><p>标准的linux ABI调用约定中<br><a href="">System V Application Binary Interface—AMD64 Architecture Processor Supplement</a>   </p>
-<h6><span id="caller-save和callee-save">Caller Save和Callee Save</span></h6><p>当产生函数调用时 子函数内通常也会使用到通用寄存器 那么这些寄存器中之前保存的调用者(父函数)的值就会被覆盖<br>为了避免数据覆盖而导致从子函数返回时寄存器中的数据不可恢复 CPU 体系结构中就规定了通用寄存器的保存方式   </p>
+<h5><span id="00508-参数压栈顺序">0.0.5.0.8. 参数压栈顺序</span></h5><p>标准的linux ABI调用约定中<br><a href="">System V Application Binary Interface—AMD64 Architecture Processor Supplement</a>   </p>
+<h6><span id="005081-caller-save和callee-save">0.0.5.0.8.1. Caller Save和Callee Save</span></h6><p>当产生函数调用时 子函数内通常也会使用到通用寄存器 那么这些寄存器中之前保存的调用者(父函数)的值就会被覆盖<br>为了避免数据覆盖而导致从子函数返回时寄存器中的数据不可恢复 CPU 体系结构中就规定了通用寄存器的保存方式   </p>
 <ul>
 <li><p>Casller Save ‘调用者保存’ 在发起一个调用前需要保存(子例程直接覆盖使用) </p>
 <ul>
@@ -1090,7 +1093,7 @@
 <li><p>cross</p>
 </li>
 </ul>
-<h3><span id="工具">工具</span></h3><ul>
+<h3><span id="006-工具">0.0.6. 工具</span></h3><ul>
 <li>objdump -S 查看汇编指令  </li>
 <li>gdb  <ul>
 <li>gdb 通过<code>layout regs</code>打开寄存器显示, 通过<code>set disassemble-next-line on</code>打开汇编  </li>
@@ -1118,12 +1121,15 @@
 </ul>
 </li>
 <li>查看二进制  <ul>
-<li><code>x /1ag addr</code><!-- more -->
-<h4><span id="peda插件">PEDA插件</span></h4>peda默认设置的是intel的语法风格<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;longld&#x2F;peda.git ~&#x2F;peda</span><br><span class="line">echo &quot;source ~&#x2F;peda&#x2F;peda.py&quot; &gt;&gt; ~&#x2F;.gdbinit</span><br><span class="line">echo &quot;DONE! debug your program with gdb and enjoy&quot;</span><br></pre></td></tr></table></figure></li>
+<li><code>x /1ag addr</code></li>
 </ul>
 </li>
 </ul>
 </li>
+</ul>
+<h4><span id="0061-peda插件">0.0.6.1. PEDA插件</span></h4><p>peda默认设置的是intel的语法风格</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;longld&#x2F;peda.git ~&#x2F;peda</span><br><span class="line">echo &quot;source ~&#x2F;peda&#x2F;peda.py&quot; &gt;&gt; ~&#x2F;.gdbinit</span><br><span class="line">echo &quot;DONE! debug your program with gdb and enjoy&quot;</span><br></pre></td></tr></table></figure>
+<ul>
 <li>aslr – Show/set ASLR setting of GDB</li>
 <li>checksec – Check for various security options of binary</li>
 <li>dumpargs – Display arguments passed to a function when stopped at a call instruction</li>
@@ -1169,8 +1175,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/11/29/2019-11-29-static-linking/" rel="next" title="静态链接过程">
-                <i class="fa fa-chevron-left"></i> 静态链接过程
+              <a href="/2019/11/29/2019-12-06-is-a-and-has-a/" rel="next" title="AS-A 和 HAS-A 概念">
+                <i class="fa fa-chevron-left"></i> AS-A 和 HAS-A 概念
               </a>
             
           </div>
@@ -1178,6 +1184,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/12/16/2019-12-16-elf-link/" rel="prev" title="ELF静态链接过程和动态链接过程中的GOT表的作用">
+                ELF静态链接过程和动态链接过程中的GOT表的作用 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -1302,7 +1312,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">2.</span> <span class="nav-text">基础语法格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">3.</span> <span class="nav-text">常见寄存器以及作用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.1.</span> <span class="nav-text">通用寄存器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.1.1.</span> <span class="nav-text">寄存器使用惯例 原文</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.1.2.</span> <span class="nav-text">中文对照</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.2.</span> <span class="nav-text">专用寄存器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.2.1.</span> <span class="nav-text">标志寄存器 RFLAGS</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.2.2.</span> <span class="nav-text">程序计数器(PC)(Relative Instruction-Pointer)(IP)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.2.3.</span> <span class="nav-text">指令寄存器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">4.</span> <span class="nav-text">汇编语法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.1.</span> <span class="nav-text">汇编指令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.2.</span> <span class="nav-text">操作数格式与寻址</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.1.</span> <span class="nav-text">内存操作数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.2.</span> <span class="nav-text">寻址模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.3.</span> <span class="nav-text">large code mode:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.4.</span> <span class="nav-text">共享库中对g_static_so_data的访问</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.5.</span> <span class="nav-text">small code mode:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.6.</span> <span class="nav-text">备注说明</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.7.</span> <span class="nav-text">RELRO  Relocation Read Only</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">5.</span> <span class="nav-text">调用惯例Calling Conventions</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">5.0.1.</span> <span class="nav-text">参数压栈顺序</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#null"><span class="nav-number">5.0.1.1.</span> <span class="nav-text">Caller Save和Callee Save</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">6.</span> <span class="nav-text">工具</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">6.1.</span> <span class="nav-text">PEDA插件</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">0.0.1. 目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">2.</span> <span class="nav-text">0.0.2. 基础语法格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">3.</span> <span class="nav-text">0.0.3. 常见寄存器以及作用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.1.</span> <span class="nav-text">0.0.3.1. 通用寄存器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.1.1.</span> <span class="nav-text">0.0.3.1.1. 寄存器使用惯例 原文</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.1.2.</span> <span class="nav-text">0.0.3.1.2. 中文对照</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.2.</span> <span class="nav-text">0.0.3.2. 专用寄存器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.2.1.</span> <span class="nav-text">0.0.3.2.1. 标志寄存器 RFLAGS</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.2.2.</span> <span class="nav-text">0.0.3.2.2. 程序计数器(PC)(Relative Instruction-Pointer)(IP)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.2.3.</span> <span class="nav-text">0.0.3.2.3. 指令寄存器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">4.</span> <span class="nav-text">0.0.4. 汇编语法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.1.</span> <span class="nav-text">0.0.4.1. 汇编指令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.2.</span> <span class="nav-text">0.0.4.2. 操作数格式与寻址</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.1.</span> <span class="nav-text">0.0.4.2.1. 内存操作数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.2.</span> <span class="nav-text">0.0.4.2.2. 寻址模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.3.</span> <span class="nav-text">0.0.4.2.3. large code mode:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.4.</span> <span class="nav-text">0.0.4.2.4. 共享库中对g_static_so_data的访问</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.5.</span> <span class="nav-text">0.0.4.2.5. small code mode:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.6.</span> <span class="nav-text">0.0.4.2.6. 备注说明</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.2.7.</span> <span class="nav-text">0.0.4.2.7. RELRO  Relocation Read Only</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">5.</span> <span class="nav-text">0.0.5. 调用惯例Calling Conventions</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">5.0.1.</span> <span class="nav-text">0.0.5.0.8. 参数压栈顺序</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#null"><span class="nav-number">5.0.1.1.</span> <span class="nav-text">0.0.5.0.8.1. Caller Save和Callee Save</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">6.</span> <span class="nav-text">0.0.6. 工具</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">6.1.</span> <span class="nav-text">0.0.6.1. PEDA插件</span></a></li></ol></li></ol></div>
             
 
           </div>
