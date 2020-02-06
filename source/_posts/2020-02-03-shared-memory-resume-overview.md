@@ -1,5 +1,5 @@
 ---
-title: 基于共享内存的对象池管理器   
+title: 基于共享内存的对象池管理器 
 date: 2020-02-07
 categories: develop 
 author: yawei.zhang 

@@ -1,5 +1,5 @@
 ---
-title: 基于共享内存的通用内存分配器   
+title: 基于共享内存的通用内存分配器
 date: 2020-02-07
 categories: develop 
 author: yawei.zhang 
