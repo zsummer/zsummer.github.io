@@ -250,6 +250,348 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/02/07/2020-02-03-shared-memory-resume-overview/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/02/07/2020-02-03-shared-memory-resume-overview/" itemprop="url">基于共享内存的对象池管理器</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-02-07T00:00:00+08:00">
+                2020-02-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="1-目录"><a href="#1-目录" class="headerlink" title="..1. 目录"></a>..1. 目录</h3><h3 id="通用的对象池管理器"><a href="#通用的对象池管理器" class="headerlink" title="通用的对象池管理器"></a>通用的对象池管理器</h3><h4 id="数据结构定义"><a href="#数据结构定义" class="headerlink" title="数据结构定义"></a>数据结构定义</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">对象池管理器</span><br><span class="line">  [对象A条目IDX]: 对象是否包含虚函数(是否需要重建虚函数表):  对象类型(对应条目IDX): 对象大小: 对象个数: 该条目总长: 条目对应内存地址:  条目对应对象起始地址: 空闲对象下标ID : 已分配计数   </span><br><span class="line">  [对象B条目IDX]: 对象是否包含虚函数(是否需要重建虚函数表):  对象类型(对应条目IDX): 对象大小: 对象个数: 该条目总长: 条目对应内存地址:  条目对应对象起始地址: 空闲对象下标ID : 已分配计数   </span><br><span class="line">  [对象C条目IDX]: 对象是否包含虚函数(是否需要重建虚函数表):  对象类型(对应条目IDX): 对象大小: 对象个数: 该条目总长: 条目对应内存地址:  条目对应对象起始地址: 空闲对象下标ID : 已分配计数   </span><br><span class="line">  [对象D条目IDX]: 对象是否包含虚函数(是否需要重建虚函数表):  对象类型(对应条目IDX): 对象大小: 对象个数: 该条目总长: 条目对应内存地址:  条目对应对象起始地址: 空闲对象下标ID : 已分配计数</span><br></pre></td></tr></table></figure>
+
+<p>单个条目指向的起始地址结构:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flag|flag|flag : ...  FENCE SIZE: NODE SIZE :   FENCE SIZE: NODE SIZE :   ...</span><br></pre></td></tr></table></figure>
+<p>条目指向的地址会首先保存flag标志标明该对象是否在使用中, 用于请求和释放时候的判定标志<br>NODE SIZE会进行8字节对齐, FENCE SIZE也选择8字节 这样整个对象池的地址都是保证8字节对齐的<br>FENCE写入特殊固定的魔法数值 用于溢出检测<br>分配出去的对象 NODE SIZE的起始地址即为对象的地址<br>空闲的对象, 其NODE SIZE的第一个U32保存的是下一个空闲内存 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">: NODE SIZE: 对应下面结构</span><br><span class="line">: FREE IDX, NODE SIZE- FENCE SIZE:</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/02/07/2020-02-03-shared-memory-resume-overview/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/02/07/2020-02-07-shared-memory-buddy_system/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/02/07/2020-02-07-shared-memory-buddy_system/" itemprop="url">基于共享内存的通用内存分配器</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-02-07T00:00:00+08:00">
+                2020-02-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3><span id="1-目录">..1. 目录</span></h3><h3><span id="通用的内存分配器">通用的内存分配器</span></h3><h4><span id="数据结构和概述">数据结构和概述</span></h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*  perfect binary true</span></span><br><span class="line"><span class="comment">*                   0        -----------   : reserve</span></span><br><span class="line"><span class="comment">*	                1        -----------   :  root </span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*          2                 3</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*     4        5         6        7</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*   8   9   10   11   12   13  14   15</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">* ----------------------------------------</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*   0   1   2    3    4    5   6     7     : memory buff</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<p><img src="/images/buddy_system.gif" alt="buddy_system"><br>伙伴算法是一个特殊的分离适配的内存管理器  </p>
+<ul>
+<li>被管理的内存必须是2的幂次方对齐 通过上述结构可以观察到  </li>
+<li>分配的单位必须是2的幂次对齐  </li>
+<li>回收时候回对伙伴空闲块进行合并   </li>
+</ul>
+<p>显而易见, 伙伴算法有明显的缺点和优点<br>缺点:  </p>
+<ul>
+<li><p>极大的内存浪费, 因为2的幂次对齐分配, 比如我们需要power(2, 12)+1 的内存 实际上就会分配power(2,13)的内存,  内部碎片比例为 (power(2, 12)+1)/power(2,13), 有效负荷只有0.5左右. </p>
+</li>
+<li><p>外部碎片, 并不是所有的相邻空闲块都能合并, 必须满足伙伴的条件,  因此相比只要是相邻空闲内存就会合并的算法而言, 会带来更多的内存碎片   </p>
+</li>
+<li><p>分配复杂度<br>最好为O(1), 即最大空间的分配, 最坏为叶子节点 LGN, 从root查找到叶子节点, 然后向上修改每个节点的当前的最大可分配大小     </p>
+</li>
+</ul>
+<ul>
+<li>释放复杂度<br>最好为O(1), 即叶子空间的分配, (查找某个地址所在的层级, 从叶子节点)<br>合并复杂度, 向上合并, 最好为O(1) 无法合并, 最坏为LGN, 全部合并.   </li>
+</ul>
+<p>如果结合SLAB分配器看.</p>
+<ul>
+<li>来自SLAB分配器的申请: 粒度都是2的幂次, 完全避免了内部碎片  </li>
+<li>来自SLAB分配器的申请: 分配的粒度都是同一层级, 避免了外部碎片  </li>
+</ul>
+<p>通用的内存管理器中, 伙伴系统是批发商, slab是零售商这个比喻是很形象的.  </p>
+<h4><span id="数据结构的定义">数据结构的定义:</span></h4><p>同linux系统的方式类似, 我们按照页框为单位来管理内存, 页框的大小大于等于系统的页框大小, 可结合slab分配器进行调整.<br>根据要管理的内存大小和页框大小, 我们可以算出总得叶子数量,  而在这棵树上, 节点总数为2N(2倍叶子节点)   </p>
+<p>因此数据结构的定义为如下方式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">共享内存管理头部: 所有叶子节点 : 被管理的内存</span><br></pre></td></tr></table></figure>
+
+<p>每个节点用1个字节来记录, 内容为该节点的所对应的空间大小, (这里记录的不是大小, 而是大小的幂, 所以可以用一个字节来存储)<br>该节点对应的空间起始地址这位该节点在该层中的offset* power(2, order), </p>
+<h5><span id="初始化">初始化</span></h5><p>所有节点的初始化为为该节点的空间大小.<br>例如index1 对应的则是被管理的所有空间<br>然后每层递减1<br>到叶子节点则为2^0次幂大小, 即一个页框单位.  </p>
+<h5><span id="分配">分配</span></h5><p>如果分配参数是字节数, 则需要先按照页框向上取整<br>如果分配的参数是页框数量, 则需要按照2的幂次取整, 可以用bit search指令获取2的幂数(这个取法是向下取整 所以取完后要进行一次向上取整)<br>如果分配的是order<br>则检查root节点保存的order是否满足需求, 不满足这代表没有足够大的空间<br>如果满足需求则逐层查找, 直到到达对应的order层级, 然后修改该节点的可分配空间为0, 然后逐层向上修改分配能力  </p>
+<p>tips:<br> 这里定义0为已分配, 而不是power(2,0)个空间大小,  因此在这里节点对应空间大小计算是power(2, (order ability)-1)   -1后才是power(2, order) .<br> 这样可以保证这棵树中从叶子节点向上查找时候的可以简单的while循环时候少一次边界判定, 计算方便   </p>
+<p>分配时候永远选择刚好满足需求的路径, 可以减少切分大块, 其次优先左子树,  减少外部碎片的产生以及提高cache命中.  </p>
+<h5><span id="释放">释放</span></h5><p> 通过地址计算页框编号, 然后加上N (树的大小是2N, N为所有非叶子节点的节点总数) 得到叶子节点的索引.<br> 从叶子节点用IDX /2 不断的向上查找, 直到找到节点被标记为0的层级,  修改该节点为该层级对应的空间大小, 然后逐层向上修改每层的新的空间分配能力, 如果左右节点的空间大小为该层级的大小(都空闲)则合并,(每个上层节点的能力均是节点对应的空间大小)   </p>
+<h3><span id="slab内存分配器">SLAB内存分配器</span></h3><p>面向终端用户的内存分配器, 或者说BUDDY SYSTEM管批发, 这里管零售.<br>好的SLAB内存分配器并没有那么容易编写和验证,  因此我们选择了移植一个dlmalloc, 代码简单, 移植方便, 性能也是经过linux系统的验证, 虽然更现代的内存分配器更优秀, 但是用在项目中还是优先选择一个满足需求但是所有代码看的明白的库更容易进行分析和定制.    </p>
+<p>有了buddy system之后, 移植所有可以基于mmap或者brk批量分配的内存分配器都会变得容易, 常见的现在linux系统使用的ptmalloc, 以及常用的TCMALLOC或者jemalloc都是基于dlmalloc的思想进行了更优的实现, 体现在更好的内存利用率, cpu cache更友好的分配策略, 多线程下更少的竞争等.   </p>
+<p>dlmalloc是一个典型的分离存储的分配器, 并充分使用了’池’来减少频繁的内存申请和返还.   </p>
+<p>对于小内存 小于256的, 很类似我上篇文章讲的对象池分配器, 或者说我们的对象池分配器参照了dlmalloc小内存的分配算法.   </p>
+<p>dlmalloc定义了最小的分配粒度为8字节, 这样在保存chunk大小的字段中可以多出来3个位作为bit标记<br>然后每8个字节递增, 直到248字节.<br>[bin idx] 8 8 8 8 8 8 8 8 8<br>[bin idx] 16 16 16 16 16 16<br>[bin idx] 24 24 24 24 24 24<br>…<br>[bin idx] 248 248 248 248 248 248  </p>
+<h4><span id="小内存分配">小内存分配</span></h4><p>首先检查对应bin idx是否有空闲chunk 有这分配并返回<br>其次检查更高bin idx中是否有空闲的chunk, 有则切割, 并把剩余大小组合成一个新chunk记录为切割剩余chunk(如果过小则直接丢给用户)<br>其次检查大内存的bin里面是否有内存 有则切割 同上<br>其次检查上次剩余切割的chunk是否满足需要 如果满足则进一步切割 同上<br>其次检查最新从上级分配器(buddy system, 或者对应系统函数mmap brk)得到的大块chunk的剩余是否满足 满足就切割 (brk表现为扩展top)<br>其次则申请一个新的大块chunk进行切割   </p>
+<h4><span id="大内存分配">大内存分配</span></h4><p>大内存的bin idx递增则为2的幂次的半高为区分  例如:  </p>
+<p>[256<del>384)<br>[384</del>512)<br>[512<del>768)<br>…<br>[4096</del>6144)<br>…<br>[768k~1m)  </p>
+<p>首先查找对应的bin idx是否存在空闲<br>  如果有空闲着按照一个简版的线段树查找最优大小的内存块<br>  如果找到这返还<br>其次检查更高bin idx中是否存在空闲, 如果有则拿最小的一个chunk进行切分, 切分后的数据块保存记录到(最后一层切割剩余的chunk)中   </p>
+<p>其次检查剩余chunk的大小是否满足, 满足则进一步切割  </p>
+<p>其次检查最近一次向上层管理器申请的内存chunk是否满足需求, 满足则切分 同上    </p>
+<p>其次选择申请新的大块chunk</p>
+<h4><span id="内存返还">内存返还</span></h4><p>返还时会根据标志检查是否存在前一个空闲块 如果存在则合并.<br>合并后的内存是否满足回收给上层分配器, 满足这返还 (检查是否是top 剩余切割 这两个保留, 是否满足正好是向上层申请的边界和大小, 如果是brk则是是否是top下超过某阈值大小的空闲块)<br>不满足则插入到对应的bin空闲块中.   </p>
+<h4><span id="超大内存">超大内存</span></h4><p>对于大于该阈值内存直接走上层分配器  比如mmap或者brk  </p>
+<h4><span id="tips">tips</span></h4><p>dlmalloc总是进行最大化的空闲块合并 减少外部碎片,  通过bin分箱最小化内部碎片的产生和大块内存分配时的树的高度.<br>绝大部分时候小内存都能做到常数级的分配, 对于大内存的分配因为bin分箱有效的控制bitwish树的高度</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/12/17/2019-12-17-elf-load/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1920,401 +2262,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/05/2019-11-05-fast-check-linux/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/11/05/2019-11-05-fast-check-linux/" itemprop="url">linux快速排查问题的命令</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-05T00:00:00+08:00">
-                2019-11-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="全局分析和统计"><a href="#全局分析和统计" class="headerlink" title="全局分析和统计"></a>全局分析和统计</h3><ul>
-<li><p>top命令   </p>
-<ul>
-<li>free 查看内存使用信息  </li>
-<li>vmstate [delay时间]  按照delay时间打印内存使用 io读写 CPU用量等信息  </li>
-<li>iostat -m -x [时间] [次数]   io读写详细信息</li>
-</ul>
-</li>
-<li><p>sar 系统活动情况报告 追溯统计数据 从最近的0点0分开始显示数据   </p>
-<ul>
-<li>sar -A 所有  </li>
-<li>sar -u CPU  </li>
-<li>sar -q 负载</li>
-<li>sar -r 内存</li>
-<li>CPU存在瓶颈，可用 sar -u 和 sar -q 等来查看</li>
-<li>内存存在瓶颈，可用sar -B、sar -r 和 sar -W 等来查看</li>
-<li>I/O存在瓶颈，可用 sar -b、sar -u 和 sar -d 等来查看</li>
-</ul>
-</li>
-<li><p>df 查看当前硬盘存储</p>
-<ul>
-<li>du -h  –max-depth=1 [./]   统计当前目录树下的文件大小  </li>
-</ul>
-</li>
-<li><p>IPC资源查询   </p>
-<ul>
-<li>ipcs -m 查看共享内存资源  </li>
-<li>ipcsrm -M [shmkey]  删除共享内存资源  </li>
-<li>ipcsrm -m [shmid]    删除shmid标识的共享内存资源  </li>
-</ul>
-</li>
-<li><p>ulimit -a   配置位置 /etc/security/limits.conf  </p>
-<ul>
-<li>coredump文件的大小</li>
-<li>线程栈的大小  </li>
-<li>单进程最大设备数<ul>
-<li>单进程最大设备数的硬性限制在/proc/sys/fs/nr_open 中配置  </li>
-<li>系统配置的最大设备数可查看/proc/sys/fs/file-max 中配置  </li>
-<li>系统配置的最大设备数修改/etc/sysctl.conf |  fs.file-max = 1000000</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>全局线程总数 </p>
-<ul>
-<li>查看位置 /proc/sys/kernel/threads-max  </li>
-</ul>
-</li>
-<li><p>单个进程最大线程数 PTHREAD_THREADS_MAX  新的NPTL实现中不存在该限制   </p>
-<ul>
-<li>查看位置 /usr/include/bits/local_lim.h </li>
-<li>查看位置 /usr/include/x86_64-linux-gnu/bits/local_lim.h</li>
-</ul>
-</li>
-<li><p>whereis   查看命令所在位置  </p>
-</li>
-<li><p>lsof [文件/路径]  查看占用该文件/该目录下文件的进程  </p>
-</li>
-<li><p>lsof -i  查看当前活动的网络连接 包括TCP / UDP</p>
-</li>
-<li><p>lsof -p [pid] 查看当前进程所有打开的文件/设备</p>
-</li>
-<li><p>ulimit -s 栈大小  </p>
-</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/11/05/2019-11-05-fast-check-linux/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/04/2019-11-04-aslr/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/11/04/2019-11-04-aslr/" itemprop="url">linux内存布局和ASLR</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-04T00:00:00+08:00">
-                2019-11-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="内存布局"><a href="#内存布局" class="headerlink" title="内存布局"></a>内存布局</h3><h6 id="基本布局"><a href="#基本布局" class="headerlink" title="基本布局"></a>基本布局</h6><p>内核地址空间范围  [0XFFFF 0000 0000 0000, 0XFFFF FFFF FFFF FFFF]<br>不规范地址空间    (0XFFFF 0000 0000 0000, 0X0000 FFFF FFFF FFFF)<br>用户地址空间      [0X0000 FFFF FFFF FFFF, 0X0000 0000 0000 0000]</p>
-<p>备注: 用户空间范围对应为0~TASK_SIZE = 2^VA_BITS</p>
-<ol>
-<li>用户地址空间默认最大宽度是48 如上  </li>
-<li>内核地址空间和用户地址空间宽度相同  </li>
-<li>不同的页长默认有不同的宽度, 例如4KB页长默认是39位   16:47, 64:42等, 可直接选择48位.  </li>
-<li>开启LVA支持并且页长64可以支持到最大宽度52   </li>
-<li>通过getconf PAGE_SIZE 可以查看系统的页大小  </li>
-<li>通过/proc/$pid/maps或者pmap可以查看一个进程的实际内存布局 </li>
-<li>mprotect 可以修改内存页权限   </li>
-<li>madvise 可以修改建议内存使用的方式  </li>
-<li>老的LinuxThreads (管理线程机制) 设计中线程栈的位置在 HEAP之下 的高位 导致无法可信的设置heap大小  </li>
-<li>新的NPTL解决了老的线程机制中的管理单点问题 信号问题 内存布局问题等 顺便实现了PTHREAD_PROCESS_SHARED </li>
-<li>pthread_attr_setstackaddr可指定线程栈的地址(mmap)   </li>
-<li>pthread的创建和销毁 <ol>
-<li>创建   <ol>
-<li>使用用户提供的stack创建线程并加入__stack_user </li>
-<li>nptl 先尝试获取stack_cache中tid为0大小合适的空闲stack, 如果失败则从mmap分配新的stack, 然后加入stack_used  </li>
-<li>tid list等信息存储在stack内存的高地址端的头部  </li>
-</ol>
-</li>
-<li>start_thread执行完用户函数后会进行数据回收和清理(但无法销毁自身)   <ol>
-<li>如果该线程非detach 则等待join  (没有join则会一直保留)  </li>
-<li>如果该线程被detach 则执行__free_tcb   <ol>
-<li>如果是用户分配的stack 从stack_user链表中移除并清理tls 线程局部存储  </li>
-<li>如果是自动分配的stack 从stack_used链表中移除, 然后加入stack_cache中, 清理tls线程局部存储(此时tid不为0)   </li>
-<li>检查当前stack_cache的总大小, 超过阈值则遍历一次stack_cache并释放掉(tid为0)空闲的stack, 如果小于阈值则提前break该次遍历   </li>
-</ol>
-</li>
-</ol>
-</li>
-<li>内核在该线程结束后 会对该线程的tid清零(创建线程时CLONE_CHILD_CLEARTID参数会让内存清除某标记内存), 此后该资源可以安全销毁.        </li>
-</ol>
-</li>
-<li>brk和mmap的分配由glibc确定 默认规则是小于M_MMAP_THRESHOLD宏走brk  但是新系统的算法可能会让大于这个参数的临时分配也走brk
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/11/04/2019-11-04-aslr/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
   </nav>
 
 
@@ -2360,7 +2312,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">29</span>
+                <span class="site-state-item-count">32</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -2415,7 +2367,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
