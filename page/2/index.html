@@ -553,9 +553,11 @@
       
         
           
-            <h3><span id="目录">目录</span></h3><!-- TOC -->
+            <h3><span id="导语">导语</span></h3><p>64位下的linux地址空间虽然看起来虽然庞大2^64  但是实际上进行内核与用户空间的划分后, 包括ASLR以及PIE等机制的启用, 实际留给mmap和brk的可分配区域远远小于这个值, 大约是42T的可用地址空间. 本文根据内核代码的默认宏定义进行了X86-64下的布局分析, 给基于共享内存的用户空间选址给予一定的参考.   </p>
+<h3><span id="目录">目录</span></h3><!-- TOC -->
 
 <ul>
+<li><a href="#导语">导语</a></li>
 <li><a href="#目录">目录</a></li>
 <li><a href="#linux内存布局">LINUX内存布局</a><ul>
 <li><a href="#11-基本布局">..1.1. 基本布局</a></li>
@@ -565,6 +567,8 @@
 <li><a href="#aslr地址空间随机化">ASLR地址空间随机化</a><ul>
 <li><a href="#aslr的设置与关闭">ASLR的设置与关闭</a><ul>
 <li><a href="#设置randomize_va_space的等级">设置randomize_va_space的等级</a></li>
+<li><a href="#进程个性化设置-进程描述符的成员personality设置-addr_no_randomize">进程个性化设置: 进程描述符的成员personality设置 ADDR_NO_RANDOMIZE</a></li>
+<li><a href="#gdb调试中打开或者关闭aslr默认会禁用">GDB调试中打开或者关闭ASLR(默认会禁用)</a></li>
 </ul>
 </li>
 </ul>
@@ -574,14 +578,36 @@
 <li><a href="#栈地址">栈地址</a></li>
 <li><a href="#mmap映射区起始地址">MMAP映射区起始地址</a></li>
 <li><a href="#代码段开始地址">代码段开始地址</a></li>
-<li><a href="#heap区开始地址随机">HEAP区开始地址随机</a></li>
+<li><a href="#heap区开始地址">HEAP区开始地址</a></li>
 </ul>
 </li>
-<li><a href="#结论部分">结论部分</a></li>
+<li><a href="#结论部分">结论部分</a><ul>
+<li><a href="#结论部分补充验证数据">结论部分补充验证数据</a></li>
+</ul>
+</li>
 </ul>
 <!-- /TOC -->
 <h3><span id="linux内存布局">LINUX内存布局</span></h3><p>针对X86-64内核代码的分析  </p>
-<h4><span id="11-基本布局">..1.1. 基本布局</span></h4><p>内核地址空间范围  [0XFFFF 0000 0000 0000, 0XFFFF FFFF FFFF FFFF]<br>用户地址空间      [0X0000 7FFF FFFF F000, 0X0000 0000 0000 0000]<br>不规范地址空间    不属于内核或者用户的地址空间属于不规范地址空间  </p>
+<h4><span id="11-基本布局">..1.1. 基本布局</span></h4><table>
+<thead>
+<tr>
+<th>-</th>
+<th>-</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>内核地址空间范围</td>
+<td>[0XFFFF 0000 0000 0000, 0XFFFF FFFF FFFF FFFF]</td>
+</tr>
+<tr>
+<td>用户地址空间</td>
+<td>[0X0000 7FFF FFFF F000, 0X0000 0000 0000 0000]</td>
+</tr>
+<tr>
+<td>不规范地址空间</td>
+<td>不属于内核或者用户的地址空间属于不规范地址空间</td>
+</tr>
+</tbody></table>
 <p>用户空间的大小由宏定义TASK_SIZE决定, 在X86-64下这个大小默认为2^47-4096(128T) 对应十六进制数为: 0X0000 7FFF FFFF F000 .     </p>
 <h4><span id="12-用户空间布局">..1.2. 用户空间布局</span></h4><table>
 <thead>
@@ -635,7 +661,7 @@
 <td>TASK_SIZE</td>
 </tr>
 </tbody></table>
-<h3><span id="aslr地址空间随机化">ASLR地址空间随机化</span></h3><p>地址空间配置随机加载（英语：Address space layout randomization，缩写ASLR，又称地址空间配置随机化、地址空间布局随机化）是一种防范内存损坏漏洞被利用的计算机安全技术。<br>ASLR通过随机放置进程关键数据区域的地址空间来防止攻击者能可靠地跳转到内存的特定位置来利用函数。现代操作系统一般都加设这一机制，以防范恶意程序对已知地址进行Return-to-libc攻击。<br>这些数据区域一般包括代码段 数据段 堆区 栈区 mmap  动态库等,  其中代码段的随机一般需要代码位置无关化的支持(PIC PIE机制)  </p>
+<h3><span id="aslr地址空间随机化">ASLR地址空间随机化</span></h3><p>地址空间配置随机加载（英语：Address space layout randomization，缩写ASLR，又称地址空间配置随机化、地址空间布局随机化）是一种防范内存损坏漏洞被利用的计算机安全技术。<br>ASLR通过随机放置进程关键数据区域的地址空间来防止攻击者能可靠地跳转到内存的特定位置来利用函数。现代操作系统一般都加设这一机制，以防范恶意程序对已知地址进行Return-to-libc攻击。<br>这些数据区域一般包括代码段 数据段 堆区 栈区 mmap  动态库等,  其中涉及代码段的随机一般需要代码位置无关化的支持(PIC PIE机制)  </p>
 <p>不同版本的操作系统和内核版本, 在ASLR的实现上会有细节的不同, 这里主要是根据目前的生产环境做的分析, 用于确认ASLR的在地址空间中对内存布局带来的扰动范围.   </p>
 <h4><span id="aslr的设置与关闭">ASLR的设置与关闭</span></h4><p>LINUX下常见的设置或关闭有方式:  </p>
 <h5><span id="设置randomize_va_space的等级">设置randomize_va_space的等级</span></h5><p>随机化虚拟地址空间的配置说明如下:     </p>
@@ -643,7 +669,7 @@
 <p>echo 0 &gt; /proc/sys/kernel/randomize_va_space</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">* 或者通过sysctl修改</span><br></pre></td></tr></table></figure>
 <p>sysctl -w kernel.randomize_va_space=0</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">* 进程个性化设置: 进程描述符的成员personality设置 ADDR_NO_RANDOMIZE     </span><br><span class="line">  * setarch $(uname -m) -R [--addr-no-randomize] [target exe]  </span><br><span class="line">  * 例如 ldd .&#x2F;benchmark_fast 在aslr环境下会看到每次so的内存位置都在变化   </span><br><span class="line">    * setarch $(uname -m) -R ldd .&#x2F;benchmark_fast 这样去查看则是固定不变的  </span><br><span class="line"></span><br><span class="line">* GDB调试默认会禁用被调试程序的ASLR来方便调试, 也可以在GDB中使用命令打开和关闭</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">##### 进程个性化设置: 进程描述符的成员personality设置 ADDR_NO_RANDOMIZE     </span><br><span class="line">  * setarch $(uname -m) -R [--addr-no-randomize] [target exe]  </span><br><span class="line">  * 例如 ldd .&#x2F;benchmark_fast 在aslr环境下会看到每次so的内存位置都在变化   </span><br><span class="line">    * setarch $(uname -m) -R ldd .&#x2F;benchmark_fast 这样去查看则是固定不变的  </span><br><span class="line"></span><br><span class="line">##### GDB调试中打开或者关闭ASLR(默认会禁用)</span><br></pre></td></tr></table></figure>
 <p>关闭ASLR：<br>set disable-randomization on<br>开启ASLR：<br>set disable-randomization off<br>查看：<br>show disable-randomization</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">### 内核代码中相关的宏定义和随机值计算</span><br><span class="line"></span><br><span class="line">#### TASK_SIZE 定义 用户地址空间的大小    </span><br><span class="line">在X86的内核代码中, 默认的TASK_SIZE为 (1UL &lt;&lt; 47) - 4096)   </span><br><span class="line">即</span><br></pre></td></tr></table></figure>
 <p>2^47-4096 =&gt; 0x7fff ffff f000    约为128T  </p>
@@ -670,15 +696,24 @@
 
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">loc-&gt;elf_ex.e_entry += load_bias;</span><br><span class="line">elf_bss += load_bias;</span><br><span class="line">elf_brk += load_bias;</span><br><span class="line">start_code += load_bias;</span><br><span class="line">end_code += load_bias;</span><br><span class="line">start_data += load_bias;</span><br><span class="line">end_data += load_bias;</span><br></pre></td></tr></table></figure>
 
-<h4><span id="heap区开始地址随机">HEAP区开始地址随机</span></h4><p>brk从BSS结束地址开始, 会有一个额外的随机arch_randomize_brk<br>为固定的大小范围0x02000000, 大约为33M  </p>
+<h4><span id="heap区开始地址">HEAP区开始地址</span></h4><p>brk从BSS结束地址开始, 会有一个额外的随机arch_randomize_brk<br>为固定的大小范围0x02000000, 大约为33M  </p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ((current-&gt;flags &amp; PF_RANDOMIZE) &amp;&amp; (randomize_va_space &gt; <span class="number">1</span>)) &#123;</span><br><span class="line">		<span class="comment">/*</span></span><br><span class="line"><span class="comment">		 * For architectures with ELF randomization, when executing</span></span><br><span class="line"><span class="comment">		 * a loader directly (i.e. no interpreter listed in ELF</span></span><br><span class="line"><span class="comment">		 * headers), move the brk area out of the mmap region</span></span><br><span class="line"><span class="comment">		 * (since it grows up, and may collide early with the stack</span></span><br><span class="line"><span class="comment">		 * growing down), and into the unused ELF_ET_DYN_BASE region.</span></span><br><span class="line"><span class="comment">		 */</span></span><br><span class="line">		<span class="keyword">if</span> (IS_ENABLED(CONFIG_ARCH_HAS_ELF_RANDOMIZE) &amp;&amp;</span><br><span class="line">		    loc-&gt;elf_ex.e_type == ET_DYN &amp;&amp; !interpreter)</span><br><span class="line">			current-&gt;mm-&gt;brk = current-&gt;mm-&gt;start_brk =</span><br><span class="line">				ELF_ET_DYN_BASE;</span><br><span class="line"></span><br><span class="line">		current-&gt;mm-&gt;brk = current-&gt;mm-&gt;start_brk =</span><br><span class="line">			arch_randomize_brk(current-&gt;mm);</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> compat_brk_randomized</span></span><br><span class="line">		current-&gt;brk_randomized = <span class="number">1</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="title">arch_randomize_brk</span><span class="params">(struct mm_struct *mm)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> randomize_page(mm-&gt;brk, <span class="number">0x02000000</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3><span id="结论部分">结论部分</span></h3><p>假定编译出来的是PIE类型的ELF并且全开ASLR设置<br>那么在mmap和heap之间的地址空间大小大约是<br>128T - 17G - 1T - 84T - 1T -33M  = 42T  </p>
-<p>mmap最小起始地址略小于0x0000 7000 0000 0000<br>brk起始地址略大于     0x0000 5655 5555 5555  </p>
+<p>mmap最小起始地址略小于0x0000 7000 0000 0000<br>brk起始地址最大略大于 0x0000 5655 5555 5555  </p>
 <p>这个是以T为单位的粗略计算, 考虑到计算时忽略了一些小的单位(GB级别或者更小), 包括间隙 小的随机值, 以及动态库 数据段代码段本身占用的空间, 这里可以做一个进一步的保守计算来使用这个空间.   </p>
-<p>计算这个空间的意义在于, 例如我们对共享内存使用一个固定的地址时, 需要避免和系统本身的动态分配的地址空间相冲突, 粗暴的做法可以用这两个地址做一个中值计算, 把这个中值作为安全的绝对地址使用.</p>
+<p> <strong>计算这个空间的意义在于, 例如我们对共享内存使用一个固定的地址时, 需要避免和系统本身的动态分配的地址空间相冲突, 而计算出来的地址空间的确定可以保证这一点,</strong>  例如可以用这两个地址做一个中值计算, 把这个中值作为安全的绝对地址使用.     </p>
+<h4><span id="结论部分补充验证数据">结论部分补充验证数据</span></h4><ul>
+<li>没有开启PIE和ASLR<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">0000000000400000      4K r-x-- a.out (deleted)</span><br><span class="line">0000000000600000      4K r---- a.out (deleted)</span><br><span class="line">0000000000601000  40964K rw--- a.out (deleted)</span><br><span class="line">0000000002e02000    132K rw---   [ anon ]</span><br><span class="line">00007ffff70f2000   1732K r-x-- libc-2.27.so</span><br><span class="line">00007ffff72a3000   2044K ----- libc-2.27.so</span><br><span class="line">00007ffff74a2000     16K r---- libc-2.27.so</span><br><span class="line">00007ffff74a6000      8K rw--- libc-2.27.so</span><br><span class="line">00007ffff74a8000     16K rw---   [ anon ]</span><br><span class="line">00007ffff74ac000     92K r-x-- libgcc_s.so.1</span><br><span class="line">00007ffff74c3000   2044K ----- libgcc_s.so.1</span><br><span class="line">00007ffff76c2000      4K r---- libgcc_s.so.1</span><br><span class="line">00007ffff76c3000      4K rw--- libgcc_s.so.1</span><br><span class="line">00007ffff76c4000   1608K r-x-- libm-2.27.so</span><br><span class="line">00007ffff7856000   2044K ----- libm-2.27.so</span><br><span class="line">00007ffff7a55000      4K r---- libm-2.27.so</span><br><span class="line">00007ffff7a56000      4K rw--- libm-2.27.so</span><br><span class="line">00007ffff7a57000   1480K r-x-- libstdc++.so.6.0.25</span><br><span class="line">00007ffff7bc9000   2048K ----- libstdc++.so.6.0.25</span><br><span class="line">00007ffff7dc9000     40K r---- libstdc++.so.6.0.25</span><br><span class="line">00007ffff7dd3000      8K rw--- libstdc++.so.6.0.25</span><br><span class="line">00007ffff7dd5000     12K rw---   [ anon ]</span><br><span class="line">00007ffff7dd8000    148K r-x-- ld-2.27.so</span><br><span class="line">00007ffff7fd7000     24K rw---   [ anon ]</span><br><span class="line">00007ffff7ff8000      8K r----   [ anon ]</span><br><span class="line">00007ffff7ffa000      8K r-x--   [ anon ]</span><br><span class="line">00007ffff7ffc000      4K r---- ld-2.27.so</span><br><span class="line">00007ffff7ffd000      4K rw--- ld-2.27.so</span><br><span class="line">00007ffff7ffe000      4K rw---   [ anon ]</span><br><span class="line">00007ffffffde000    132K rw---   [ stack ]</span><br><span class="line">ffffffffff600000      4K r-x--   [ anon ]</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<ul>
+<li>开启PIE和ASLR后多次测试得到的一个接近最小可分配空间的内存分布结果如下:<br>代码段从0x0000 5640开始<br>mmap的则从0x 0000 7eff开始而不是概率更大的0x 0000 7f** 这样的地址  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">00005640b5092000      4K r-x-- a.out</span><br><span class="line">00005640b5292000      4K r---- a.out</span><br><span class="line">00005640b5293000  40964K rw--- a.out</span><br><span class="line">00005640b99f2000    132K rw---   [ anon ]</span><br><span class="line">00007effd7734000  20484K rw---   [ anon ]</span><br><span class="line">00007effd8b35000   1732K r-x-- libc-2.27.so</span><br><span class="line">00007effd8ce6000   2044K ----- libc-2.27.so</span><br><span class="line">00007effd8ee5000     16K r---- libc-2.27.so</span><br><span class="line">00007effd8ee9000      8K rw--- libc-2.27.so</span><br><span class="line">00007effd8eeb000     16K rw---   [ anon ]</span><br><span class="line">00007effd8eef000     92K r-x-- libgcc_s.so.1</span><br><span class="line">00007effd8f06000   2044K ----- libgcc_s.so.1</span><br><span class="line">00007effd9105000      4K r---- libgcc_s.so.1</span><br><span class="line">00007effd9106000      4K rw--- libgcc_s.so.1</span><br><span class="line">00007effd9107000   1608K r-x-- libm-2.27.so</span><br><span class="line">00007effd9299000   2044K ----- libm-2.27.so</span><br><span class="line">00007effd9498000      4K r---- libm-2.27.so</span><br><span class="line">00007effd9499000      4K rw--- libm-2.27.so</span><br><span class="line">00007effd949a000   1480K r-x-- libstdc++.so.6.0.25</span><br><span class="line">00007effd960c000   2048K ----- libstdc++.so.6.0.25</span><br><span class="line">00007effd980c000     40K r---- libstdc++.so.6.0.25</span><br><span class="line">00007effd9816000      8K rw--- libstdc++.so.6.0.25</span><br><span class="line">00007effd9818000     12K rw---   [ anon ]</span><br><span class="line">00007effd981b000    148K r-x-- ld-2.27.so</span><br><span class="line">00007effd9a1e000     24K rw---   [ anon ]</span><br><span class="line">00007effd9a3f000      4K r---- ld-2.27.so</span><br><span class="line">00007effd9a40000      4K rw--- ld-2.27.so</span><br><span class="line">00007effd9a41000      4K rw---   [ anon ]</span><br><span class="line">00007ffd922c7000    132K rw---   [ stack ]</span><br><span class="line">00007ffd92385000      8K r----   [ anon ]</span><br><span class="line">00007ffd92387000      8K r-x--   [ anon ]</span><br><span class="line">ffffffffff600000      4K r-x--   [ anon ]</span><br></pre></td></tr></table></figure></li>
+</ul>
 
           
         
