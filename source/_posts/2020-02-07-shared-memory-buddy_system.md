@@ -13,7 +13,7 @@ author: yawei.zhang
 ```C++
     /*  perfect binary true
     *                   0        -----------   : reserve
-    *	                1        -----------   :  root 
+    *	                  1        -----------   :  root 
     *
     *          2                 3
     *
