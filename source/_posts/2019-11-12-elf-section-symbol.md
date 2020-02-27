@@ -165,7 +165,7 @@ pie是链接选项 用于生成DYN类型的可执行文件.
     * 在最终二进制文件中 使用"符号的地址"在此目标文件中的"偏移量"处修补该值   
 
 
-    * .rel.text RELOCATION RECORDS FOR [.text] (object file)包含了代码段中引用的函数和全局变量的重定位条目 包括调用当前编译单元的
+    * .rel.text RELOCATION RECORDS FOR  .text 包含了代码段中引用的函数和全局变量的重定位条目 包括调用当前编译单元的
       * Offset 偏移地址 代码段中要修改掉的地址  
       * Type 类型 不启用PIC的一般是PC32 启用后如下
         * PLT32 函数符号 外部或者内部  
@@ -174,7 +174,7 @@ pie是链接选项 用于生成DYN类型的可执行文件.
 
 
 
-    * .rela.eh_frame RELOCATION RECORDS FOR [.eh_frame](object file)  eh_frame 的重定位信息    
+    * .rela.eh_frame RELOCATION RECORDS FOR [.eh_frame  eh_frame 的重定位信息    
       * 在编译成object file的过程中, 该section提供了当前编译单元所定义的函数符号以及符号所在代码段的偏移位置.  
       * OFFSET 当前函数在代码段中的开始位置  
       * TYPE   PC32 本地实现  

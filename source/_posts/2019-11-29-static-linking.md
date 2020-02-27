@@ -285,11 +285,13 @@ main:
 * .rela.eh_frame Call Frame Information 
   * 提供了异常的Stack Unwind 支持  
   * 这张表提供了'给定一个PC值, 可以查到上一个stack frame位置'
-  * Stack Unwind 指从最內层函数呼叫堆栈开始，找到最外层  
+  * Stack Unwind 指从最內层函数呼叫堆栈开始，找到最外层
+  	```  
     * _Unwind_Backtrace()   
     * uw_frame_state_for() 
     * uw_update_context() 
     * uw_update_context_1()  
+    ```
 
 
 * PC32 的PC是指的 program counter   在本文的汇编中对应寄存器的RIP 

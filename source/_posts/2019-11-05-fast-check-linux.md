@@ -107,9 +107,9 @@ getconf GNU_LIBPTHREAD_VERSION   查看线程模型
     git clone https://github.com/longld/peda.git ~/peda
     echo "source ~/peda/peda.py" >> ~/.gdbinit
     ```
-  * x /nfu <mem addr>   显示指定内存的值, 内存长度(单位)由u决定
+  * x /nfu [mem addr]   显示指定内存的值, 内存长度(单位)由u决定
     * n项  显示数量  
-      * 要往下显示多少个 [fu] 即 n*(fu)   0代表一个都不显示 
+      * 要往下显示多少个 [fu] 即 n * (fu)   0代表一个都不显示 
     * f项  显示方式  
       * x 按十六进制格式显示变量 
       * d 按十进制格式显示变量  

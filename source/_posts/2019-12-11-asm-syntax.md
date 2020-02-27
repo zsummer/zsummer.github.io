@@ -298,10 +298,10 @@ jump    offset
  81b:   e9 c0 ff ff ff          jmpq   7e0 <.plt>  
  ```
 
-* jmpq   7e0  跳转到 CS:7e0 这个位置  
+* ```jmpq   7e0```  跳转到 CS:7e0 这个位置  
   > 实际上二进制的内容仍然是相对寻址(81b+5 + -40) ==  7e0  等同 jumpq * -0x40(%rip) 但省了一个字节的指令   
 
-* jmpq   *0x200812(%rip)  跳转到 816 + 0x200812 这个位置 (rip是一个指针 需要解引用获得目标地址)   
+* ```jmpq   *0x200812(%rip)```  跳转到 816 + 0x200812 这个位置 (rip是一个指针 需要解引用获得目标地址)   
 
 
 ```
@@ -339,8 +339,8 @@ a4e为8字节的操作数剩余部分
 
 a40行取得当前行的地址 
 a51行通过偏移量获得.got表的end 地址 =  a40 + 0x2005c0 =   201000   =.plt.got   (.got表在本测试中大小是0x40)  
-a6c行把RBX + 0xffffffffffffffd0 (= -0x30) 得到GOT表中存放全局变量的地址 *(.plt.got -0x30) = got[g_static_so_data]   
-a70赋值立即数0x3e8 给全局变量 g_static_so_data = *(got[g_static_so_data])  
+a6c行把RBX + 0xffffffffffffffd0 (= -0x30) 得到GOT表中存放全局变量的地址 ```  *(.plt.got -0x30) = got[g_static_so_data]  ```   
+a70赋值立即数0x3e8 给全局变量 ```  g_static_so_data = *(got[g_static_so_data])  ```  
 
 
 节点偏移和大小如下    
