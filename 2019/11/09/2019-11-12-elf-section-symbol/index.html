@@ -102,7 +102,7 @@
 <meta property="og:description" content="目录    目录 ELF文件类型和描述 文件类型 链接器视图(编译器 汇编器 链接器) 加载器视图 (系统加载器) 基本测试命令 基础术语知识 目标文件格式的比较和说明 其他词汇说明        ELF文件类型和描述 (Executable and Linking Format) (可执行可链接格式) 文件     文件类型 可重定位文件  (relocatable file)    由源文件编">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2019-11-08T16:00:00.000Z">
-<meta property="article:modified_time" content="2019-12-18T07:21:20.029Z">
+<meta property="article:modified_time" content="2020-02-27T15:30:33.937Z">
 <meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
 
@@ -603,7 +603,7 @@
 </ul>
 </li>
 </ul>
-<pre><code>* .rel.text RELOCATION RECORDS FOR [.text] (object file)包含了代码段中引用的函数和全局变量的重定位条目 包括调用当前编译单元的
+<pre><code>* .rel.text RELOCATION RECORDS FOR  .text 包含了代码段中引用的函数和全局变量的重定位条目 包括调用当前编译单元的
   * Offset 偏移地址 代码段中要修改掉的地址  
   * Type 类型 不启用PIC的一般是PC32 启用后如下
     * PLT32 函数符号 外部或者内部  
@@ -612,7 +612,7 @@
 
 
 
-* .rela.eh_frame RELOCATION RECORDS FOR [.eh_frame](object file)  eh_frame 的重定位信息    
+* .rela.eh_frame RELOCATION RECORDS FOR [.eh_frame  eh_frame 的重定位信息    
   * 在编译成object file的过程中, 该section提供了当前编译单元所定义的函数符号以及符号所在代码段的偏移位置.  
   * OFFSET 当前函数在代码段中的开始位置  
   * TYPE   PC32 本地实现  
@@ -784,7 +784,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">29</span>
+                <span class="site-state-item-count">32</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -855,7 +855,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

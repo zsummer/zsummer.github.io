@@ -104,7 +104,7 @@
 <meta property="og:image" content="https:&#x2F;&#x2F;zsummer.github.io&#x2F;images&#x2F;system_memory.jpg">
 <meta property="og:image" content="https:&#x2F;&#x2F;zsummer.github.io&#x2F;images&#x2F;buddy_system.gif">
 <meta property="article:published_time" content="2020-02-06T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-02-26T17:44:06.873Z">
+<meta property="article:modified_time" content="2020-02-27T16:41:03.600Z">
 <meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https:&#x2F;&#x2F;zsummer.github.io&#x2F;images&#x2F;system_memory.jpg">
@@ -346,7 +346,7 @@
       
         <h3><span id="1-目录">..1. 目录</span></h3><h3><span id="linux系统的内存管理架构">linux系统的内存管理架构</span></h3><p><img src="/images/system_memory.jpg" alt="buddy_system"><br>Linux内核内存管理的一项重要工作就是如何在长期频繁申请释放内存的情况下, 避免碎片的产生.<br>Linux采用伙伴系统在极高的分配和回收性能(LGN)上, 最大化的减少了外部碎片(总是合并伙伴内存)的产生.<br>伙伴算法非常简洁并且容易实现, 其一般实现的核心思路为维护一个整块内存, 通过不断的2分把最适配的内存分配给用户, 并且总是优先选择最零碎的空闲内存进行适配, 在回收时候则总是会合并空闲的伙伴内存(左右两个子节点的关系称之为伙伴关系), 以此来尽可能的保证大块的连续内存.<br>但是伙伴算法要求分配的内存必须是2的幂次大小, 因此直接使用会带来大量的内部碎片, 也因此伙伴算法一般都是作为底层内存管理算法不直接提供给用户, 而是通过dlmalloc等slab算法或者衍生算法提供给最终用户.  </p>
 <p>linux采用slab算法来进行更细粒度的内存分配管理, 通过分箱算法, 对于小内存(256字节, 分离存储)可以达到常数的性能, 对于 &gt;256 &amp;&amp; &lt;1m的内存可以做到不大于LGN的分配性能, 并且通过开采和分箱算法可以做到几乎没有内部碎片, 通过对空闲内存的合并(没有伙伴关系约束也不存在假碎片问题) 也有效的控制了外部碎片的产生.  </p>
-<p>linux面对的环境在通用性上要求更高, 考虑到brk/mmap在一些环境下的性能表现, 以及小内存的在初始化数据(查找 切分等), slab相关的算法中更倾向于缓存足够多的block来保证小内存在分配上的性能表现, 而操作系统heap苛刻的收缩条件也会导致在项目中的实际表现往往是整个heap的内存总是接近保持在峰值水平上, 换句话说slab算法在实际的实现中其概念更接近’内存池’的概念.<br>其分箱算法采用64位的bitmap 也就是64个箱位, 支持单个内存分配请求的大小范围在dlmalloc的实现中为8字节~1M, 对于一个通用分配器来说这个范围并不够.<br>而slab的切分算法则更容易出现同一个block被切分成不规则大小chunk组合形式, 导致更容易出现一个block因为有少量的小chunk未释放而无法完整回收, 与buddy 算法相比,  前者用外部碎片置换内部碎片,  后者用内部碎片来置换外部碎片.<br>因此包括linux内核, 一般的通用内存分配方案中, 使用buddy算法或者衍生算法来做大块线性地址空间的管理, 保证其外部碎片的最小化和比较好的性能,  然后通过slab算法或者衍生算法维护一个小内存请求的内存池, 并保证向buddy system索要的内存都是满足2的幂次大小,  从而得到一个综合性能最优的方案, 这个方案比喻成[buddy算法负责批发 slab算法负责零售]有一定的参考意义.    </p>
+<p>linux面对的环境在通用性上要求更高, 考虑到brk/mmap在一些环境下的性能表现, 以及小内存的在初始化数据(查找 切分等), slab相关的算法中更倾向于缓存足够多的block来保证小内存在分配上的性能表现, 而操作系统heap苛刻的收缩条件也会导致在项目中的实际表现往往是整个heap的内存总是接近保持在峰值水平上, 换句话说slab算法在实际的实现中其概念更接近’内存池’的概念.<br>其分箱算法采用64位的bitmap 也就是64个箱位, 支持单个内存分配请求的大小范围在dlmalloc的实现中为8字节-1M, 对于一个通用分配器来说这个范围并不够.<br>而slab的切分算法则更容易出现同一个block被切分成不规则大小chunk组合形式, 导致更容易出现一个block因为有少量的小chunk未释放而无法完整回收, 与buddy 算法相比,  前者用外部碎片置换内部碎片,  后者用内部碎片来置换外部碎片.<br>因此包括linux内核, 一般的通用内存分配方案中, 使用buddy算法或者衍生算法来做大块线性地址空间的管理, 保证其外部碎片的最小化和比较好的性能,  然后通过slab算法或者衍生算法维护一个小内存请求的内存池, 并保证向buddy system索要的内存都是满足2的幂次大小,  从而得到一个综合性能最优的方案, 这个方案比喻成[buddy算法负责批发 slab算法负责零售]有一定的参考意义.    </p>
 <h3><span id="伙伴算法">伙伴算法</span></h3><p>因为最终的目的是希望把伙伴算法的管理结构保存在共享内存中,  因此我们在数组结构上以完美二叉树(perfect binary tree)的方式构建了整个伙伴算法,  由于对cpu cache友好的特征, 并且全局几乎只有简单的加减位移操作, 所以整个实现可以在非常简洁的基础上得到了一个比较出色的性能表现.   </p>
 <h4><span id="数据结构和概述">数据结构和概述</span></h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*  perfect binary tree</span></span><br><span class="line"><span class="comment">*                   0        -----------   : reserve</span></span><br><span class="line"><span class="comment">*	                  1        -----------   :  root </span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*          2                 3</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*     4        5         6        7</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*   8   9   10   11   12   13  14   15</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">* ----------------------------------------</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*   0   1   2    3    4    5   6     7     : memory buff</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
 <p><img src="/images/buddy_system.gif" alt="buddy_system"><br>伙伴算法是一个特殊的分离适配的内存管理器  </p>
@@ -378,8 +378,21 @@
 <h5><span id="释放">释放</span></h5><p> 通过地址计算页框编号, 然后加上N (树的大小是2N, N为所有非叶子节点的节点总数) 得到叶子节点的索引.<br> 从叶子节点用IDX /2 不断的向上查找, 直到找到节点被标记为0的层级,  修改该节点为该层级对应的空间大小, 然后逐层向上修改每层的新的空间分配能力, 如果左右节点的空间大小为该层级的大小(都空闲)则合并,(每个上层节点的能力均是节点对应的空间大小)   </p>
 <h3><span id="slab内存分配器">SLAB内存分配器</span></h3><p>有了buddy system之后, 移植所有可以基于mmap或者brk批量分配的内存分配器都会变得容易, 常见的现在linux系统使用的ptmalloc属于dlmalloc的分支版本, 而常用的TCMALLOC或者jemalloc都是基于dlmalloc的思想进行了更优更细粒度的实现, 体现在更好的内存利用率, 或者通过cpu cache更友好的分配策略以及多线程下更少的竞争等来获取更好的分配性能.      </p>
 <p>dlmalloc有着更简洁干净的实现 大约只有6000行代码, 其设计也非常的出色, 可以说是最容易移植的优秀的内存分配器.  </p>
-<p>对于小内存 小于256的, 很类似我上篇文章讲的对象池分配器, 或者说我们的对象池分配器参照了dlmalloc小内存的分配算法.   </p>
-<h4><span id="小内存分配">小内存分配</span></h4><p>dlmalloc定义了最小的分配粒度为8字节, 这样在保存chunk大小的字段中可以多出来3个位作为bit标记<br>然后每8个字节递增, 直到248字节, 总共32个箱子 如下: </p>
+<h4><span id="基础术语和概念如下">基础术语和概念如下:</span></h4><p>Payload: 有效负载.指的是实际交给应用程序使用的内存大小.  </p>
+<p>Overhead: 负载,开销.本意是为了满足分配需求所消耗的内存量,实际在代码注释中多指除了payload之外的额外开销(有些书中也称之为cookie).  </p>
+<p>Chunk: 区块.是内存分配的基本单位,类似物质世界中的原子不可再分. dlmalloc对内存的管理基本上都是以chunk为单位.一个典型的chunk是由用户程序使用的部分(payload)以及额外的标记信息(overhead)组成.  </p>
+<p>Bin: 分箱.用来管理相同或同一区间大小的chunk.在dlmalloc中分为sbin和tbin两种.  </p>
+<p>Mspace: 分配空间.说白了就是dlmalloc中内存池的叫法.在dlmalloc中可以管理多个mspace.如果不显式声明,将会使用一个全局的匿名空间,或者用户可以自行划分空间交给dlmalloc管理.  </p>
+<p>Segment: 区段.一般情况下,内存分配都是在一片连续区间内开采(exploit).但也会遇到不连续的情况,这就需要分成若干个区段记录.多个区段可以同属一个mspace.  </p>
+<p>Fenceposts: 栅栏.大多数分配器中, fencepost起到非连续内存间的隔离作用.一般这种隔离被用做安全检查.分配器会在fenceposts所在位置写上特殊标记,一旦非连续内存间发生写入溢出(overwrite)就可以通过异常的fenceposts值发出警告.  </p>
+<p>Bookkeeping: 记录信息.不同于每个chunk中的overhead,这里指的是整个mspace控制块的记录信息.往往这部分信息都固定在mspace开始的一段空间,或者干脆就放在地址空间的静态区中.  </p>
+<p>Granularity: 粒度.这个粒度指的是从system heap上获取内存的最小单位.一般来说该值至少为一个page size, 且必须以2为底.  </p>
+<p>Mmap: 本意是类unix系统的文件映射调用.但在dlmalloc中表示的更宽泛,这里指代可以在进程地址空间中开辟非连续内存空间的系统调用.  </p>
+<p>Morecore: 指可以在进程地址空间中开辟连续内存空间的系统调用.在类unix系统下morecore指的是sbrk调用.  </p>
+<p>Program break: 前面提到的sbrk()实际也是一个库函数,真正起作用的是brk()系统调用.这个函数其实就是break的缩写.所谓的break是一个代表进程heap区top-most位置的指针.当我们通过sbrk/brk向系统请求内存时,系统做的仅仅是移动break指针,内存就这样被划拨到heap中了.而当释放内存时,就反方向移动该指针,内存就返回给系统.  </p>
+<p>Footprint: 从系统获得的内存量.指的是当前dlmalloc从system heap获取的内存总和.设立footprint一方面是为了方便统计,另一方面也可以限制dlmalloc从系统获取的最大内存量.   </p>
+<p>Trimming: 裁剪.被dlmalloc管理的内存被free后,并不直接返还给系统,而是当积累到一定程度会通过一些算法判断system heap是否收缩(shrink),这个过程在dlmalloc中称作auto-trimming.   </p>
+<h4><span id="小内存分配">小内存分配</span></h4><p>dlmalloc定义了最小的分配粒度为8字节, 这样在保存chunk大小的字段中可以多出来3个位作为bit标记<br>然后每8个字节递增, 直到248字节, 总共32个箱子 如下:   </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[bin idx] 8 8 8 8 8 8 8 8 8 </span><br><span class="line">[bin idx] 16 16 16 16 16 16   </span><br><span class="line">[bin idx] 24 24 24 24 24 24   </span><br><span class="line">...</span><br><span class="line">[bin idx] 248 248 248 248 248 248</span><br></pre></td></tr></table></figure>
 
 <p>分配:  </p>
@@ -419,8 +432,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/12/17/2019-12-17-elf-load/" rel="next" title="ELF装载和动态链接过程">
-                <i class="fa fa-chevron-left"></i> ELF装载和动态链接过程
+              <a href="/2020/02/07/2020-02-03-shared-memory-resume-overview/" rel="next" title="基于共享内存的对象池管理器">
+                <i class="fa fa-chevron-left"></i> 基于共享内存的对象池管理器
               </a>
             
           </div>
@@ -428,10 +441,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2020/02/07/2020-02-03-shared-memory-resume-overview/" rel="prev" title="基于共享内存的对象池管理器">
-                基于共享内存的对象池管理器 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -556,7 +565,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">..1. 目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">2.</span> <span class="nav-text">linux系统的内存管理架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">3.</span> <span class="nav-text">伙伴算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.1.</span> <span class="nav-text">数据结构和概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.2.</span> <span class="nav-text">数据结构的定义:</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.2.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.2.2.</span> <span class="nav-text">分配</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.2.3.</span> <span class="nav-text">释放</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">4.</span> <span class="nav-text">SLAB内存分配器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.1.</span> <span class="nav-text">小内存分配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.2.</span> <span class="nav-text">大内存分配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.3.</span> <span class="nav-text">内存回收</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.4.</span> <span class="nav-text">默认内存分配阈值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.5.</span> <span class="nav-text">tips</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">..1. 目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">2.</span> <span class="nav-text">linux系统的内存管理架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">3.</span> <span class="nav-text">伙伴算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.1.</span> <span class="nav-text">数据结构和概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.2.</span> <span class="nav-text">数据结构的定义:</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.2.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.2.2.</span> <span class="nav-text">分配</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">3.2.3.</span> <span class="nav-text">释放</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">4.</span> <span class="nav-text">SLAB内存分配器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.1.</span> <span class="nav-text">基础术语和概念如下:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.2.</span> <span class="nav-text">小内存分配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.3.</span> <span class="nav-text">大内存分配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.4.</span> <span class="nav-text">内存回收</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.5.</span> <span class="nav-text">默认内存分配阈值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.6.</span> <span class="nav-text">tips</span></a></li></ol></li></ol></div>
             
 
           </div>
