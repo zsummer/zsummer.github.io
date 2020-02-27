@@ -494,56 +494,57 @@
       
         
           
-            <h3><span id="1-目录">..1. 目录</span></h3><h3><span id="通用的内存分配器">通用的内存分配器</span></h3><h4><span id="数据结构和概述">数据结构和概述</span></h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*  perfect binary true</span></span><br><span class="line"><span class="comment">*                   0        -----------   : reserve</span></span><br><span class="line"><span class="comment">*	                1        -----------   :  root </span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*          2                 3</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*     4        5         6        7</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*   8   9   10   11   12   13  14   15</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">* ----------------------------------------</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*   0   1   2    3    4    5   6     7     : memory buff</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+            <h3><span id="1-目录">..1. 目录</span></h3><h3><span id="linux系统的内存管理架构">linux系统的内存管理架构</span></h3><p><img src="/images/system_memory.jpg" alt="buddy_system"><br>Linux内核内存管理的一项重要工作就是如何在长期频繁申请释放内存的情况下, 避免碎片的产生.<br>Linux采用伙伴系统在极高的分配和回收性能(LGN)上, 最大化的减少了外部碎片(总是合并伙伴内存)的产生.<br>伙伴算法非常简洁并且容易实现, 其一般实现的核心思路为维护一个整块内存, 通过不断的2分把最适配的内存分配给用户, 并且总是优先选择最零碎的空闲内存进行适配, 在回收时候则总是会合并空闲的伙伴内存(左右两个子节点的关系称之为伙伴关系), 以此来尽可能的保证大块的连续内存.<br>但是伙伴算法要求分配的内存必须是2的幂次大小, 因此直接使用会带来大量的内部碎片, 也因此伙伴算法一般都是作为底层内存管理算法不直接提供给用户, 而是通过dlmalloc等slab算法或者衍生算法提供给最终用户.  </p>
+<p>linux采用slab算法来进行更细粒度的内存分配管理, 通过分箱算法, 对于小内存(256字节, 分离存储)可以达到常数的性能, 对于 &gt;256 &amp;&amp; &lt;1m的内存可以做到不大于LGN的分配性能, 并且通过开采和分箱算法可以做到几乎没有内部碎片, 通过对空闲内存的合并(没有伙伴关系约束也不存在假碎片问题) 也有效的控制了外部碎片的产生.  </p>
+<p>linux面对的环境在通用性上要求更高, 考虑到brk/mmap在一些环境下的性能表现, 以及小内存的在初始化数据(查找 切分等), slab相关的算法中更倾向于缓存足够多的block来保证小内存在分配上的性能表现, 而操作系统heap苛刻的收缩条件也会导致在项目中的实际表现往往是整个heap的内存总是接近保持在峰值水平上, 换句话说slab算法在实际的实现中其概念更接近’内存池’的概念.<br>其分箱算法采用64位的bitmap 也就是64个箱位, 支持单个内存分配请求的大小范围在dlmalloc的实现中为8字节~1M, 对于一个通用分配器来说这个范围并不够.<br>而slab的切分算法则更容易出现同一个block被切分成不规则大小chunk组合形式, 导致更容易出现一个block因为有少量的小chunk未释放而无法完整回收, 与buddy 算法相比,  前者用外部碎片置换内部碎片,  后者用内部碎片来置换外部碎片.<br>因此包括linux内核, 一般的通用内存分配方案中, 使用buddy算法或者衍生算法来做大块线性地址空间的管理, 保证其外部碎片的最小化和比较好的性能,  然后通过slab算法或者衍生算法维护一个小内存请求的内存池, 并保证向buddy system索要的内存都是满足2的幂次大小,  从而得到一个综合性能最优的方案, 这个方案比喻成[buddy算法负责批发 slab算法负责零售]有一定的参考意义.    </p>
+<h3><span id="伙伴算法">伙伴算法</span></h3><p>因为最终的目的是希望把伙伴算法的管理结构保存在共享内存中,  因此我们在数组结构上以完美二叉树(perfect binary tree)的方式构建了整个伙伴算法,  由于对cpu cache友好的特征, 并且全局几乎只有简单的加减位移操作, 所以整个实现可以在非常简洁的基础上得到了一个比较出色的性能表现.   </p>
+<h4><span id="数据结构和概述">数据结构和概述</span></h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*  perfect binary tree</span></span><br><span class="line"><span class="comment">*                   0        -----------   : reserve</span></span><br><span class="line"><span class="comment">*	                  1        -----------   :  root </span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*          2                 3</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*     4        5         6        7</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*   8   9   10   11   12   13  14   15</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">* ----------------------------------------</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*   0   1   2    3    4    5   6     7     : memory buff</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
 <p><img src="/images/buddy_system.gif" alt="buddy_system"><br>伙伴算法是一个特殊的分离适配的内存管理器  </p>
 <ul>
-<li>被管理的内存必须是2的幂次方对齐 通过上述结构可以观察到  </li>
-<li>分配的单位必须是2的幂次对齐  </li>
-<li>回收时候回对伙伴空闲块进行合并   </li>
-</ul>
-<p>显而易见, 伙伴算法有明显的缺点和优点<br>缺点:  </p>
-<ul>
-<li><p>极大的内存浪费, 因为2的幂次对齐分配, 比如我们需要power(2, 12)+1 的内存 实际上就会分配power(2,13)的内存,  内部碎片比例为 (power(2, 12)+1)/power(2,13), 有效负荷只有0.5左右. </p>
+<li><p>能被有效管理的内存大小必须是2的幂次方   </p>
 </li>
-<li><p>外部碎片, 并不是所有的相邻空闲块都能合并, 必须满足伙伴的条件,  因此相比只要是相邻空闲内存就会合并的算法而言, 会带来更多的内存碎片   </p>
+<li><p>分配的内存大小一定是2的幂次大小对齐, 通过逐层向下2分找到最适配请求的大小  </p>
 </li>
-<li><p>分配复杂度<br>最好为O(1), 即最大空间的分配, 最坏为叶子节点 LGN, 从root查找到叶子节点, 然后向上修改每个节点的当前的最大可分配大小     </p>
+<li><p>回收的内存会逐层向上合并 并且总是幂次大小合并 并且只能对伙伴内存(左右子节点)进行合并     </p>
+</li>
+<li><p>显而易见的内部碎片<br>因为2的幂次对齐分配, 比如我们需要power(2, 12)+1 的内存 实际上就会分配power(2,13)的内存,  内部碎片比例为 (power(2, 12)+1)/power(2,13), 有效负荷只有0.5左右.<br>伙伴系统的分配粒度如果为页框机制, 例如采取页框大小为4k(方便匹配操作系统的页大小), 那么即使请求1个字节也需要一个完整的页框内存,  有效负荷只有1/(4k-1)即4k分之一.  </p>
+</li>
+<li><p>显而易见的假碎片<br>两块相邻的空闲内存因为不属于伙伴关系则无法合并, 换句话说存在一块连续的空闲地址满足需求但是却因为无法在内存管理器中完成合并操作而不能提供服务.<br>比如上面结构中 IDX 9 和 IDX 10皆为空闲,  IDX 9 和 IDX 5皆为空闲等      </p>
+</li>
+<li><p>无法杜绝的外部碎片<br>虽然伙伴算法能有效的控制外部碎片, 但是并不是完全杜绝外部碎片, 如图所示中, 我们并不能保证不会出现索引11和12被分配出去其他内存全部空闲这样的情况, 导致总空闲内存大小为6但是只能最大分配3个连续页框 .<br>外部碎片的产生不仅仅在于分配器管理结构的设计, 更在于将来时, 外部的请求和释放方式.  </p>
+</li>
+<li><p>较为恒定的分配复杂度<br>分配时会从根节点向下查找直到适配, 回收时从叶子节点向上查找, 并且都会从对应节点向根节点方向进行分配能力的修改.<br>因此一对分配和释放请求总是恒定为LGN  </p>
 </li>
 </ul>
-<ul>
-<li>释放复杂度<br>最好为O(1), 即叶子空间的分配, (查找某个地址所在的层级, 从叶子节点)<br>合并复杂度, 向上合并, 最好为O(1) 无法合并, 最坏为LGN, 全部合并.   </li>
-</ul>
-<p>如果结合SLAB分配器看.</p>
-<ul>
-<li>来自SLAB分配器的申请: 粒度都是2的幂次, 完全避免了内部碎片  </li>
-<li>来自SLAB分配器的申请: 分配的粒度都是同一层级, 避免了外部碎片  </li>
-</ul>
-<p>通用的内存管理器中, 伙伴系统是批发商, slab是零售商这个比喻是很形象的.  </p>
 <h4><span id="数据结构的定义">数据结构的定义:</span></h4><p>同linux系统的方式类似, 我们按照页框为单位来管理内存, 页框的大小大于等于系统的页框大小, 可结合slab分配器进行调整.<br>根据要管理的内存大小和页框大小, 我们可以算出总得叶子数量,  而在这棵树上, 节点总数为2N(2倍叶子节点)   </p>
 <p>因此数据结构的定义为如下方式:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">共享内存管理头部: 所有叶子节点 : 被管理的内存</span><br></pre></td></tr></table></figure>
 
-<p>每个节点用1个字节来记录, 内容为该节点的所对应的空间大小, (这里记录的不是大小, 而是大小的幂, 所以可以用一个字节来存储)<br>该节点对应的空间起始地址这位该节点在该层中的offset* power(2, order), </p>
+<p>每个节点用1个字节来记录, 内容为该节点的所对应的空间大小, (这里记录的不是大小, 而是大小的幂, 所以可以用一个字节来存储)<br>该节点对应的空间起始地址这位该节点在该层中的<code>offset* power(2, order)</code></p>
 <h5><span id="初始化">初始化</span></h5><p>所有节点的初始化为为该节点的空间大小.<br>例如index1 对应的则是被管理的所有空间<br>然后每层递减1<br>到叶子节点则为2^0次幂大小, 即一个页框单位.  </p>
 <h5><span id="分配">分配</span></h5><p>如果分配参数是字节数, 则需要先按照页框向上取整<br>如果分配的参数是页框数量, 则需要按照2的幂次取整, 可以用bit search指令获取2的幂数(这个取法是向下取整 所以取完后要进行一次向上取整)<br>如果分配的是order<br>则检查root节点保存的order是否满足需求, 不满足这代表没有足够大的空间<br>如果满足需求则逐层查找, 直到到达对应的order层级, 然后修改该节点的可分配空间为0, 然后逐层向上修改分配能力  </p>
 <p>tips:<br> 这里定义0为已分配, 而不是power(2,0)个空间大小,  因此在这里节点对应空间大小计算是power(2, (order ability)-1)   -1后才是power(2, order) .<br> 这样可以保证这棵树中从叶子节点向上查找时候的可以简单的while循环时候少一次边界判定, 计算方便   </p>
 <p>分配时候永远选择刚好满足需求的路径, 可以减少切分大块, 其次优先左子树,  减少外部碎片的产生以及提高cache命中.  </p>
 <h5><span id="释放">释放</span></h5><p> 通过地址计算页框编号, 然后加上N (树的大小是2N, N为所有非叶子节点的节点总数) 得到叶子节点的索引.<br> 从叶子节点用IDX /2 不断的向上查找, 直到找到节点被标记为0的层级,  修改该节点为该层级对应的空间大小, 然后逐层向上修改每层的新的空间分配能力, 如果左右节点的空间大小为该层级的大小(都空闲)则合并,(每个上层节点的能力均是节点对应的空间大小)   </p>
-<h3><span id="slab内存分配器">SLAB内存分配器</span></h3><p>面向终端用户的内存分配器, 或者说BUDDY SYSTEM管批发, 这里管零售.<br>好的SLAB内存分配器并没有那么容易编写和验证,  因此我们选择了移植一个dlmalloc, 代码简单, 移植方便, 性能也是经过linux系统的验证, 虽然更现代的内存分配器更优秀, 但是用在项目中还是优先选择一个满足需求但是所有代码看的明白的库更容易进行分析和定制.    </p>
-<p>有了buddy system之后, 移植所有可以基于mmap或者brk批量分配的内存分配器都会变得容易, 常见的现在linux系统使用的ptmalloc, 以及常用的TCMALLOC或者jemalloc都是基于dlmalloc的思想进行了更优的实现, 体现在更好的内存利用率, cpu cache更友好的分配策略, 多线程下更少的竞争等.   </p>
-<p>dlmalloc是一个典型的分离存储的分配器, 并充分使用了’池’来减少频繁的内存申请和返还.   </p>
+<h3><span id="slab内存分配器">SLAB内存分配器</span></h3><p>有了buddy system之后, 移植所有可以基于mmap或者brk批量分配的内存分配器都会变得容易, 常见的现在linux系统使用的ptmalloc属于dlmalloc的分支版本, 而常用的TCMALLOC或者jemalloc都是基于dlmalloc的思想进行了更优更细粒度的实现, 体现在更好的内存利用率, 或者通过cpu cache更友好的分配策略以及多线程下更少的竞争等来获取更好的分配性能.      </p>
+<p>dlmalloc有着更简洁干净的实现 大约只有6000行代码, 其设计也非常的出色, 可以说是最容易移植的优秀的内存分配器.  </p>
 <p>对于小内存 小于256的, 很类似我上篇文章讲的对象池分配器, 或者说我们的对象池分配器参照了dlmalloc小内存的分配算法.   </p>
-<p>dlmalloc定义了最小的分配粒度为8字节, 这样在保存chunk大小的字段中可以多出来3个位作为bit标记<br>然后每8个字节递增, 直到248字节.<br>[bin idx] 8 8 8 8 8 8 8 8 8<br>[bin idx] 16 16 16 16 16 16<br>[bin idx] 24 24 24 24 24 24<br>…<br>[bin idx] 248 248 248 248 248 248  </p>
-<h4><span id="小内存分配">小内存分配</span></h4><p>首先检查对应bin idx是否有空闲chunk 有这分配并返回<br>其次检查更高bin idx中是否有空闲的chunk, 有则切割, 并把剩余大小组合成一个新chunk记录为切割剩余chunk(如果过小则直接丢给用户)<br>其次检查大内存的bin里面是否有内存 有则切割 同上<br>其次检查上次剩余切割的chunk是否满足需要 如果满足则进一步切割 同上<br>其次检查最新从上级分配器(buddy system, 或者对应系统函数mmap brk)得到的大块chunk的剩余是否满足 满足就切割 (brk表现为扩展top)<br>其次则申请一个新的大块chunk进行切割   </p>
-<h4><span id="大内存分配">大内存分配</span></h4><p>大内存的bin idx递增则为2的幂次的半高为区分  例如:  </p>
-<p>[256<del>384)<br>[384</del>512)<br>[512<del>768)<br>…<br>[4096</del>6144)<br>…<br>[768k~1m)  </p>
-<p>首先查找对应的bin idx是否存在空闲<br>  如果有空闲着按照一个简版的线段树查找最优大小的内存块<br>  如果找到这返还<br>其次检查更高bin idx中是否存在空闲, 如果有则拿最小的一个chunk进行切分, 切分后的数据块保存记录到(最后一层切割剩余的chunk)中   </p>
+<h4><span id="小内存分配">小内存分配</span></h4><p>dlmalloc定义了最小的分配粒度为8字节, 这样在保存chunk大小的字段中可以多出来3个位作为bit标记<br>然后每8个字节递增, 直到248字节, 总共32个箱子 如下: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[bin idx] 8 8 8 8 8 8 8 8 8 </span><br><span class="line">[bin idx] 16 16 16 16 16 16   </span><br><span class="line">[bin idx] 24 24 24 24 24 24   </span><br><span class="line">...</span><br><span class="line">[bin idx] 248 248 248 248 248 248</span><br></pre></td></tr></table></figure>
+
+<p>分配:  </p>
+<p>首先检查对应bin idx是否有空闲chunk 有这分配并返回<br>其次检查更高bin idx中是否有空闲的chunk, 有则切割, 并把剩余大小组合成一个新chunk记录为切割剩余chunk(如果过小则直接丢给用户)<br>其次检查大内存的bin里面是否有内存 有则切割 同上<br>其次检查上次剩余切割的chunk是否满足需要 如果满足则进一步切割 同上<br>其次检查最新从上级分配器(buddy system, 或者对应系统函数mmap brk)得到的大块chunk的剩余是否满足 满足就切割 (brk表现为扩展top)<br>其次则申请一个新的大块chunk进行切割   </p>
+<h4><span id="大内存分配">大内存分配</span></h4><p>大内存的bin idx递增则为2的幂次的半高为区分 总共32个箱子 如:  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[bin idx] [256~384)  </span><br><span class="line">[bin idx] [384~512)  </span><br><span class="line">[bin idx] [512~768)  </span><br><span class="line">[bin idx] ...  </span><br><span class="line">[bin idx] [4096~6144)  </span><br><span class="line">[bin idx] ...   </span><br><span class="line">[bin idx] [768k~1m)</span><br></pre></td></tr></table></figure>
+<p>分配:<br>首先查找对应的bin idx是否存在空闲<br>  如果有空闲则按照一个简版的线段树查找大小最适配的内存块<br>    每个空闲块保存左右两个指针指向其两个子节点chunk并保存一个next指针指向下一个相同大小的空闲块,<br>    插入新节点时根据其大小分别划分在左右子树中<br>      则根据0向左(小)1向右(大)的查找路径 找到路径上相同大小的节点并加入其next链表  或者填充到叶子节点中<br>      当这颗达到该大小空间的最大深度时, 查找性能为LGN,  这里的N时指的当前深度, 最坏情况为满深度.  </p>
+<p>如果当前bin无空闲内存或者没找到合适空闲内存, 则检查更高bin idx中是否存在空闲, 如果有则拿最小的一个chunk </p>
+<p>如果找到则切分保存剩余内存为剩余chunk并返回合适大小的内存给用户  </p>
 <p>其次检查剩余chunk的大小是否满足, 满足则进一步切割  </p>
-<p>其次检查最近一次向上层管理器申请的内存chunk是否满足需求, 满足则切分 同上    </p>
-<p>其次选择申请新的大块chunk</p>
-<h4><span id="内存返还">内存返还</span></h4><p>返还时会根据标志检查是否存在前一个空闲块 如果存在则合并.<br>合并后的内存是否满足回收给上层分配器, 满足这返还 (检查是否是top 剩余切割 这两个保留, 是否满足正好是向上层申请的边界和大小, 如果是brk则是是否是top下超过某阈值大小的空闲块)<br>不满足则插入到对应的bin空闲块中.   </p>
-<h4><span id="超大内存">超大内存</span></h4><p>对于大于该阈值内存直接走上层分配器  比如mmap或者brk  </p>
-<h4><span id="tips">tips</span></h4><p>dlmalloc总是进行最大化的空闲块合并 减少外部碎片,  通过bin分箱最小化内部碎片的产生和大块内存分配时的树的高度.<br>绝大部分时候小内存都能做到常数级的分配, 对于大内存的分配因为bin分箱有效的控制bitwish树的高度</p>
+<p>其次检查最近一次向上层管理器申请的内存chunk是否满足需求, 满足则切分     </p>
+<p>其次选择向底层(操作系统)申请满足需求的大块内存 </p>
+<h4><span id="内存回收">内存回收</span></h4><p>回收内存时会根据标志检查是否存在前一个空闲块 如果存在则合并.<br>检查是否满足收缩条件, 满足收缩条件则向系统/底层分配器返还内存<br>不满足则插入到对应的bin空闲块中.   </p>
+<h4><span id="默认内存分配阈值">默认内存分配阈值</span></h4><p>分配对齐至少8字节 默认为两倍<code>sizeof(void*)</code><br>向系统的索要内存的最小粒度默认为64k, windows下通过api获取到的分配粒度默认也是64k (最小单位)<br>当dlmalloc的请求内存超过阈值256k时 直接向系统索要内存<br>系统的内存分配方式是brk时至少在堆顶缓存一个分配粒度的空闲内存而不是收缩堆顶所有空闲内存<br>系统的内存分配方式是mmap时会通过满足条件一定次数后扫描线性扫描所有segment列表, 对未使用并且完全空闲的segment进行清除(保留堆顶 剩余切分被占用的segment). </p>
+<h4><span id="tips">tips</span></h4><p>dlmalloc总是进行空闲块合并来减少外部碎片,  通过bin分箱减少内部碎片的产生和大块内存分配时的树的高度.<br>绝大部分时候小内存都能做到常数级的分配, 对于大内存的分配因为bin分箱有效的控制bitwish树的高度</p>
 
           
         
@@ -863,39 +864,44 @@
 <h3 id="1-目录"><a href="#1-目录" class="headerlink" title="..1. 目录"></a>..1. 目录</h3><!-- TOC -->
 
 <ul>
-<li><a href="#目录">目录</a></li>
-<li><a href="#准备工具和基础汇编知识">准备工具和基础汇编知识</a></li>
-<li><a href="#编译链接过程的基本原理和流程">编译链接过程的基本原理和流程</a><ul>
-<li><a href="#gcc中编译一个源文件可以拆分为4个部分">gcc中编译一个源文件可以拆分为4个部分</a></li>
-<li><a href="#编译单元translation-environment-编译的转换阶段-">编译单元(Translation environment), 编译的转换阶段 :</a></li>
-<li><a href="#pic-pie-位置无关代码">PIC PIE 位置无关代码</a></li>
-<li><a href="#got-plt-全局偏移表-链接过程表">GOT PLT 全局偏移表 链接过程表</a></li>
-<li><a href="#符号表和符号">符号表和符号</a><ul>
-<li><a href="#全局符号和局部符号">全局符号和局部符号</a></li>
-<li><a href="#外部符号和内部符号">外部符号和内部符号</a></li>
-<li><a href="#和字符串表的关系">和字符串表的关系</a></li>
+<li><a href="#1-目录">..1. 目录</a></li>
+<li><a href="#2-准备工具和基础汇编知识">..2. 准备工具和基础汇编知识</a></li>
+<li><a href="#3-编译链接过程的基本原理和流程">..3. 编译链接过程的基本原理和流程</a><ul>
+<li><a href="#31-gcc中编译一个源文件可以拆分为4个部分">..3.1. gcc中编译一个源文件可以拆分为4个部分</a></li>
+<li><a href="#32-编译单元translation-environment-编译的转换阶段-">..3.2. 编译单元(Translation environment), 编译的转换阶段 :</a></li>
+<li><a href="#33-pic-pie-位置无关代码">..3.3. PIC PIE 位置无关代码</a></li>
+<li><a href="#34-got-plt-全局偏移表-链接过程表">..3.4. GOT PLT 全局偏移表 链接过程表</a></li>
+<li><a href="#35-符号表和符号">..3.5. 符号表和符号</a><ul>
+<li><a href="#351-全局符号和局部符号">..3.5.1. 全局符号和局部符号</a></li>
+<li><a href="#352-外部符号和内部符号">..3.5.2. 外部符号和内部符号</a></li>
+<li><a href="#353-和字符串表的关系">..3.5.3. 和字符串表的关系</a></li>
 </ul>
 </li>
-<li><a href="#静态链接过程">静态链接过程</a></li>
-<li><a href="#动态链接过程">动态链接过程</a></li>
+<li><a href="#36-静态链接过程">..3.6. 静态链接过程</a></li>
+<li><a href="#37-动态链接过程">..3.7. 动态链接过程</a></li>
 </ul>
 </li>
-<li><a href="#跟踪调测">跟踪调测</a><ul>
-<li><a href="#测试源码">测试源码</a></li>
-<li><a href="#位置有关的重定位分析">位置有关的重定位分析</a><ul>
-<li><a href="#分析结论如下">分析结论如下:</a></li>
-<li><a href="#系统源码参考">系统源码参考:</a></li>
-<li><a href="#字符串数据">字符串数据</a></li>
-<li><a href="#节信息">节信息</a></li>
-<li><a href="#text数据">text数据</a></li>
+<li><a href="#4-跟踪调测">..4. 跟踪调测</a><ul>
+<li><a href="#41-测试源码">..4.1. 测试源码</a></li>
+<li><a href="#42-位置有关的重定位分析">..4.2. 位置有关的重定位分析</a><ul>
+<li><a href="#421-分析结论如下">..4.2.1. 分析结论如下:</a></li>
+<li><a href="#422-系统源码参考">..4.2.2. 系统源码参考:</a></li>
+<li><a href="#423-字符串数据">..4.2.3. 字符串数据</a></li>
+<li><a href="#424-节信息">..4.2.4. 节信息</a></li>
+<li><a href="#425-text数据">..4.2.5. text数据</a></li>
 </ul>
 </li>
-<li><a href="#位置无关的重定位分析">位置无关的重定位分析</a><ul>
-<li><a href="#分析说明">分析说明</a></li>
-<li><a href="#全局数据访问代码分析">全局数据访问代码分析</a></li>
-<li><a href="#全局函数访问代码分析">全局函数访问代码分析</a></li>
+<li><a href="#43-位置无关的重定位分析">..4.3. 位置无关的重定位分析</a><ul>
+<li><a href="#431-分析说明">..4.3.1. 分析说明</a></li>
+<li><a href="#432-全局数据访问代码分析">..4.3.2. 全局数据访问代码分析</a></li>
+<li><a href="#433-全局函数访问代码分析">..4.3.3. 全局函数访问代码分析</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li><a href="#动态库装载过程">动态库装载过程</a><ul>
+<li><a href="#elf的辅助向量-auxv">ELF的辅助向量 AUXV</a></li>
+<li><a href="#load_elf_binary函数">load_elf_binary函数</a></li>
 </ul>
 </li>
 </ul>

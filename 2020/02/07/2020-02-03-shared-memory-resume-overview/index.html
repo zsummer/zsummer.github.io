@@ -102,7 +102,7 @@
 <meta property="og:description" content="..1. 目录通用的对象池管理器数据结构定义12345对象池管理器  [对象A条目IDX]: 对象是否包含虚函数(是否需要重建虚函数表):  对象类型(对应条目IDX): 对象大小: 对象个数: 该条目总长: 条目对应内存地址:  条目对应对象起始地址: 空闲对象下标ID : 已分配计数     [对象B条目IDX]: 对象是否包含虚函数(是否需要重建虚函数表):  对象类型(对应条目IDX):">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-02-06T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-02-06T20:36:09.532Z">
+<meta property="article:modified_time" content="2020-02-26T17:00:26.100Z">
 <meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
 
@@ -347,7 +347,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flag|flag|flag : ...  FENCE SIZE: NODE SIZE :   FENCE SIZE: NODE SIZE :   ...</span><br></pre></td></tr></table></figure>
 <p>条目指向的地址会首先保存flag标志标明该对象是否在使用中, 用于请求和释放时候的判定标志<br>NODE SIZE会进行8字节对齐, FENCE SIZE也选择8字节 这样整个对象池的地址都是保证8字节对齐的<br>FENCE写入特殊固定的魔法数值 用于溢出检测<br>分配出去的对象 NODE SIZE的起始地址即为对象的地址<br>空闲的对象, 其NODE SIZE的第一个U32保存的是下一个空闲内存 </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">: NODE SIZE: 对应下面结构</span><br><span class="line">: FREE IDX, NODE SIZE- FENCE SIZE:</span><br></pre></td></tr></table></figure>
-
+<a id="more"></a>
 <h4><span id="初始化">初始化</span></h4><p>我们首先通过静态代码定义好对应每种对象的条目ID, 并记录(注册)该条目的条目信息,  这时可以得到对象池管理器占用的大小, 以及每个对象池的总长, 以保证共享内存在分配的时候分配足够的内存完成初始化.<br>在对象池管理器的内存之后 开始逐个条目初始化对象池<br>首先对FLAG标志段的内存清零, 即所有flag都是空闲<br>然后从FLAG后开始进行空闲对象池的初始化 </p>
 <ol>
 <li>设置FENCE数值 例如0XBEAFBEAFBEAFBEAF  </li>
@@ -375,26 +375,24 @@
 </ul>
 </li>
 </ul>
-<h4><span id="其他方案">其他方案</span></h4><p>对STL容器构造专用的对象池(内存块池), 并构造专用的alloc进行包装.<br>这样可以实现对STL容器的接入   </p>
-<ul>
-<li>缺点是针对每种vector或者map 都需要编写独立的ALLOCTER代码, 并在对象池中新增IDX   </li>
-<li>优点是内存的分配是O(1) ,  内存所在位置相对整齐, 并且具备非常强的内存控制能力(包括调试,检查, 分析)能力.<br>通常 这很值得.</li>
-</ul>
 <h4><span id="其他方案">其他方案:</span></h4><p>动态内存分配器方案, 可以一次性实现所有STL容器的分配器, 也可以接入第三方的库来完成共享内存RESUME方案的接入<br>缺点: </p>
 <ul>
-<li>内存碎片无法解决, 可以通过优秀的算法来最大化的减少内部和外部碎片, 但会牺牲更多的性能  </li>
-<li>性能 难以做到常数, 但是可以优化为尽可能接近常数,  一般和内存利用率权衡后能做到LGN级别   </li>
-<li>调试困难, 申请的内存位置分布在整个动态内存管理器可使用的内存范围内的任意位置   </li>
+<li>内存规模难以预估和控制<ul>
+<li>对象池一般靠近业务层, 容易预估规模以及对应的上限处理</li>
+<li>动态内存分配方案则相对难以评估, 又因为靠近底层可以发生任何底层容易的内存分配请求中,难以做相应的上限处理  </li>
+</ul>
+</li>
+<li>性能不如对象池, 存在LGN的复杂度, 以及较大的常数计算.      </li>
+<li>调试分析不太方便, 申请到的内存地址可以是被管理的地址空间中的任意位置   </li>
 </ul>
 <p>优点: </p>
 <ul>
 <li>通用<ul>
 <li>可完成少数第三方库的接入 例如PB LUA 等  </li>
-<li>可轻易完成任何需要内存分配的需求.   </li>
+<li>可轻易完成任何需要内存分配的需求而不需要特写内存分配和管理代码.</li>
 </ul>
 </li>
 </ul>
-<p>有时候这是必须选择</p>
 
       
     </div>
@@ -552,7 +550,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">..1. 目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">2.</span> <span class="nav-text">通用的对象池管理器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">2.1.</span> <span class="nav-text">数据结构定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">2.2.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">2.3.</span> <span class="nav-text">分配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">2.4.</span> <span class="nav-text">回收</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">2.5.</span> <span class="nav-text">RESUME</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">3.</span> <span class="nav-text">协助使用的容器类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.1.</span> <span class="nav-text">KV容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.2.</span> <span class="nav-text">数组容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.3.</span> <span class="nav-text">其他方案</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.4.</span> <span class="nav-text">其他方案:</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">..1. 目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">2.</span> <span class="nav-text">通用的对象池管理器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">2.1.</span> <span class="nav-text">数据结构定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">2.2.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">2.3.</span> <span class="nav-text">分配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">2.4.</span> <span class="nav-text">回收</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">2.5.</span> <span class="nav-text">RESUME</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">3.</span> <span class="nav-text">协助使用的容器类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.1.</span> <span class="nav-text">KV容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.2.</span> <span class="nav-text">数组容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.3.</span> <span class="nav-text">其他方案:</span></a></li></ol></li></ol></div>
             
 
           </div>
