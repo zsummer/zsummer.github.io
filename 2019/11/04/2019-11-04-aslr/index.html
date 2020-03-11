@@ -102,7 +102,7 @@
 <meta property="og:description" content="导语64位下的linux地址空间虽然看起来虽然庞大2^64  但是实际上进行内核与用户空间的划分后, 包括ASLR以及PIE等机制的启用, 实际留给mmap和brk的可分配区域远远小于这个值, 大约是42T的可用地址空间. 本文根据内核代码的默认宏定义进行了X86-64下的布局分析, 给基于共享内存的用户空间选址给予一定的参考.    目录   导语 目录 LINUX内存布局 ..1.1. 基本布">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2019-11-03T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-02-26T03:30:04.821Z">
+<meta property="article:modified_time" content="2020-03-10T06:31:55.494Z">
 <meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
 
@@ -490,7 +490,7 @@
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="title">arch_randomize_brk</span><span class="params">(struct mm_struct *mm)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> randomize_page(mm-&gt;brk, <span class="number">0x02000000</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3><span id="结论部分">结论部分</span></h3><p>假定编译出来的是PIE类型的ELF并且全开ASLR设置<br>那么在mmap和heap之间的地址空间大小大约是<br>128T - 17G - 1T - 84T - 1T -33M  = 42T  </p>
-<p>mmap最小起始地址略小于0x0000 7000 0000 0000<br>brk起始地址最大略大于 0x0000 5655 5555 5555  </p>
+<p>mmap最小起始地址略小于0x0000 7F00 0000 0000<br>brk起始地址最大略大于 0x0000 5655 5555 5555  </p>
 <p>这个是以T为单位的粗略计算, 考虑到计算时忽略了一些小的单位(GB级别或者更小), 包括间隙 小的随机值, 以及动态库 数据段代码段本身占用的空间, 这里可以做一个进一步的保守计算来使用这个空间.   </p>
 <p> <strong>计算这个空间的意义在于, 例如我们对共享内存使用一个固定的地址时, 需要避免和系统本身的动态分配的地址空间相冲突, 而计算出来的地址空间的确定可以保证这一点,</strong>  例如可以用这两个地址做一个中值计算, 把这个中值作为安全的绝对地址使用.     </p>
 <h4><span id="结论部分补充验证数据">结论部分补充验证数据</span></h4><ul>
