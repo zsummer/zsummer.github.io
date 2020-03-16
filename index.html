@@ -555,7 +555,7 @@
       
         
           <h3 id="1-目录"><a href="#1-目录" class="headerlink" title="..1. 目录"></a>..1. 目录</h3><h3 id="通用的对象池管理器"><a href="#通用的对象池管理器" class="headerlink" title="通用的对象池管理器"></a>通用的对象池管理器</h3><p>该对象池管理器本质上一个简单分离存储的内存分配方案:<br>分配器维护多个空闲链表, 每个空闲链表包含大小相等的空闲块 每个块的大小为这个大小类中最大元素的大小, 不分割不合并.    </p>
-<p><img src="/images/objpools.jpg" alt="buddy_system">  </p>
+<p><img src="/images/objpools.png" alt="buddy_system">  </p>
 <h4 id="数据结构定义"><a href="#数据结构定义" class="headerlink" title="数据结构定义"></a>数据结构定义</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">对象池管理器</span><br><span class="line">  [对象A条目IDX]: 对象是否包含虚函数(是否需要重建虚函数表):  对象类型(对应条目IDX): 对象大小: 对象个数: 该条目总长: 条目对应内存地址:  条目对应对象起始地址: 空闲对象下标ID : 已分配计数   </span><br><span class="line">  [对象B条目IDX]: 对象是否包含虚函数(是否需要重建虚函数表):  对象类型(对应条目IDX): 对象大小: 对象个数: 该条目总长: 条目对应内存地址:  条目对应对象起始地址: 空闲对象下标ID : 已分配计数   </span><br><span class="line">  [对象C条目IDX]: 对象是否包含虚函数(是否需要重建虚函数表):  对象类型(对应条目IDX): 对象大小: 对象个数: 该条目总长: 条目对应内存地址:  条目对应对象起始地址: 空闲对象下标ID : 已分配计数   </span><br><span class="line">  [对象D条目IDX]: 对象是否包含虚函数(是否需要重建虚函数表):  对象类型(对应条目IDX): 对象大小: 对象个数: 该条目总长: 条目对应内存地址:  条目对应对象起始地址: 空闲对象下标ID : 已分配计数</span><br></pre></td></tr></table></figure>
 
 <p>单个条目指向的起始地址结构:</p>
