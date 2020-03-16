@@ -1,5 +1,5 @@
 ---
-title: 基于共享内存的对象池管理器 
+title: 基于共享内存的对象池管理方案 
 date: 2020-02-07
 categories: develop 
 author: yawei.zhang 
@@ -8,12 +8,12 @@ author: yawei.zhang
 ### ..1. 目录  
 
 
-### 通用的对象池管理器
-该对象池管理器本质上一个简单分离存储的内存分配方案:  
+### 通用的对象池方案
+该方案本质上一个简单分离存储的内存分配方案:  
 分配器维护多个空闲链表, 每个空闲链表包含大小相等的空闲块 每个块的大小为这个大小类中最大元素的大小, 不分割不合并.    
 
 
-![buddy_system](/images/objpools.jpg)  
+![buddy_system](/images/objpools.png)  
 
 #### 数据结构定义  
 ```
