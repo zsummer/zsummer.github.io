@@ -5,11 +5,11 @@ categories: develop
 author: yawei.zhang 
 ---
 
-### ..1. 目录  
+## 内存分配器核心思想和算法
 
-### 核心思想和算法   
+### 内存管理策略   
 
-#### Sequential Fit  (连续链表)
+#### Sequential Fit  (连续适配)
  是基于一个单向或双向链表管理各个blocks的基础算法，因为和blocks的个数有关，性能比较差。这一类算法包括Fast-Fit, First-Fit, Next-Fit, and Worst-Fit。  
 
 * Buddy System (Sequential Fit变种)  
@@ -18,7 +18,7 @@ author: yawei.zhang
   * Fibonacci Buddies  
   * Weighted Buddies   
 
-#### Segregated Free List (离散式空闲列表) 
+#### Segregated Free List (分离适配) 
  将所有的空闲块，放入到一组链表中，每一个链表中只包含某一个大小范围的空闲块  
 
 #### Indexed  Fit  
@@ -28,6 +28,31 @@ author: yawei.zhang
 * Bitmap Fit (Indexed Fit 变种)
   Indexed Fit算法的变种，通过一小段内存的位图来标记对应的内存是空闲的还是使用中。  
   
+### 路径匹配策略  
+对于操作系统而言, 除了管理进程之外, 还需要有效的管理计算机的主内存, 管理主内存的共享使用和最小化内存访问时间是内存管理器的基本目标. 虽然使用了各种不同的策略来为争夺内存的进程分配空间，但最流行的三种策略是最佳匹配、最不适合匹配和首次匹配.    
+
+* Best fit:   
+  The allocator places a process in the smallest block of unallocated memory in which it will fit. For example, suppose a process requests 12KB of memory and the memory manager currently has a list of unallocated blocks of 6KB, 14KB, 19KB, 11KB, and 13KB blocks. The best-fit strategy will allocate 12KB of the 13KB block to the process.   
+  最佳匹配:  
+  这种匹配策略中, 分配器会从满足匹配要求的未分配内存中选择最小的块.  
+  例如程序请求一个12kb的内存, 而当前的内存管理器有一个未分配的内存块列表, 分别为14k, 19k, 11k, 13k, 那么best-fit讲从13k的内存块中分配内存给程序.  
+
+
+* Worst fit:  
+  The memory manager places a process in the largest block of unallocated memory available. The idea is that this placement will create the largest hold after the allocations, thus increasing the possibility that, compared to best fit, another process can use the remaining space. Using the same example as above, worst fit will allocate 12KB of the 19KB block to the process, leaving a 7KB block for future use.  
+  最不适合匹配  
+  内存管理器总是选择获得的最大的那个未分配内存块. 
+  这种策略在每次分配后总是持有最大的内存块, 从而增加匹配的可能性. 与最佳匹配相比, 其他的请求可以使用剩余的空间.(最佳匹配的剩余内存往往无法利用)  
+  同上例, 最坏匹配会从19k的那个内存块中分配, 并留下7k的内存留给将来使用.  
+
+* First fit:  
+  There may be many holes in the memory, so the operating system, to reduce the amount of time it spends analyzing the available spaces, begins at the start of primary memory and allocates memory from the first hole it encounters large enough to satisfy the request. Using the same example as above, first fit will allocate 12KB of the 14KB block to the process.  
+  通常内存中会存在很多空洞, 所以操作系统为了减少分析可用空间的性能(时间)消耗, 会从主要内存或者 第一个足够大并且满足求要的可分配内存的起始位置相应请求.   
+  同上例中, 首先匹配会从14k的block中分配12k的请求.   
+  First Fit的一个改良版本叫做Next Fit, 即在下次请求时会从上次中断的地方的开始搜索, 从而避免总是从起始的空闲内存开始查找. (Designated victim), First Fit的策略会倾向于总是把大块切的更零碎也因此带来更多的外部碎片问题, 也因为总是从空闲内存的头部开始切造成更多的内部碎片,  而Next Fit的做法会避免(改良)这些问题, 并且速度比Firt 以及 Best更快.  
+
+
+
 #### TLSF: a New Dynamic Memory Allocator for Real-Time Systems   
 通过一组链表来管理不同大小内存块的内存分配算法。
 适用环境和要求:
@@ -80,7 +105,7 @@ pages 管理
 * jemalloc  
 * Hoard
 * minimalloc
-* TLSF  
+* TLSF: https://github.com/OlegHahm/tlsf    
 
 #### 援引
 1. jemalloc关于使用red-block tree的反思 [链接]
@@ -102,6 +127,3 @@ pages 管理
 16. ptmalloc,tcmalloc和jemalloc内存分配策略研究。[链接]
 17. Firefox3使用jemalloc后的总结，可以看到Firefox优化的思路。[链接] [Firefox使用的源代码]
 18. Chromimum Project: Out of memory handling, 里面有不错的观点。 [链接]
-————————————————
-版权声明：本文为CSDN博主「Horky」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
-原文链接：https://blog.csdn.net/HorkyChen/java/article/details/35735103
