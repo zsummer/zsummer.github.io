@@ -12,15 +12,17 @@ author: yawei.zhang
 #### Sequential Fit  (连续适配)
  是基于一个单向或双向链表管理各个blocks的基础算法，因为和blocks的个数有关，性能比较差。这一类算法包括Fast-Fit, First-Fit, Next-Fit, and Worst-Fit。  
 
+
+
+#### Segregated List (分离列表) 
+ 将所有的空闲块，放入到一组链表中，每一个链表中只包含某一个大小范围的空闲块  
+
 * Buddy System (Sequential Fit变种)  
   * 内部碎片化问题比较严重   
   * Binary Buddies  
   * Fibonacci Buddies  
   * Weighted Buddies   
-
-#### Segregated Free List (分离适配) 
- 将所有的空闲块，放入到一组链表中，每一个链表中只包含某一个大小范围的空闲块  
-
+  
 #### Indexed  Fit  
  通过一些高阶的数据结构来索引（Index）空闲的内存块。例如基于平衡树的“Best Fit”算法。
 * 使用Balanced Tree的Best Fit allocator
@@ -87,7 +89,7 @@ Memory is not cleaned-up，分配个应用的内存没有被请0.
 
 * 局部化, 本地缓存/链表  
 * 注意false shared  
-
+* 跨线程队列 最大本地缓存 
 
 #### 内存安全   
 管理数据和被管理内存分离
@@ -108,22 +110,13 @@ pages 管理
 * TLSF: https://github.com/OlegHahm/tlsf    
 
 #### 援引
-1. jemalloc关于使用red-block tree的反思 [链接]
-  文章发布于2008年，作者在2009年将其应用于FaceBook时，则是进行了算法上优化。
-2. 2011年jemalloc作者在FaceBook应用jemalloc后撰文介绍了jemalloc的核心算法及在Facebook上应用效果。[链接] [早期的论文，有更多的细节]
-3. Android碎片化的度量 通过改造ROM做的实验。
-4. Hoard Offical [链接]
-5. Mac OS上malloc是怎么工作的[链接]
-6. 关于WebKit应用tcmalloc的对比[链接]
-7. How tcmalloc works[链接] [中文翻译]
-8. TCMalloc源代码分析,很不错资料。作者的网站还有其它干货值得一读。[链接]
-9. dlmalloc早期的技术文档，讲述了其核心算法。[链接]
-10. ptmalloc源码分析,讲的很系统，非常值得一读。[CSDN下载链接]
-11. 介绍jemalloc的资料《更好的内存管理-jemalloc》[链接]
-12. 替换系统malloc的四种方法 [链接]
-13. 介绍针对实时系统进行优化的内存分配算法TLSF，其中对动态分配算法(DSA)做了总结。[链接]
-14. 维基百科上关于Thread Local Storage的说明, 也许你能感受到技术的相通性。[链接]
-15. 针对实时系统进行各种分配算法的对比,可以结合13一起看。[链接]
-16. ptmalloc,tcmalloc和jemalloc内存分配策略研究。[链接]
-17. Firefox3使用jemalloc后的总结，可以看到Firefox优化的思路。[链接] [Firefox使用的源代码]
-18. Chromimum Project: Out of memory handling, 里面有不错的观点。 [链接]
+[jemalloc深入分析 PDF](https://github.com/everschen/tools/blob/master/DOC/Jemalloc.pdf)  
+[jemalloc 2015演讲视频 tick tock, malloc needs a clock 背景和初始设计思想介绍](http://applicative.acm.org/2015/applicative.acm.org/speaker-JasonEvans.html)   
+[jemalloc facebook工程贴](https://www.facebook.com/notes/facebook-engineering/scalable-memory-allocation-using-jemalloc/480222803919)   
+[BSDcan paper 2006](http://people.freebsd.org/~jasone/jemalloc/bsdcan2006/jemalloc.pdf)   
+[On the Impact of Memory Allocationon High-Performance Query Processing](https://dl.acm.org/doi/abs/10.1145/3329785.3329918)   
+[How tcmalloc Works](https://www.jamesgolick.com/2013/5/19/how-tcmalloc-works.html)   
+[Chromimum Project: Out of memory handling](https://www.chromium.org/chromium-os/chromiumos-design-docs/out-of-memory-handling)  
+[Scalable Memory Allocation TBB](https://rd.springer.com/content/pdf/10.1007%2F978-1-4842-4398-5_7.pdf)  
+[ptmalloc,tcmalloc和jemalloc内存分配策略研究](https://cloud.tencent.com/developer/article/1173720)   
+

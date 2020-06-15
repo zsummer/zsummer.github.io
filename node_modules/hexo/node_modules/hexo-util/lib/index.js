@@ -2,6 +2,7 @@
 
 const hash = require('./hash');
 
+exports.Cache = require('./cache');
 exports.CacheStream = require('./cache_stream');
 exports.camelCaseKeys = require('./camel_case_keys');
 exports.Color = require('./color');
@@ -22,10 +23,13 @@ exports.isExternalLink = require('./is_external_link');
 exports.Pattern = require('./pattern');
 exports.Permalink = require('./permalink');
 exports.prettyUrls = require('./pretty_urls');
+exports.prismHighlight = require('./prism');
 exports.relative_url = require('./relative_url');
 exports.slugize = require('./slugize');
 exports.spawn = require('./spawn');
 exports.stripHTML = require('./strip_html');
+exports.stripIndent = require('./strip_indent');
+exports.tocObj = require('./toc_obj');
 exports.truncate = require('./truncate');
 exports.unescapeHTML = require('./unescape_html');
 exports.url_for = require('./url_for');
