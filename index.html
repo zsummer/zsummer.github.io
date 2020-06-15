@@ -96,7 +96,7 @@
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="关于夏天的一切">
-<meta property="og:url" content="https:&#x2F;&#x2F;zsummer.github.io&#x2F;index.html">
+<meta property="og:url" content="https://zsummer.github.io/index.html">
 <meta property="og:site_name" content="关于夏天的一切">
 <meta property="og:locale" content="en_US">
 <meta property="article:author" content="夏天">
@@ -151,7 +151,7 @@
 
 
 
-<meta name="generator" content="Hexo 4.1.1"></head>
+<meta name="generator" content="Hexo 4.2.1"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
 
@@ -236,6 +236,346 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/05/09/2020-06-15-shadowsock-proxy/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/05/09/2020-06-15-shadowsock-proxy/" itemprop="url">shadowsocks代理远端和本地配置以及VPS上的bbr开启等</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-09T00:00:00+08:00">
+                2020-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="shadowsocks服务器配置"><a href="#shadowsocks服务器配置" class="headerlink" title="shadowsocks服务器配置"></a>shadowsocks服务器配置</h2><ul>
+<li><p>安装shadowsocks  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install shadowsocks</span><br></pre></td></tr></table></figure></li>
+<li><p>配置shadowsocks<br>配置路径</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;etc&#x2F;shadowsocks&#x2F;config.json</span><br></pre></td></tr></table></figure></li>
+<li><p>配置内容(参考):</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;server&quot;:[&quot;::1&quot;, &quot;0.0.0.0&quot;],</span><br><span class="line">  &quot;mode&quot;:&quot;tcp_and_udp&quot;,</span><br><span class="line">  &quot;server_port&quot;:8080,</span><br><span class="line">  &quot;password&quot;:&quot;****&quot;,</span><br><span class="line">  &quot;method&quot;:&quot;aes-256-cfb&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/05/09/2020-06-15-shadowsock-proxy/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/05/09/2020-05-09-memory_alloctor/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/05/09/2020-05-09-memory_alloctor/" itemprop="url">内存分配器</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-09T00:00:00+08:00">
+                2020-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2><span id="内存分配器核心思想和算法">内存分配器核心思想和算法</span></h2><h3><span id="内存管理策略">内存管理策略</span></h3><h4><span id="sequential-fit-连续适配">Sequential Fit  (连续适配)</span></h4><p> 是基于一个单向或双向链表管理各个blocks的基础算法，因为和blocks的个数有关，性能比较差。这一类算法包括Fast-Fit, First-Fit, Next-Fit, and Worst-Fit。  </p>
+<h4><span id="segregated-list-分离列表">Segregated List (分离列表)</span></h4><p> 将所有的空闲块，放入到一组链表中，每一个链表中只包含某一个大小范围的空闲块  </p>
+<ul>
+<li>Buddy System (Sequential Fit变种)  <ul>
+<li>内部碎片化问题比较严重   </li>
+<li>Binary Buddies  </li>
+<li>Fibonacci Buddies  </li>
+<li>Weighted Buddies   </li>
+</ul>
+</li>
+</ul>
+<h4><span id="indexed-fit">Indexed  Fit</span></h4><p> 通过一些高阶的数据结构来索引（Index）空闲的内存块。例如基于平衡树的“Best Fit”算法。</p>
+<ul>
+<li>使用Balanced Tree的Best Fit allocator</li>
+<li>使用Cartesian tree 的Stephenson Fast-Fit allocator</li>
+<li>Bitmap Fit (Indexed Fit 变种)<br>Indexed Fit算法的变种，通过一小段内存的位图来标记对应的内存是空闲的还是使用中。  </li>
+</ul>
+<h3><span id="路径匹配策略">路径匹配策略</span></h3><p>对于操作系统而言, 除了管理进程之外, 还需要有效的管理计算机的主内存, 管理主内存的共享使用和最小化内存访问时间是内存管理器的基本目标. 虽然使用了各种不同的策略来为争夺内存的进程分配空间，但最流行的三种策略是最佳匹配、最不适合匹配和首次匹配.    </p>
+<ul>
+<li>Best fit:<br>The allocator places a process in the smallest block of unallocated memory in which it will fit. For example, suppose a process requests 12KB of memory and the memory manager currently has a list of unallocated blocks of 6KB, 14KB, 19KB, 11KB, and 13KB blocks. The best-fit strategy will allocate 12KB of the 13KB block to the process.<br>最佳匹配:<br>这种匹配策略中, 分配器会从满足匹配要求的未分配内存中选择最小的块.<br>例如程序请求一个12kb的内存, 而当前的内存管理器有一个未分配的内存块列表, 分别为14k, 19k, 11k, 13k, 那么best-fit讲从13k的内存块中分配内存给程序.  </li>
+</ul>
+<ul>
+<li><p>Worst fit:<br>The memory manager places a process in the largest block of unallocated memory available. The idea is that this placement will create the largest hold after the allocations, thus increasing the possibility that, compared to best fit, another process can use the remaining space. Using the same example as above, worst fit will allocate 12KB of the 19KB block to the process, leaving a 7KB block for future use.<br>最不适合匹配<br>内存管理器总是选择获得的最大的那个未分配内存块.<br>这种策略在每次分配后总是持有最大的内存块, 从而增加匹配的可能性. 与最佳匹配相比, 其他的请求可以使用剩余的空间.(最佳匹配的剩余内存往往无法利用)<br>同上例, 最坏匹配会从19k的那个内存块中分配, 并留下7k的内存留给将来使用.  </p>
+</li>
+<li><p>First fit:<br>There may be many holes in the memory, so the operating system, to reduce the amount of time it spends analyzing the available spaces, begins at the start of primary memory and allocates memory from the first hole it encounters large enough to satisfy the request. Using the same example as above, first fit will allocate 12KB of the 14KB block to the process.<br>通常内存中会存在很多空洞, 所以操作系统为了减少分析可用空间的性能(时间)消耗, 会从主要内存或者 第一个足够大并且满足求要的可分配内存的起始位置相应请求.<br>同上例中, 首先匹配会从14k的block中分配12k的请求.<br>First Fit的一个改良版本叫做Next Fit, 即在下次请求时会从上次中断的地方的开始搜索, 从而避免总是从起始的空闲内存开始查找. (Designated victim), First Fit的策略会倾向于总是把大块切的更零碎也因此带来更多的外部碎片问题, 也因为总是从空闲内存的头部开始切造成更多的内部碎片,  而Next Fit的做法会避免(改良)这些问题, 并且速度比Firt 以及 Best更快.  </p>
+</li>
+</ul>
+<h4><span id="tlsf-a-new-dynamic-memory-allocator-for-real-time-systems">TLSF: a New Dynamic Memory Allocator for Real-Time Systems</span></h4><p>通过一组链表来管理不同大小内存块的内存分配算法。<br>适用环境和要求:<br>内存分配/释放的执行时间可预期，可接受的。由于RTOS对指令的执行时间有严格要求，所以常常采用静态内存分配的方法，以获得一个可以预期的执行时间。<br>内存分配算法的碎片化程度要低，这是由于RTOS往往长时间执行，碎片化程度高会导致内存分配失败。<br>实时系统动态内存算法<br>可信的执行环境，Trusted Environment，应用不会故意破坏数据或者窃取数据。<br>有限的物理内存。<br>没有物理MMU来支持虚拟内存。</p>
+<p>核心概念: Two Level<br>基本的Segregated Fit算法是使用一组链表，每个链表只包含特定长度范围来的空闲块的方式来管理空闲块的，这样链表数组的长度可能会很大。如下图，TLSF为了简化查找定位过程，使用了两层链表。第一层，将空闲内存块的大小根据2的幂进行分类，如（16、32、64…）。第二层链表在第一层的基础上，按照一定的间隔，线性分段。比如2的6次方这一段，分为4个小区间【64,80），【80,96），【96,112），【112，128）.每一级的链表都有一个bitmap用于标记对应的链表中是否有内存块。比如第一级别bitmap的后4bit位0100，即2的6次方这个区间有空闲块。对应的第二级链表的bitmap位0010及【80,96）这个区间有空闲块，即下面的89 Byte。</p>
+<p>策略:<br>Immediate coalescing，立即合并，当内存块被释放后，立即与相邻的空闲内存块合并，以获得一个更大的空闲块，插入到链表的相应位置。这样可以减少碎片化。<br>Splitting threshold，分割阈值，最小可分配的内存块大小为16字节，应用一般不会分配一些基本的数据结构，如int、char等。限定最小可分配大小为16字节，这样可以在空闲的内存块中存储一些管理信息。<br>Good-fit strategy，TLSF会尽可能的返回一个最小的、能够满足需求的内存块。<br>Same strategy for all block sizes，对于不同大小的内存请求，TLSF只有一个分配策略，实现相对简单，执行时间可以预期。相应的dlmalloc根据所请求的内存大小不同，有多达4种内存分配策略。<br>Memory is not cleaned-up，分配个应用的内存没有被请0.</p>
+<p>特点:<br>可以预期的分配执行时间，无论对于多达的内存分配请求，TLSF可以在限定的时间内完成分配。<br>碎片化程度低。</p>
+<h4><span id="mimalloc">mimalloc:</span></h4><h4><span id="多线程">多线程</span></h4><ul>
+<li>局部化, 本地缓存/链表  </li>
+<li>注意false shared  </li>
+<li>跨线程队列 最大本地缓存 </li>
+</ul>
+<h4><span id="内存安全">内存安全</span></h4><p>管理数据和被管理内存分离<br>buddy system<br>pages 管理  </p>
+<p>可信的执行环境Trusted Environment，应用不会故意破坏数据或者窃取数据<br>有限的物理内存<br>有限的物理地址<br>没有物理MMU来支持虚拟内存</p>
+<h4><span id="开源内存分配器">开源内存分配器</span></h4><ul>
+<li>dlmalloc </li>
+<li>tcmalloc  </li>
+<li>jemalloc  </li>
+<li>Hoard</li>
+<li>minimalloc</li>
+<li>TLSF: <a href="https://github.com/OlegHahm/tlsf" target="_blank" rel="noopener">https://github.com/OlegHahm/tlsf</a>    </li>
+</ul>
+<h4><span id="援引">援引</span></h4><p><a href="https://github.com/everschen/tools/blob/master/DOC/Jemalloc.pdf" target="_blank" rel="noopener">jemalloc深入分析 PDF</a><br><a href="http://applicative.acm.org/2015/applicative.acm.org/speaker-JasonEvans.html" target="_blank" rel="noopener">jemalloc 2015演讲视频 tick tock, malloc needs a clock 背景和初始设计思想介绍</a><br><a href="https://www.facebook.com/notes/facebook-engineering/scalable-memory-allocation-using-jemalloc/480222803919" target="_blank" rel="noopener">jemalloc facebook工程贴</a><br><a href="http://people.freebsd.org/~jasone/jemalloc/bsdcan2006/jemalloc.pdf" target="_blank" rel="noopener">BSDcan paper 2006</a><br><a href="https://dl.acm.org/doi/abs/10.1145/3329785.3329918" target="_blank" rel="noopener">On the Impact of Memory Allocationon High-Performance Query Processing</a><br><a href="https://www.jamesgolick.com/2013/5/19/how-tcmalloc-works.html" target="_blank" rel="noopener">How tcmalloc Works</a><br><a href="https://www.chromium.org/chromium-os/chromiumos-design-docs/out-of-memory-handling" target="_blank" rel="noopener">Chromimum Project: Out of memory handling</a><br><a href="https://rd.springer.com/content/pdf/10.1007%2F978-1-4842-4398-5_7.pdf" target="_blank" rel="noopener">Scalable Memory Allocation TBB</a><br><a href="https://cloud.tencent.com/developer/article/1173720" target="_blank" rel="noopener">ptmalloc,tcmalloc和jemalloc内存分配策略研究</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -481,7 +821,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/02/07/2020-02-03-shared-memory-resume-overview/" itemprop="url">基于共享内存的对象池管理器</a></h1>
+                <a class="post-title-link" href="/2020/02/07/2020-02-03-shared-memory-resume-overview/" itemprop="url">基于共享内存的对象池管理方案</a></h1>
         
 
         <div class="post-meta">
@@ -554,7 +894,7 @@
 
       
         
-          <h3 id="1-目录"><a href="#1-目录" class="headerlink" title="..1. 目录"></a>..1. 目录</h3><h3 id="通用的对象池管理器"><a href="#通用的对象池管理器" class="headerlink" title="通用的对象池管理器"></a>通用的对象池管理器</h3><p>该对象池管理器本质上一个简单分离存储的内存分配方案:<br>分配器维护多个空闲链表, 每个空闲链表包含大小相等的空闲块 每个块的大小为这个大小类中最大元素的大小, 不分割不合并.    </p>
+          <h3 id="1-目录"><a href="#1-目录" class="headerlink" title="..1. 目录"></a>..1. 目录</h3><h3 id="通用的对象池方案"><a href="#通用的对象池方案" class="headerlink" title="通用的对象池方案"></a>通用的对象池方案</h3><p>该方案本质上一个简单分离存储的内存分配方案:<br>分配器维护多个空闲链表, 每个空闲链表包含大小相等的空闲块 每个块的大小为这个大小类中最大元素的大小, 不分割不合并.    </p>
 <p><img src="/images/objpools.png" alt="buddy_system">  </p>
 <h4 id="数据结构定义"><a href="#数据结构定义" class="headerlink" title="数据结构定义"></a>数据结构定义</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">对象池管理器</span><br><span class="line">  [对象A条目IDX]: 对象是否包含虚函数(是否需要重建虚函数表):  对象类型(对应条目IDX): 对象大小: 对象个数: 该条目总长: 条目对应内存地址:  条目对应对象起始地址: 空闲对象下标ID : 已分配计数   </span><br><span class="line">  [对象B条目IDX]: 对象是否包含虚函数(是否需要重建虚函数表):  对象类型(对应条目IDX): 对象大小: 对象个数: 该条目总长: 条目对应内存地址:  条目对应对象起始地址: 空闲对象下标ID : 已分配计数   </span><br><span class="line">  [对象C条目IDX]: 对象是否包含虚函数(是否需要重建虚函数表):  对象类型(对应条目IDX): 对象大小: 对象个数: 该条目总长: 条目对应内存地址:  条目对应对象起始地址: 空闲对象下标ID : 已分配计数   </span><br><span class="line">  [对象D条目IDX]: 对象是否包含虚函数(是否需要重建虚函数表):  对象类型(对应条目IDX): 对象大小: 对象个数: 该条目总长: 条目对应内存地址:  条目对应对象起始地址: 空闲对象下标ID : 已分配计数</span><br></pre></td></tr></table></figure>
 
@@ -1884,410 +2224,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/23/2019-11-23-elf-hash/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/11/23/2019-11-23-elf-hash/" itemprop="url">ELF的hash算法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-23T00:00:00+08:00">
-                2019-11-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="1-目录"><a href="#1-目录" class="headerlink" title="..1. 目录"></a>..1. 目录</h3><hr>
-<!-- TOC -->
-
-<ul>
-<li><a href="#1-目录">..1. 目录</a></li>
-<li><a href="#elf-hash">ELF HASH</a><pre><code>- [使用elf hash获取符号所在的偏移地址](#使用elf-hash获取符号所在的偏移地址)
-- [结论](#结论)</code></pre></li>
-<li><a href="#elf-hash源码">ELF HASH源码</a></li>
-</ul>
-<!-- /TOC -->
-
-<h3 id="ELF-HASH"><a href="#ELF-HASH" class="headerlink" title="ELF HASH"></a>ELF HASH</h3><p>ELF的哈希表提供了对符号表的访问<br>组织结构如下:     </p>
-<table>
-<thead>
-<tr>
-<th>labels</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>nbucket</td>
-</tr>
-<tr>
-<td>nchain</td>
-</tr>
-<tr>
-<td>bucket[0]</td>
-</tr>
-<tr>
-<td>…</td>
-</tr>
-<tr>
-<td>bucket[nbucket-1]</td>
-</tr>
-<tr>
-<td>chain[0]</td>
-</tr>
-<tr>
-<td>…</td>
-</tr>
-<tr>
-<td>chain[nchain-1]</td>
-</tr>
-</tbody></table>
-<h6 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h6><ul>
-<li>bucket和chain的数量是相等的  </li>
-<li>每个符号值对应一个字符串  </li>
-<li>基本查找流程 <ul>
-<li>使用elf_hash得到hash值   </li>
-<li>对hash值取模计算存放的符号值的桶  </li>
-<li>如果该桶内没有数据则结束</li>
-<li>如果桶内内有数据不匹配   <ul>
-<li>以该符号值为下标的 chain 中存在下一个符号值 </li>
-<li>重复该步骤直到找到和目标字符串匹配   </li>
-</ul>
-</li>
-<li>找到符号值对应的字符串以及符号加载时的偏移信息和符号地址信息   </li>
-</ul>
-</li>
-</ul>
-<h6 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h6><ul>
-<li>chain 的数量必然大于符号的数量  </li>
-<li>不考虑性能, 桶的数量可以小于符号的数量 也可以同时小于chain的数量   </li>
-<li>遇到冲突后从 chain 表中查找以出现冲突的符号值为下标位置的chain, 如果该chain无内容则从符号表中查找匹配的符号的值填充该chain  <ul>
-<li>如果有内容并且符号值依然冲突, 则用该冲突的符号值为索引继续查找下一个 </li>
-<li>最差情况则相当于直接遍历符号表   </li>
-</ul>
-</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/11/23/2019-11-23-elf-hash/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/09/2019-11-12-elf-section-symbol/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/11/09/2019-11-12-elf-section-symbol/" itemprop="url">ELF文件的SECTIO分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-09T00:00:00+08:00">
-                2019-11-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><hr>
-<!-- TOC -->
-
-<ul>
-<li><a href="#目录">目录</a></li>
-<li><a href="#elf文件类型和描述">ELF文件类型和描述</a><ul>
-<li><a href="#文件类型">文件类型</a></li>
-<li><a href="#链接器视图编译器-汇编器-链接器">链接器视图(编译器 汇编器 链接器)</a></li>
-<li><a href="#加载器视图-系统加载器">加载器视图 (系统加载器)</a></li>
-<li><a href="#基本测试命令">基本测试命令</a></li>
-<li><a href="#基础术语知识">基础术语知识</a><ul>
-<li><a href="#目标文件格式的比较和说明">目标文件格式的比较和说明</a></li>
-<li><a href="#其他词汇说明">其他词汇说明</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<!-- /TOC -->
-
-<h3 id="ELF文件类型和描述"><a href="#ELF文件类型和描述" class="headerlink" title="ELF文件类型和描述"></a>ELF文件类型和描述</h3><hr>
-<p>(Executable and Linking Format) (可执行可链接格式) 文件    </p>
-<h4 id="文件类型"><a href="#文件类型" class="headerlink" title="文件类型"></a>文件类型</h4><ul>
-<li><p>可重定位文件  (relocatable file)  </p>
-<ul>
-<li>由源文件编译而成但是还没有链接成可执行文件, 扩展名通常为.o  通常’目标文件(object file)’  用于与其他目标文件进行链接成可执行文件或者动态链接库.  </li>
-<li>可重定位是指 对外部符号的访问会进行标记, 在链接时候会重写这部分访问(操作数)重定位到真正的位置上.  </li>
-<li>重定位因为存在该修补 则有以下作用:  <ul>
-<li>重定位在执行时是直接使用真实位置 没有其他过程 性能非常好   </li>
-<li>链接共享库的时候如果需要确定地址和修补, 则还需要保证多个共享库的地址不可以重叠, 在32位下这种保证会很容易用尽虚拟(地址)空间  </li>
-<li>重定位需要修改代码段, 从而破坏’代码段’只读属性, 如果在链接阶段无法完成重定位, 则只能放在加载过程完成, 这样会导致’无法实现真正的代码共享’ .  比如所有进程使用的相同so文件在内存中实际上只有一份就是依赖于so的代码段只读且一致这个原则上的.  </li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>共享目标文件(shared object file)，即动态连接库文件 它在以下两种情况下被使用</p>
-<ul>
-<li>在链接过程中与其它动态链接库或可重定位文件一起构建新的目标文件</li>
-<li>在可执行文件被加载的过程中 被动态链接到新的进程中 成为运行代码的一部分  </li>
-</ul>
-</li>
-<li><p>可执行文件(executable file)，经过连接的，可以执行的程序文件。  </p>
-</li>
-<li><p>coredump文件 核心转储  </p>
-</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/11/09/2019-11-12-elf-section-symbol/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2338,7 +2274,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-count">34</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>

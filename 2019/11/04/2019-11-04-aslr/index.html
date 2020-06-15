@@ -97,7 +97,7 @@
 <meta name="description" content="导语64位下的linux地址空间虽然看起来虽然庞大2^64  但是实际上进行内核与用户空间的划分后, 包括ASLR以及PIE等机制的启用, 实际留给mmap和brk的可分配区域远远小于这个值, 大约是42T的可用地址空间. 本文根据内核代码的默认宏定义进行了X86-64下的布局分析, 给基于共享内存的用户空间选址给予一定的参考.    目录   导语 目录 LINUX内存布局 ..1.1. 基本布">
 <meta property="og:type" content="article">
 <meta property="og:title" content="linux内存布局和ASLR下的可分配地址空间">
-<meta property="og:url" content="https:&#x2F;&#x2F;zsummer.github.io&#x2F;2019&#x2F;11&#x2F;04&#x2F;2019-11-04-aslr&#x2F;index.html">
+<meta property="og:url" content="https://zsummer.github.io/2019/11/04/2019-11-04-aslr/index.html">
 <meta property="og:site_name" content="关于夏天的一切">
 <meta property="og:description" content="导语64位下的linux地址空间虽然看起来虽然庞大2^64  但是实际上进行内核与用户空间的划分后, 包括ASLR以及PIE等机制的启用, 实际留给mmap和brk的可分配区域远远小于这个值, 大约是42T的可用地址空间. 本文根据内核代码的默认宏定义进行了X86-64下的布局分析, 给基于共享内存的用户空间选址给予一定的参考.    目录   导语 目录 LINUX内存布局 ..1.1. 基本布">
 <meta property="og:locale" content="en_US">
@@ -155,7 +155,7 @@
 
 
 
-<meta name="generator" content="Hexo 4.1.1"></head>
+<meta name="generator" content="Hexo 4.2.1"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
 
@@ -615,7 +615,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-count">34</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -663,7 +663,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">导语</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">2.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">3.</span> <span class="nav-text">LINUX内存布局</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.1.</span> <span class="nav-text">..1.1. 基本布局</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">3.2.</span> <span class="nav-text">..1.2. 用户空间布局</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">4.</span> <span class="nav-text">ASLR地址空间随机化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.1.</span> <span class="nav-text">ASLR的设置与关闭</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#null"><span class="nav-number">4.1.1.</span> <span class="nav-text">设置randomize_va_space的等级</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.2.</span> <span class="nav-text">栈地址</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.3.</span> <span class="nav-text">MMAP映射区起始地址</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.4.</span> <span class="nav-text">代码段开始地址</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">4.5.</span> <span class="nav-text">HEAP区开始地址</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">5.</span> <span class="nav-text">结论部分</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#null"><span class="nav-number">5.1.</span> <span class="nav-text">结论部分补充验证数据</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">导语</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">3.</span> <span class="nav-text">LINUX内存布局</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">3.1.</span> <span class="nav-text">..1.1. 基本布局</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">3.2.</span> <span class="nav-text">..1.2. 用户空间布局</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">4.</span> <span class="nav-text">ASLR地址空间随机化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.1.</span> <span class="nav-text">ASLR的设置与关闭</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">4.1.1.</span> <span class="nav-text">设置randomize_va_space的等级</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.2.</span> <span class="nav-text">栈地址</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.3.</span> <span class="nav-text">MMAP映射区起始地址</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.4.</span> <span class="nav-text">代码段开始地址</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.5.</span> <span class="nav-text">HEAP区开始地址</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">5.</span> <span class="nav-text">结论部分</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">5.1.</span> <span class="nav-text">结论部分补充验证数据</span></a></li></ol></li></ol></div>
             
 
           </div>
