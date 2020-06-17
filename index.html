@@ -250,6 +250,237 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/06/16/2020-06-16-lua-oop/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/16/2020-06-16-lua-oop/" itemprop="url">游戏中的脚本设计</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-06-16T00:00:00+08:00">
+                2020-06-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2><span id="脚本设计">脚本设计</span></h2><h3><span id="前言">前言</span></h3><p>每种语言都有自己的惯用思维, 面对领域需求时, 也应该在不同的语言思维环境下寻找解决方案, 而不是生搬硬套另外一种语言的特性, 但是从可计算性的角度上来看, 相同需求的良好解决方案往往具备很强的相似性.  </p>
+<p>那么更具体的领域中, 我们说说技能系统的场景:  </p>
+<p>技能系统的复杂度偏向问题域, 如果不去约束问题域的规模, 最好的解决方案一定是通过脚本化方式让技能的设计者直接去写设计者期望的战斗逻辑. 但是作为一门通用的语言, 是需要转化为一个简洁的, 低门槛的领域语言.  </p>
+<p>这里不讨论如何拆解该系统所面对的问题域, 如何抽象出解决域的模型等, 这部分在之前的技能系统相关的PPT中已经描述过,  这里主要关注的是, 在使用脚本的情况下, 我们如何对脚本这部分进行更具体的设计.   </p>
+<ul>
+<li>作为开发者, 更关注的是开发测试成本, 即用最简洁的代码, 一劳永逸的提供最丰富的上层接口.   </li>
+<li>作为设计者, 更关注的是是否提供了足够的封装, 隐藏掉不需要关心的功能实现细节以及流程细节, 并且能够总是通过简单的if else call来完成所有决策, 或者用简单的枚举或者画图 打钩完成所有决策而不需要操刀脚本编写.  <ul>
+<li>更进一步的, 从设计者角度, 按照配置的出场频度和复杂度应该有如下的方案排序:<font color="#f33" size="3">   <ul>
+<li>几乎总是需要配置的:  默认配置方案,  什么都不需要做就是应该有的功能或者流程   </li>
+<li>次高频:  通过开关来切换功能或者流程   </li>
+<li>高频: 通过枚举来完成多功能或者多流程case   </li>
+<li>高频略复杂: 通过枚举+固定的跟随参数来完成   </li>
+<li>高频略复杂: 开发人员编写特定的功能模块, 条件模块, 并提炼出参数以特定枚举方式提供   </li>
+<li>中低频复杂条件: 嵌入简短的脚本, 通过数据接口+脚本提供的布尔表达式来完成   </li>
+<li>中低频复杂逻辑: 开发人员使用脚本封装好逻辑, 提供脚本接口供设计者配置 </li></ul></font>      </li>
+</ul>
+</li>
+</ul>
+
+
+<p>对于一些硬核的项目, 例如设计者本身就有一定的CS基础或者对脚本比较熟悉,  那么其实作为开发者只要提供基础功能和接口, 就可以完全用脚本来铺展所有的工作了  </p>
+<p>但是不同的项目有不同的思维风格, 考虑进一步压缩编写脚本的情景, 或者说我们希望把要手动写脚本才能解决问题的范围从例如40%压缩到5% …<br>除了<strong>数据驱动相关的组合拳, 以堆开发量减少这个范围外</strong>, 还考虑了另外一个路径来减少开发成本和代码风险.<br><font color="#f33" size="3"></font></p>
+<ul>
+<li>在配置接口和脚本接口之间添加一个中间层脚本, 使用脚本语言自身的封装特性进一步简化接口, 并且支持热更.      <ul>
+<li>在中间层编写复杂逻辑的封装, 保证C++内核的代码稳定性和质量稳定性   </li>
+</ul>
+</li>
+<li>在配置层增加模版机制或者脚本片段选择机制, 提供更简洁高效的脚本配置途径.  </li>
+<li>在部分中低频数据驱动的配置方案中, 采用翻译为脚本的快速形式, 减少代码风险提供开发速度   
+
+
+
+</li>
+</ul>
+<h3><span id="how-to">how to</span></h3><p>如何实现这样一套完善的脚本体系呢 ?   </p>
+<ul>
+<li><p>提炼技能系统的meta数据   </p>
+<blockquote>
+<p>这里的meta数据, 意思是把一个能表征技能状态和数据的关键元素提取出来单独维护, 它足够小但足够提供我们关心的所有信息.  例如初始状态, 当前状态, 可追溯的来源信息, 相关联的配置ID, 上下文等.<br>这份meta数据会成为脚本的基础数据环境, 通过这个meta信息我们可以查询相关的配置 状态, 以作为某些条件的判定依据, 以及新的行为的参数.<br>必要时我们可以拷贝这份meta数据, 或者伪造修饰部分数据来提供更特殊的环境实现.    </p>
+</blockquote>
+</li>
+<li><p>基础的脚本胶水接口实现 (开发向低级接口)   </p>
+<blockquote>
+<p>一次性提供所有meta数据的访问接口<br>提供C侧基于meta数据的功能函数封装, 尽可能的做到原子性   </p>
+</blockquote>
+</li>
+<li><p>编写模板类, 提供易用 易读 易使用的高级接口  </p>
+<blockquote>
+<p>一次性翻译低级接口到高级接口,  这个过程会隐藏掉例如meta数据本身访问等<br>编写高级封装    </p>
+</blockquote>
+</li>
+<li><p>在C++代码中打桩  </p>
+<blockquote>
+<p>把来自设计者的脚本片段和合成一个临时函数并压栈<br>把meta数据和调用信息压栈, 作为临时函数的参数去执行.<br>这里为了简化不同流程的桩点环境和不同事件的桩点环境不同, 并不会编写不同的桩点代码而是统一使用meta数据,  这样再脚本系统的实现上就做到了统一的埋点处理, 极大的减少了因此带来的桩点代码量.<br>桩点中来自策划的脚本片段实际执行会经过’模板类’这个中间层,  而这个中间层存储在可热更的单独文件中.<br>打桩的脚本代码在首次执行时会处理为字节码提高性能, 热更配置会清除字节码.<br>模板类脚本也为字节码 可热更.   </p>
+</blockquote>
+</li>
+<li><p>注意项:  对脚本调用可能存在嵌套, 例如在脚本事件中触发新的脚本甚至重入  </p>
+<blockquote>
+<p>在每段可能会触发脚本的关键路径上进行stack计数, 超过计数block掉该流程.<br>脚本环境支持嵌套, 或者说脚本环境(包含技能meta和脚本环境实例)应该是放在栈上. </p>
+</blockquote>
+</li>
+</ul>
+<h3><span id="detail">detail</span></h3><h4><span id="lua的oop模拟">lua的OOP模拟</span></h4><p>需要解释下是 lua没有类的概念, 只有实例(table).  但是lua的table是可以聚合函数和数据的, 并且存在metatable这种元表概念, 因此在在lua的语法特性中我们可以用以下方式来完成一个接近OOP的模拟, 基本思路如下:  </p>
+<ul>
+<li><p>构造一个全局的table实例作为创建实例的metatable(类的概念)   </p>
+</li>
+<li><p>提供一个公共的new接口来创建一个新表, 并设置好metatable的关系. (实例化)  </p>
+</li>
+<li><p>以:形式来编写所有函数完成C++this指针的作用, 即所有函数的实现默认第一个参数为实例自身, 调用时默认用自身作为函数的第一个参数   </p>
+</li>
+<li><p>其简洁的实现形式如下:   </p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 定义全局table  </span></span><br><span class="line">meta = &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">--数据成员 </span></span><br><span class="line">meta.class_name = <span class="string">"meta"</span>;  </span><br><span class="line"></span><br><span class="line"><span class="comment">--函数成员</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">meta:desc</span><span class="params">(msg)</span></span></span><br><span class="line">    <span class="built_in">print</span>(self.class_name .. <span class="string">": "</span> .. msg)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--这个:是一个语法糖, 等价代码:</span></span><br><span class="line"><span class="comment">--[[</span></span><br><span class="line"><span class="comment">function meta.desc(self, msg)</span></span><br><span class="line"><span class="comment">    print(self.class_name .. ": " .. msg)</span></span><br><span class="line"><span class="comment">end</span></span><br><span class="line"><span class="comment">]]</span><span class="comment">--</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--实例化方法</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">meta.New</span><span class="params">(...)</span></span></span><br><span class="line">    <span class="keyword">local</span> inst = &#123;...&#125;  </span><br><span class="line">    <span class="built_in">setmetatable</span>(inst, &#123; <span class="built_in">__index</span> = meta &#125;)   <span class="comment">--设置metatable 当inst中不存在某个键，会读出meta相应的元方法   </span></span><br><span class="line">    <span class="keyword">return</span> inst</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--实例化一个meta的实例  </span></span><br><span class="line"><span class="keyword">local</span> inst = meta.New()</span><br><span class="line"></span><br><span class="line"><span class="comment">--修改新实例的class_name为inst    </span></span><br><span class="line">inst.class_name = <span class="string">"inst"</span>   </span><br><span class="line"></span><br><span class="line"><span class="comment">--子类并没有desc方法 会尝试读meta的desc 并把inst实例以self参数传入该方法    </span></span><br><span class="line">inst:desc(<span class="string">"new inst"</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>output  <blockquote>
+<p> inst: new inst</p>
+</blockquote>
+</li>
+</ul>
+<h4><span id="实际应用">实际应用</span></h4><ul>
+<li>统一的桩点代码<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="params">(skill_meta, result, ...)</span></span></span><br><span class="line">  <span class="keyword">local</span> inst_env = &#123;skill_meta, result, ...&#125;</span><br><span class="line">  <span class="built_in">setmetatable</span>(inst_env, &#123; <span class="built_in">__index</span> = meta_env &#125;)</span><br><span class="line">  <span class="keyword">do</span> </span><br><span class="line">     <span class="comment">--配置开始</span></span><br><span class="line">     <span class="comment">--inst_env:cast_skill(...)</span></span><br><span class="line">     <span class="comment">--配置结束</span></span><br><span class="line">  <span class="keyword">end</span> </span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>; </span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li></li>
+<li><p>…</p>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/05/09/2020-06-15-shadowsock-proxy/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1987,243 +2218,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/28/2019-11-28-pie-pic-linker-option/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/11/28/2019-11-28-pie-pic-linker-option/" itemprop="url">位置无关代码生成(重定位)选项和说明 GCC</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-28T00:00:00+08:00">
-                2019-11-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3><span id="目录">目录</span></h3><ul>
-<li><a href="#目录">目录</a></li>
-<li><a href="#选项说明">选项说明</a></li>
-</ul>
-<h3><span id="选项说明">选项说明</span></h3><ul>
-<li><p>-rdynamic  </p>
-<ul>
-<li>该选项指示链接器添加所有的符号到动态符号表, 不仅仅是用到的部分  </li>
-<li>在INTEL X64 linux gcc-6 未测试出该选项有否的异同 (也可认为是默认存在)   <ul>
-<li>无论是否用过都会添加  </li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>-fpic    (position-independent code)  编译选项和链接选项  </p>
-<ul>
-<li>用于生成PIC 位置无关代码 的共享库, 在链接到EXE时如果GOT表超过某些特定机器指定的最大值时会返回错误, 这时需要使用-fPIC进行重新编译和链接   </li>
-</ul>
-</li>
-<li><p>-fPIC 编译选项和链接选项  </p>
-<ul>
-<li>和-fpic一样, 但是回避掉了GOT大小的限制问题  </li>
-<li>在编译和链接时都需要指定    </li>
-</ul>
-</li>
-</ul>
-<blockquote>
-<p>-fpic与-fpie的差别很细微,当使用-fpie时编译器知道当前的编译会生成一个PIC模式的 main executable(也就是有main入口的可执行文件),这样对于内部定义的global符号,就不 要考虑全局符号介入(global symbol interpose)的问题,对于这样的globals直接产生 PC-relative方式的代码而不需要通过GOT/PLT. –Ian Lance Taylor  </p>
-</blockquote>
-<ul>
-<li><p>-fPIE  编译选项 </p>
-<ul>
-<li>编译位置无关代码, 和PIC相同, 但是PIE假定了编译出的目标文件用于链接成可执行文件  </li>
-<li>主要是访问外部符号时是否使用PLT/GOT  </li>
-<li>实际可用-fPIC代替(不假定目标文件的最终链接目的)   </li>
-<li>-fpie 和-fpic一样  </li>
-</ul>
-</li>
-<li><p>-pie  链接器选项</p>
-<ul>
-<li>用于生成 位置无关可执行文件 的可执行文件  </li>
-<li>生成的可执行文件的ELF类型不是EXEC而是和共享库一样DYN</li>
-<li>需要-fPIE配合使用 否则会出现访问外部符号时候无法正确找到的错误  <ul>
-<li>这个问题等同用PIC链接非PIC编译的库</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>其他备注  </p>
-<ul>
-<li><p>-no-pie  新版本g++比如6版本 默认启用pie 如不需要则要显式去除  </p>
-<ul>
-<li>部分编译器支持  </li>
-</ul>
-</li>
-<li><p>-fno-plt  </p>
-<ul>
-<li>部分编译器支持  </li>
-</ul>
-</li>
-<li><p>-fno-jump-tables</p>
-<ul>
-<li>部分编译器支持  </li>
-</ul>
-</li>
-<li><p>动态库查找路径</p>
-<ul>
-<li>链接时如果要使用-l 则需要先-L指定目录  </li>
-<li>运行时如果不在系统指定目录的库需要设置LD_LIBRARY_PATH或者配置文件<ul>
-<li>例如 简单设置export LD_LIBRARY_PATH=”./“ 路径    </li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>–static 组织在链接时使用动态库</p>
-</li>
-<li><p>–shared 生成动态库</p>
-</li>
-<li><p>–static-libgcc 链接静态libgcc库</p>
-</li>
-<li><p>–shared-libgcc 链接动态libgcc库</p>
-</li>
-<li><p>-static和-shared可以同时存在 这样会创建共享库 但该共享库引用的其他库会静态地链接到该共享库中  </p>
-<ul>
-<li>-Wl,–whole-archive 告诉链接器对其后面出现的静态库包含的函数和变量打包到动态库  </li>
-<li>-Wl,–no-whole-archive 关掉特性  <ul>
-<li>举例  -Wl,–whole-archive -la -lb -lc -Wl,–no-whole-archive</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>dlopen动态load共享库</p>
-</li>
-</ul>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2274,7 +2268,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-count">35</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
