@@ -250,6 +250,197 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/29/2019-11-29-static-linking/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/11/29/2019-11-29-static-linking/" itemprop="url">静态链接过程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-29T00:00:00+08:00">
+                2019-11-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><hr>
+<!-- TOC -->
+
+<ul>
+<li><a href="#目录">目录</a></li>
+<li><a href="#基本编译链接流程">基本编译链接流程</a></li>
+<li><a href="#静态链接过程概述">静态链接过程概述</a></li>
+<li><a href="#静态链接过程流程追踪和代码验证">静态链接过程流程追踪和代码验证</a><ul>
+<li><a href="#测试源代码">测试源代码</a></li>
+<li><a href="#生成汇编代码-从这里开始会有两个分支代码-non-pic-和-pic对照">生成汇编代码 (从这里开始会有两个分支代码 NON-PIC 和 PIC对照)</a><ul>
+<li><a href="#汇编代码-相对位置版本">汇编代码 (相对位置版本)</a></li>
+<li><a href="#汇编代码-位置无关版本">汇编代码 (位置无关版本)</a></li>
+</ul>
+</li>
+<li><a href="#生成elf的可重定位文件">生成ELF的可重定位文件</a><ul>
+<li><a href="#可重定向文件和汇编指令-相对位置版本">可重定向文件和汇编指令 (相对位置版本)</a></li>
+<li><a href="#可重定向文件和汇编指令-位置无关版本">可重定向文件和汇编指令 (位置无关版本)</a></li>
+</ul>
+</li>
+<li><a href="#链接为可执行文件或者共享库">链接为可执行文件(或者共享库)</a><ul>
+<li><a href="#可执行文件-相对位置的非pieexec版本">可执行文件 (相对位置的非PIE(EXEC)版本)</a></li>
+<li><a href="#可执行文件-相对位置的piedyn版本">可执行文件 (相对位置的PIE(DYN)版本)</a></li>
+<li><a href="#可执行文件-位置无关的非pieexec版本">可执行文件 (位置无关的非PIE(EXEC)版本)</a></li>
+<li><a href="#可执行文件-位置无关的piedyn版本">可执行文件 (位置无关的PIE(DYN)版本)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!-- /TOC -->
+
+<h3 id="基本编译链接流程"><a href="#基本编译链接流程" class="headerlink" title="基本编译链接流程"></a>基本编译链接流程</h3><ul>
+<li>编译并输出汇编代码  <ul>
+<li>g++ -S lib.cpp -o lib.s </li>
+</ul>
+</li>
+<li>打包成ELF可重定位文件 ELF TYPE= ET_REL  即.o文件  <ul>
+<li>g++ -c lib.s -o lib.o </li>
+</ul>
+</li>
+<li>链接到动态库或者可执行文件<ul>
+<li>g++ lib.o -o a.out   </li>
+<li>g++ -shared lib.o -o a.out </li>
+</ul>
+</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/11/29/2019-11-29-static-linking/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/28/2019-11-28-pie-pic-linker-option/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2035,152 +2226,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/02/14/2019-02-14-vba/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/02/14/2019-02-14-vba/" itemprop="url">编写VBA脚本示例代码</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-14T17:21:00+08:00">
-                2019-02-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>VBA检测脚本<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/02/14/2019-02-14-vba/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2231,7 +2276,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">35</span>
+                <span class="site-state-item-count">36</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
