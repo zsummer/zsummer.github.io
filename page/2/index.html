@@ -250,6 +250,257 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/29/2019-12-06-is-a-and-has-a/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/11/29/2019-12-06-is-a-and-has-a/" itemprop="url">AS-A 和 HAS-A 概念</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-29T00:00:00+08:00">
+                2019-11-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3><span id="目录">目录</span></h3><hr>
+<!-- TOC -->
+
+<ul>
+<li><a href="#目录">目录</a></li>
+<li><a href="#词的关系概括">词的关系概括</a><ul>
+<li><a href="#polysemy-词汇蕴含规则">polysemy 词汇蕴含规则</a><ul>
+<li><a href="#linear-polysemy-线性多义">linear polysemy 线性多义</a></li>
+<li><a href="#non-linear-polysemy-非线性多义">non-linear polysemy 非线性多义</a></li>
+<li><a href="#一词多义">一词多义</a></li>
+</ul>
+</li>
+<li><a href="#hyperonymhyponym-上下义关系">hyperonym–hyponym 上下义关系</a></li>
+<li><a href="#autonymy-反义关系">autonymy 反义关系</a></li>
+<li><a href="#synonymy-同义关系">synonymy 同义关系</a></li>
+</ul>
+</li>
+<li><a href="#语义聚合关系">语义聚合关系</a><ul>
+<li><a href="#上下义词">上下义词</a></li>
+<li><a href="#总分词">总分词</a></li>
+<li><a href="#类义词狭义">类义词(狭义)</a></li>
+</ul>
+</li>
+<li><a href="#面向对象中的关系">面向对象中的关系</a><ul>
+<li><a href="#类型和实例关系">类型和实例关系</a></li>
+<li><a href="#hyperonymhyponym-supertypesubtype-上下义关系-超类子类关系--is-a-关系-继承泛化关系">hyperonym–hyponym (supertype–subtype) 上下义关系, 超类子类关系  IS-A 关系 继承/泛化关系</a></li>
+<li><a href="#holonymmeronym--整体部分关系-has-a-关系">holonym–meronym  整体部分关系 HAS-A 关系</a></li>
+</ul>
+</li>
+<li><a href="#集合关系">集合关系</a></li>
+</ul>
+<!-- /TOC -->
+<h3><span id="词的关系概括">词的关系概括</span></h3><h4><span id="polysemy-词汇蕴含规则">polysemy 词汇蕴含规则</span></h4><h5><span id="linear-polysemy-线性多义">linear polysemy 线性多义</span></h5><ul>
+<li>autohyponymy, where the basic sense leads to a specialised sense  基本意义-&gt;特殊意义  </li>
+<li>automeronymy, where the basic sense leads to a subpart sense 基本意义-&gt;部分意义  整体-&gt;局部  </li>
+<li>autohyperonymy or autosuperordination, where the basic sense leads to a wider sense   基本意义-&gt;宽泛意义  下位-&gt;上位意义  </li>
+<li>autoholonymy, where the basic sense leads to a larger sense  基本意义-&gt;更多意义 <h5><span id="non-linear-polysemy-非线性多义">non-linear polysemy 非线性多义</span></h5></li>
+<li>metonymy  转喻 借喻    </li>
+<li>metaphor 隐喻  <h5><span id="一词多义">一词多义</span></h5></li>
+<li>原始意义与衍生意义(派生)   </li>
+<li>普通意义与特殊意义  </li>
+<li>抽象意义与具体意义  </li>
+<li>字面意义与比喻意义  <h4><span id="hyperonymhyponym-上下义关系">hyperonym–hyponym 上下义关系</span></h4><h4><span id="autonymy-反义关系">autonymy 反义关系</span></h4><h4><span id="synonymy-同义关系">synonymy 同义关系</span></h4></li>
+</ul>
+<h3><span id="语义聚合关系">语义聚合关系</span></h3><h4><span id="上下义词">上下义词</span></h4><p>上下义关系代表了概念上的蕴含关系, 或者说在类型层级上, 下位类一定带有上位类的所有属性.  可以用 IS A 来表达.  </p>
+<p>例如 上义词 水果  下义词 香蕉.  香蕉 IS A 水果  但是不能反过来说 水果 IS A  香蕉   </p>
+<p>上下义关系也可以进入 ‘A包含B’的格式,  比如说香蕉包含水果的属性  </p>
+<h4><span id="总分词">总分词</span></h4><p>整体部分关系   用HAS A来表达  </p>
+<p>例如 门  和  门套/门板    可以进入’A包含B’的格式 但是不能用  ‘B是A’的格式   </p>
+<h4><span id="类义词狭义">类义词(狭义)</span></h4><p>多元关系中的同级词语  例如门下的 门套和门板的关系  </p>
+<h3><span id="面向对象中的关系">面向对象中的关系</span></h3><h4><span id="类型和实例关系">类型和实例关系</span></h4><ul>
+<li>Type–token distinction  例如一个语句中  rose is a rose 中有三个type 4个token   <ul>
+<li>type == classes  </li>
+<li>object == instances ==token  </li>
+</ul>
+</li>
+<li>type of    <ul>
+<li>(实例)的类型     </li>
+</ul>
+</li>
+<li>instance of   <ul>
+<li>(类型) 的实例  </li>
+</ul>
+</li>
+</ul>
+<h4><span id="hyperonymhyponym-supertypesubtype-上下义关系-超类子类关系-is-a-关系-继承泛化关系">hyperonym–hyponym (supertype–subtype) 上下义关系, 超类子类关系  IS-A 关系 继承/泛化关系</span></h4><ul>
+<li>子类包含所有超类的属性/方法 可以用 “子类 IS A 父类” 来进行判定和使用   </li>
+<li>所有可以对超类适用的规范同样也可以适用于其子类   <ul>
+<li>李氏替换原则<ul>
+<li>Functions that use pointers or references to base classes must be able to use objects of derived classes without knowing it.  </li>
+<li>使用基类对象指针或引用的函数必须能够在不了解衍生类的条件下使用衍生类的对象   </li>
+<li>李氏替换原则中 避免重写父类的非抽象方法, 而多态的实现是通过重写抽象方法实现.   </li>
+<li>面向对象中的抽象方法是定义方法的声明规范而不约束其实现因此扔可 概括为上句 “ 所有可以对超类适用的规范同样也可以适用于其子类”   </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4><span id="holonymmeronym-整体部分关系-has-a-关系">holonym–meronym  整体部分关系 HAS-A 关系</span></h4><ul>
+<li><p>aggregation 聚合关系  不存在所属权  HAS-A 关系  </p>
+<ul>
+<li>部分可以脱离/超出整体的生命周期独立存在 比如家庭成员和家庭  玩家和工会  </li>
+</ul>
+</li>
+<li><p>composition 组成关系  存在所属权  PART-OF| HAS-A 关系 </p>
+<ul>
+<li>部分不可以脱离整体的生命周期管理 比如四肢和人体  </li>
+<li>对于编程来讲, 我们实例化玩家对象, 实例化背包对象, 玩家下线需要连带清理背包对象.   </li>
+</ul>
+</li>
+<li><p>containment 包含关系   member-of | contains-a | part-of|HAS-A 关系  </p>
+<ul>
+<li>对成员的访问必须经过整体  成员为内涵状态  </li>
+<li>对于C++来说 privete:下的数据成员必须使用该类的接口访问  </li>
+<li>例如玩家对象和玩家的等级属性  </li>
+</ul>
+</li>
+</ul>
+<h3><span id="集合关系">集合关系</span></h3><p>从更抽象的角度来说<br>IS-A的关系判定为  A 是不是 B的特化 (specialization)<br>从集合关系来讲则为 A ⊃ B   A是不是B的真超集   </p>
+<p>HAS-A的关系判定为 B 是不是 A的组成部分<br>从集合关系来讲则为 B ⊂ A         B 是不是A的的真子集   </p>
+<p>ALIAS-A (没有这个术语) 的关系则是 A = B 即 别名.   </p>
+<p>从集合角度来讲, 如果B是A的特化, 那么A同时也是B的构成,  即:</p>
+<ul>
+<li>B ⊃ A(IS-A) 可以推导出 A ⊂ B (HAS-A)  </li>
+<li>但是IS-A限定了 A ⊂ B(HAS-A) 不可以推导出B ⊃ A (IS-A)     (IS-A限定特化后具有相同的拓扑结构)</li>
+</ul>
+<p>因此</p>
+<p>这IS-A这种关系 是 HAS-A 的特化.  即  IS-A  ⊃ HAS-A </p>
+<p>换成具体到OO语言里,  继承是一种特殊的聚合方式.<br>聚合更具有一般化的性质 更松散  </p>
+<p>因此 IS-A  is a  HAS-A  通过IS-A到HAS-A的转化可获得更好的一般性(泛化)  泛化转关联本身也是一种泛化</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/29/2019-11-29-static-linking/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2070,162 +2321,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/06/08/2019-06-08-rvo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/06/08/2019-06-08-rvo/" itemprop="url">RVO源码阅读笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-08T18:37:00+08:00">
-                2019-06-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h5 id="KDTREE"><a href="#KDTREE" class="headerlink" title="KDTREE"></a>KDTREE</h5><p>空间K维划分, 用来快速寻找距离最近的障碍(指定数量)  优化RVO的资源消耗.  </p>
-<h3 id="路径规划"><a href="#路径规划" class="headerlink" title="路径规划"></a>路径规划</h3><h5 id="高级规划"><a href="#高级规划" class="headerlink" title="高级规划"></a>高级规划</h5><p>DIJKSTRA 最短路径  等寻路方法  </p>
-<h5 id="底层规划"><a href="#底层规划" class="headerlink" title="底层规划"></a>底层规划</h5><p>VO RVO ORCA等Obstacle Avoidance避障算法  </p>
-<h3 id="KDTREE-1"><a href="#KDTREE-1" class="headerlink" title="KDTREE"></a>KDTREE</h3><p>这个是一个简单的KDTREE实现 用来寻找距离最近的障碍(指定数量)  优化RVO的资源消耗.  </p>
-<h3 id="VO-Velocity-Obstacles-速度障碍"><a href="#VO-Velocity-Obstacles-速度障碍" class="headerlink" title="VO  Velocity Obstacles  速度障碍"></a>VO  Velocity Obstacles  速度障碍</h3><p>核心思想: 只要在未来有可能会发生碰撞的速度 都排除在外<br>抖动现象: 两个位移单位存在可能会发生路径碰撞的情况下会同时采取保守的避让速度,导致新速度偏离过大又大幅度回归,从而产生震荡.  </p>
-<h3 id="RVO-Reciprocal-Velocity-Obstacles-互惠的速度障碍"><a href="#RVO-Reciprocal-Velocity-Obstacles-互惠的速度障碍" class="headerlink" title="RVO Reciprocal Velocity Obstacles  互惠的速度障碍"></a>RVO Reciprocal Velocity Obstacles  互惠的速度障碍</h3><p>核心思想: 优化VO思想, 假定对方也会采取避障行为, 缩小(average VO)速度.   </p>
-<h3 id="ORCA-Optimal-Reciprocal-Collision-Avoidance-最优互惠碰撞避免"><a href="#ORCA-Optimal-Reciprocal-Collision-Avoidance-最优互惠碰撞避免" class="headerlink" title="ORCA  Optimal Reciprocal Collision Avoidance  最优互惠碰撞避免"></a>ORCA  Optimal Reciprocal Collision Avoidance  最优互惠碰撞避免</h3><p>核心思想: 优化RVO, 额外考虑速度大小, 求解过程使用线性规划,更高效简洁.   </p>
-<ul>
-<li><strong>对其他所有agents的ORCA求交（线性规划），再与自己可选速度求交集，得候选速度集ORCAτA</strong>  </li>
-<li><strong>在候选集中求解跟自己偏好速度最近的一个速度vnewA</strong>  </li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/06/08/2019-06-08-rvo/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2276,7 +2371,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-count">37</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>

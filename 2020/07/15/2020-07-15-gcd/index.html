@@ -94,15 +94,15 @@
 
 
 
-<meta name="description" content="类型擦除定义** 不需要程序伴随类型修饰的操作语义成为擦除语义, 用来使程序在运行时不依赖类型.  **   类型擦除语义或者可实现类型擦除效果的实现方式 多态      闭包     模板 (可以在C++模板中应用鸭子风格)     容器 any&#x2F;tuploe">
+<meta name="description" content="技能系统中的循环控制动作循环控制  动作类技能, 普攻等依赖战斗单位身体动作的技能, 其受影响的身体部位不能同时做出两个动作    根据技能的价值级别以及特色设计, 在可能导致冲突的两个动作之间需要明确打断关系      设计策略无论是时间线的设计还是多段设计亦或是朴素的单段多子技能设计,  我们需要标记出每段动作的影响部位, 其意义是在于我们对所有技能通过打标记的形式来获得’技能与技能之间是否存">
 <meta property="og:type" content="article">
-<meta property="og:title" content="类型擦除">
-<meta property="og:url" content="https://zsummer.github.io/2019/01/17/2019-01-17-type-system-erase/index.html">
+<meta property="og:title" content="技能系统中的输出循环和节奏控制">
+<meta property="og:url" content="https://zsummer.github.io/2020/07/15/2020-07-15-gcd/index.html">
 <meta property="og:site_name" content="关于夏天的一切">
-<meta property="og:description" content="类型擦除定义** 不需要程序伴随类型修饰的操作语义成为擦除语义, 用来使程序在运行时不依赖类型.  **   类型擦除语义或者可实现类型擦除效果的实现方式 多态      闭包     模板 (可以在C++模板中应用鸭子风格)     容器 any&#x2F;tuploe">
+<meta property="og:description" content="技能系统中的循环控制动作循环控制  动作类技能, 普攻等依赖战斗单位身体动作的技能, 其受影响的身体部位不能同时做出两个动作    根据技能的价值级别以及特色设计, 在可能导致冲突的两个动作之间需要明确打断关系      设计策略无论是时间线的设计还是多段设计亦或是朴素的单段多子技能设计,  我们需要标记出每段动作的影响部位, 其意义是在于我们对所有技能通过打标记的形式来获得’技能与技能之间是否存">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2019-01-17T03:21:00.000Z">
-<meta property="article:modified_time" content="2020-02-26T03:30:04.814Z">
+<meta property="article:published_time" content="2020-07-14T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-07-15T09:24:32.462Z">
 <meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
 
@@ -133,13 +133,13 @@
 
 
 
-  <link rel="canonical" href="https://zsummer.github.io/2019/01/17/2019-01-17-type-system-erase/"/>
+  <link rel="canonical" href="https://zsummer.github.io/2020/07/15/2020-07-15-gcd/"/>
 
 
 
 
 
-  <title>类型擦除 | 关于夏天的一切</title>
+  <title>技能系统中的输出循环和节奏控制 | 关于夏天的一切</title>
   
 
 
@@ -252,7 +252,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/01/17/2019-01-17-type-system-erase/">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/07/15/2020-07-15-gcd/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="夏天">
@@ -269,7 +269,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">类型擦除</h1>
+          <h1 class="post-title" itemprop="name headline">技能系统中的输出循环和节奏控制</h1>
         
 
         <div class="post-meta">
@@ -281,8 +281,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-17T11:21:00+08:00">
-                2019-01-17
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-07-15T00:00:00+08:00">
+                2020-07-15
               </time>
             
 
@@ -341,42 +341,96 @@
       
 
       
-        <h3><span id="类型擦除定义">类型擦除定义</span></h3><p>** 不需要程序伴随类型修饰的操作语义成为擦除语义, 用来使程序在运行时不依赖类型.  **  </p>
-<h3><span id="类型擦除语义或者可实现类型擦除效果的实现方式">类型擦除语义或者可实现类型擦除效果的实现方式</span></h3><ul>
-<li><p>多态    </p>
+        <h1><span id="技能系统中的循环控制">技能系统中的循环控制</span></h1><h2><span id="动作循环控制">动作循环控制</span></h2><hr>
+<ul>
+<li>动作类技能, 普攻等依赖战斗单位身体动作的技能, 其受影响的身体部位不能同时做出两个动作   </li>
+<li>根据技能的价值级别以及特色设计, 在可能导致冲突的两个动作之间需要明确打断关系    </li>
+</ul>
+<h3><span id="设计策略">设计策略</span></h3><p>无论是时间线的设计还是多段设计亦或是朴素的单段多子技能设计,  我们需要标记出每段动作的影响部位, 其意义是在于我们对所有技能通过打标记的形式来获得’技能与技能之间是否存在动作冲突’的信息.     </p>
+<p>其次, 我们需要对冲突的技能之间的 重叠释放问题,  这里本质上是一个压制规则问题.   </p>
+<ol>
+<li>冲突的动作类技能一旦释放成功,  一定打断掉所有相关旧的技能</li>
+<li>如果不做上下半身分离, 普通移动视为动作, 否则为下半身动作  </li>
+<li>不希望被某些类型打断的时候  要禁止这些类型的技能释放 即压制类标签     </li>
+</ol>
+<p>举例来说   </p>
+<ul>
+<li><p>跳击技能:  </p>
+<ul>
+<li>技能类型:      上半身动作, 下半身动作  </li>
+<li>前摇时间压制:  禁止普通移动 禁止下半身动作 禁止上半身动作   </li>
+</ul>
 </li>
-<li><p>闭包   </p>
+<li><p>出拳技能   </p>
+<ul>
+<li>技能类型: 上半身动作   </li>
+<li>前摇时间压制: 禁止上半身动作  </li>
+</ul>
 </li>
-<li><p>模板 (可以在C++模板中应用鸭子风格)   </p>
-</li>
-<li><p>容器 any/tuploe     </p>
-<a id="more"></a> 
-<h3><span id="扩展-java的泛型实现方式-类型擦除">扩展 JAVA的泛型实现方式 类型擦除</span></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; l1 &#x3D; new ArrayList&lt;String&gt;();</span><br><span class="line">List&lt;Integer&gt; l2 &#x3D; new ArrayList&lt;Integer&gt;();</span><br><span class="line"></span><br><span class="line">System.out.println(l1.getClass() &#x3D;&#x3D; l2.getClass());</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>输出为true  </p>
-</blockquote>
+<li><p>闪避技能   </p>
+<ul>
+<li>技能类型: 上半身动作 下半身动作   </li>
+<li>前摇时间压制: 禁止普通移动 禁止上半身移动 禁止下半身移动    </li>
+</ul>
 </li>
 </ul>
-<p>** 泛型信息只存在于代码编译阶段，在进入 JVM 之前，与泛型相关的信息会被擦除掉，专业术语叫做类型擦除。 **  </p>
-<p>** 泛型转译 **   </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public class Erasure &lt;T&gt;</span><br><span class="line">&#123;</span><br><span class="line">    T object;</span><br><span class="line">    public Erasure(T object) </span><br><span class="line">    &#123;</span><br><span class="line">        this.object &#x3D; object;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意:  有些闪避是特色玩法  则需要额外的标签和流程来完成<br>闪避技能进行条件判定时先使用脚本进行预判, 如果当前存在会因动作压制闪避的技能 则先进行打断, 防止被压制<br>所有动作类技能额外添加是否可被闪避技能打断的标签,  单独完成闪避相关的压制处理.   </p>
+<p>设计小结:   本质上动作类循环的控制, 在流程上首先是模拟动作状态机,  其次通过压制策略对状态机的切换策略进行控制    </p>
+<a id="more"></a>
 
-<blockquote>
-<p>Erasure 是一个泛型类，我们查看它在运行时的状态信息可以通过反射。  </p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Erasure&lt;String&gt; erasure &#x3D; new Erasure&lt;String&gt;(&quot;hello&quot;);</span><br><span class="line">Class eclz &#x3D; erasure.getClass();</span><br><span class="line">System.out.println(&quot;erasure class is:&quot;+eclz.getName());</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>打印的结果是  </p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">erasure class is:com.frank.test.Erasure</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>泛型类被类型擦除后，相应的类型就被替换成 Object 类型呢？<br>在泛型类被类型擦除的时候，之前泛型类中的类型参数部分如果没有指定上限，如 <t> 则会被转译成普通的 Object 类型，如果指定了上限如 <t extends="" string=""> 则类型参数就被替换成类型上限。   </t></t></p>
-</blockquote>
-<pre><code>类型擦除，是泛型能够与之前的 java 版本代码兼容共存的原因。但也因为类型擦除，它会抹掉很多继承相关的特性，这是它带来的局限性。</code></pre><p>理解类型擦除有利于我们绕过开发当中可能遇到的雷区，同样理解类型擦除也能让我们绕过泛型本身的一些限制。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class ToolTest </span><br><span class="line">&#123;</span><br><span class="line">    public static void main(String[] args) </span><br><span class="line">    &#123;</span><br><span class="line">        List&lt;Integer&gt; ls &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">        ls.add(23);</span><br><span class="line">&#x2F;&#x2F;      ls.add(&quot;text&quot;);</span><br><span class="line">        Method method &#x3D; ls.getClass().getDeclaredMethod(&quot;add&quot;,Object.class);</span><br><span class="line">        method.invoke(ls,&quot;test&quot;);</span><br><span class="line">        method.invoke(ls,42.9f);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
+<h2><span id="cd循环控制">CD循环控制</span></h2><ul>
+<li><p>对于常见的技能来说, 技能的存在时长和该技能可再次释放的时长往往是不一样的  例如说:   </p>
+<ul>
+<li>高价值的爆发类技能, 如果动作结束就可以再次释放, 那么在一场战斗中就很难设计出来可以抗衡的多样性的其他技能  通常而言, 价值越高, 我们希望他们的节奏越长,  他们需要等待合适的时机来释放珍贵的一击 .    </li>
+<li>这是引入CD的机制的最本质的原因.   </li>
+</ul>
+</li>
+<li><p>CD和动作循环控制完全不冲突, 各自流程独立.   </p>
+</li>
+</ul>
+<h2><span id="公共cd组循环控制">公共CD组循环控制</span></h2><p>公共CD组的作用主要是进行跨技能级别的循环控制和压制管理, 和CD一样是和动作无关系的纯逻辑配置<br>公共CD组的核心配置为触发和响应两组   </p>
+<ul>
+<li>该技能释放时是否响应(检测)(被压制)某GCD ,  如果存在该GCD则释放失败   </li>
+<li>该技能释放后触发某GCD一定时间, 如果已有则按照最长原则刷新   </li>
+</ul>
+<p>举例来说:<br>我们规定A技能释放完的10秒内, A和与A相关的B,C,D等技能均不能释放, 那么我们配置A触发一个GCD,   A,B,C,D均响应即可.     </p>
+<p>更高阶的配置方法举例:<br>我们有一个BOSS, 有 A, B, C, D 4个技能,  价值根据顺序递减,  并且隶属于同一个冷却组 即一旦任意一个技能释放完毕后, 其他技能在CD结束前均不能释放,    并且GCD一旦结束, 如果ABCD均能释放  则应该按照价值高低进行释放,  但是其中A,B不能连续释放.       </p>
+<ul>
+<li>首先 A B C D一定存在一个GCD来控制   </li>
+<li>优先级问题可以用行为树来进行检测判定 来实现优先级释放 但是不能解决A,B连续释放问题     </li>
+<li>GCD完整做法:   <ul>
+<li>ABCD触发和响应同一个GCD大组来完成基础循环控制和优先级循环控制    <ul>
+<li>gcd 1  ABCD均响应  </li>
+<li>gcd 2 A响应</li>
+<li>gcd 3 B响应  </li>
+<li>gcd 4 C响应  </li>
+<li>gcd 5 D响应   </li>
+</ul>
+</li>
+<li>通过调整2,3,4,5的时长, 可以做到逐时长解放ABCD4个技能的释放条件  </li>
+<li>处于配置清晰目的考虑AB单独触发和响应一个GCD(AB为小组), 而不是调整AB技能中2,3的触发时长   <ul>
+<li>gcd 10 AB触发和响应 其时间超过大组内GCD的最长时长   </li>
+</ul>
+</li>
+<li>从表现结果上来描述:  <ul>
+<li>BOSS一旦释放A或者B 那么B或者A则会长时间被禁止  </li>
+<li>BOSS一旦释放ABCD, 那么一定时间内ABCD均不能再次释放, 并且到期后逐个解开  </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2><span id="职业内循环">职业内循环</span></h2><p>这里属于职业内多个技能的配合设计<br>例如射手A中  Q重伤用来增加输出,  W位移用来追人或者逃跑,  R用来打出一个大型AOE进行团战输出<br>那么射手A的职业内循环顺风WQR追人输出  逆风QRW逃跑   </p>
+<p>射手B可能是Q留人W推人R输出    被近战贴脸可以W推人Q风筝R输出  </p>
+<h2><span id="职业外循环">职业外循环</span></h2><p>这个属于职业搭配设计<br>例如坦克奶妈射手<br>坦克开团抗伤害  奶妈补血救射手   射手躲坦克后面暴力输出    </p>
+<h2><span id="连招">连招</span></h2><p>和CD类的循环控制不同:  </p>
+<ul>
+<li>GCD CD是以压制的形式进行循环控制 战斗单位在正常情况下可以放某技能但被压制而不能释放,   而连招则是战斗单位不能放某技能因为条件得到满足而可以释放.   </li>
+<li>CD和GCD一般是扁平独立关系,  而连招则是树形关系甚至是链表关系.     </li>
+<li>一般CD和GCD都是以技能释放成功即触发   而连招则可能是因为’命中&gt;=3个目标’等特殊条件后才会触发的一段窗口时间  </li>
+<li>CD和GCD一旦触发不会清除, 除非特殊指定流程,  连招窗口时间内如果触发了后续连招技能, 则会清除该连招窗口.     </li>
+</ul>
+<p>##</p>
 
       
     </div>
@@ -401,8 +455,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/01/11/2019-01-11-AT&T-INTEL-ASM/" rel="next" title="AT&T 和 INTEL 汇编格式区别">
-                <i class="fa fa-chevron-left"></i> AT&T 和 INTEL 汇编格式区别
+              <a href="/2020/06/18/2020-06-18-skill-tag/" rel="next" title="技能系统中的标签机制">
+                <i class="fa fa-chevron-left"></i> 技能系统中的标签机制
               </a>
             
           </div>
@@ -410,10 +464,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/01/29/2019-01-17-Odyssey/" rel="prev" title="古希腊历史和奥德赛">
-                古希腊历史和奥德赛 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -538,7 +588,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">类型擦除定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">类型擦除语义或者可实现类型擦除效果的实现方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">3.</span> <span class="nav-text">扩展 JAVA的泛型实现方式 类型擦除</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">技能系统中的循环控制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.1.</span> <span class="nav-text">动作循环控制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">1.1.1.</span> <span class="nav-text">设计策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.2.</span> <span class="nav-text">CD循环控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.3.</span> <span class="nav-text">公共CD组循环控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.4.</span> <span class="nav-text">职业内循环</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.5.</span> <span class="nav-text">职业外循环</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.6.</span> <span class="nav-text">连招</span></a></li></ol></li></ol></div>
             
 
           </div>
