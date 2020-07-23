@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="战斗属性战斗属性属于战斗单位的简单数据字段,  提供基础的数据读写操作(相对于magic state而言).在实践中 一般战斗属性还包含从配置文件中load数据, 一级战斗属性到二级战斗属性的封装, 以及按照功能,战斗单位层级的划分等.     战斗属性的设计和实现字段表设计字段表在设计上隶属于’接口层’这个概念, 简单直接, 易于访问和同步处理时目的.     在C++中 通常考虑用一块静态数组">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数值模型 战斗属性和判定公式">
+<meta property="og:url" content="https://zsummer.github.io/2020/07/21/2020-07-21-math_of_combat/index.html">
+<meta property="og:site_name" content="关于夏天的一切">
+<meta property="og:description" content="战斗属性战斗属性属于战斗单位的简单数据字段,  提供基础的数据读写操作(相对于magic state而言).在实践中 一般战斗属性还包含从配置文件中load数据, 一级战斗属性到二级战斗属性的封装, 以及按照功能,战斗单位层级的划分等.     战斗属性的设计和实现字段表设计字段表在设计上隶属于’接口层’这个概念, 简单直接, 易于访问和同步处理时目的.     在C++中 通常考虑用一块静态数组">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-07-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-07-23T14:33:24.795Z">
+<meta property="article:author" content="夏天">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zsummer.github.io/2020/07/21/2020-07-21-math_of_combat/"/>
+
+
+
+
+
+  <title>数值模型 战斗属性和判定公式 | 关于夏天的一切</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">关于夏天的一切</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我总觉得对你的爱很美</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/07/21/2020-07-21-math_of_combat/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">数值模型 战斗属性和判定公式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-07-21T00:00:00+08:00">
+                2020-07-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2><span id="战斗属性">战斗属性</span></h2><p><strong>战斗属性属于战斗单位的简单数据字段,  提供基础的数据读写操作(相对于magic state而言).</strong><br>在实践中 一般战斗属性还包含从配置文件中load数据, 一级战斗属性到二级战斗属性的封装, 以及按照功能,战斗单位层级的划分等.    </p>
+<h2><span id="战斗属性的设计和实现">战斗属性的设计和实现</span></h2><h3><span id="字段表设计">字段表设计</span></h3><p>字段表在设计上隶属于’接口层’这个概念, 简单直接, 易于访问和同步处理时目的.    </p>
+<p>在C++中 通常考虑用一块静态数组的内存来表示<br>| A        | A   | A   | A   | A    | A           | A        | A         | A   |<br>|———-|—–|—–|—–|——|————-|———-|———–|—–|<br>| 字段名   | HP  | MP  | ATK | CRIT | RESIST CRIT | HIT RATE | MISS RATE | … |<br>| 转换类型 | INT | INT | INT | INT  | INT         | FLOAT    | FLOAT     | … |</p>
+<p>这种字段表的设计有以下优点和特性:</p>
+<ul>
+<li>性能非常高   </li>
+<li>可以直接操作,遍历内存 方便统一管理  </li>
+<li>以数组下标完成ID的设计, 并使用BIT位进行脏数据标记辅助进行增量同步  </li>
+<li>初始化约定为0,  进行初始同步时只同步非0数据即可,  后续采用增量同步, 减少同步量   </li>
+<li>字段表中的数据修改可以由属性表进行托管结算 也可以直接set   <ul>
+<li>通常战斗属性均为属性表托管结算和刷新 不能直接set   </li>
+<li>通常能量条类属性直接进行set </li>
+<li>复杂的属性一般由多个属性功能完成 例如<ul>
+<li>血量上限 (战斗属性)   </li>
+<li>当前血量 (属于能量条类, 则特殊条件下以’血量上限属性’为依据进行set  例如出生满血)   </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<a id="more"></a>
+<h3><span id="属性表设计">属性表设计</span></h3><p>属性表是一个三维数组:  </p>
+<ul>
+<li>第一维数组的下标对应字段表的下标, 即ID一一对应完成属性表和字段表的映射关系       </li>
+<li>第二维数组对应具体属性层级, 层级按照功能划分, 例如基础数值层, 模块专属修饰层    </li>
+<li>第三位数组对应具体属性具体层级下的所有项,  例如基础值, 万分比加和修正, 万分比连乘修正,  值修正等    </li>
+</ul>
+<p>通常面板属性遵循基础的计算公式:<br>$$实际值=基础值*系数+修正值$$<br>然后根据具体的数值需求进行细化和扩展等    </p>
+<p>可能的一种计算通用计算公式(能满足大多数属性计算的公式), 提供了系数加和修正 系数连乘修正 值修正:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">基础系数加和修正 &#x3D; 基础层.基础值*(1+Σ(基础系数修正))</span><br><span class="line"></span><br><span class="line">基础系数连乘修正&#x3D;基础系数加和修正 * power(2, Σ(基础系数连乘修正指数))</span><br><span class="line"></span><br><span class="line">基础值值修正&#x3D;基础系数连乘修正+Σ(BASE VALUE + VALUE)  </span><br><span class="line"></span><br><span class="line">总值系数加和修正  连乘修正 总值修正 ...</span><br></pre></td></tr></table></figure>
+
+<p>表如下:<br>| A           | BASE VALUE | BASE RATE | BASE EXP | VALUE | TOTAL RATE | TOTAL EXP | TOTAL VAL |<br>|————-|————|———–|———-|——-|————|———–|———–|<br>| BASE LAYER  | —-       | —-      | —-     | —-  | —-       | —-      | -         |<br>| ITEM LAYER  | —-       | —-      | —-     | —-  | —-       | —-      | -         |<br>| SKILL LAYER | —-       | —-      | —-     | —-  | —-       | —-      | -         |</p>
+<p>功能设计:   </p>
+<ul>
+<li>面板属性指的是通过属性表计算的字段, 该类字段对外关闭修改权限, 只能通过修改对应的属性表中的项来进行修改. 外部只读.    </li>
+<li>字段表中的字段值不参与计算 值作为属性表的导出数据, 因此字段可以是float类型,  但是属性表中的项必须全是整数以保证属性在对称修改中时钟保证结果的确定性和正确性(精度满足需求即可)   </li>
+<li>需要保证每个项的值不会发生溢出, 来保证属性的对称修改过程中的正确性和可靠性.   </li>
+</ul>
+<h3><span id="对称计算的确定性和一致性保证">对称计算的确定性和一致性保证</span></h3><p>战斗面板属性一个很重要的特征就是在战斗对抗中会发生持续性的对称修改, 例如加攻击力 减速的BUFF等等.<br>而为了简化设计提高性能, 不能在每次战斗判定流程中遍历所有buff来完成属性计算, 常见的做法中, 我们会先修改属性(加/乘) 然后持续一段时间后再进行恢复(减/除).   </p>
+<p>例如:  加攻击力100持续1秒   减速40%持续3秒 减速30%持续2秒   </p>
+<p>然后问题就来了,  假如说我们其中一个项纪录的是float的值修正,  比如防御力+3, 然后来了一个超级防御(无敌的一种)+850万防御 然后再对称减去后,  其结果我们期望是0 但实际上可能为-1    </p>
+<h4><span id="问题原因">问题原因</span></h4><p>计算机的浮点数通常并不满足结合律和分配率, 这就会带来计算结果的不确定性.   </p>
+<p>  结合律应该满足:<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(a + b) + c &#x3D;&#x3D; a + (b + c)</span><br></pre></td></tr></table></figure><br>  举例来说: 假如上述公式的单位类型是浮点数, 其中a和b是小数, c是大数,  a+b的和在c的最后一位精度上就可能会出现<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(a + b) + c &gt; b;  </span><br><span class="line">a + (b + c) &#x3D;&#x3D; b;</span><br></pre></td></tr></table></figure><br>  单独的a和b都小于c的精度, 但a和b的和正好落在a+b的和在c的精度范围内可以被累加,  但是单独的a,b如果不在c的精度范围内累加的结果不会发生变化       </p>
+<p>  造成浮点计算的不确定性原因:</p>
+<ul>
+<li>因顺序不同带来的浮点变动导致计算结果不同   </li>
+<li>因为精度损失并且这种损失未进行良好定义而导致的结果不同   <ul>
+<li>不同位宽的FPU的计算会导致最终输出的最后一个有效位的数字不同   </li>
+<li>不同的浮点算法也会导致精度的不同  </li>
+<li>小数部分在二进制表达上存储的精度丢失问题 (例如0.1的除不尽带来的轧差处理)    </li>
+<li>精度末尾的舍入策略  </li>
+</ul>
+</li>
+</ul>
+<h4><span id="解决方法">解决方法</span></h4><p>  基础策略  </p>
+<ul>
+<li><p>用整数处理  </p>
+</li>
+<li><p>用定义良好的定点数处理    </p>
+<ul>
+<li>一个简单的实现可能是<em>10000  或者</em> 2^N的大小 但是要保证放大倍数在有效的精度范围内并且不会溢出  </li>
+</ul>
+</li>
+<li><p>隔离浮点数, 一旦整数或者定点数转换为浮点数后, 就不应该参与原有需要保证重复计算一致性的流程   </p>
+</li>
+<li><p>三角函数可以通过查表或者泰勒级数求值  </p>
+<p>实践策略:   </p>
+</li>
+<li><p>能用整数的尽量用整数   </p>
+</li>
+<li><p>范围比较小的浮点数通过缩放为整数进行计算和存储  并保证不会(定义好)溢出   </p>
+</li>
+<li><p>对业务进行拆解, 把无法避免的浮点计算部分改成单向导出模式,  保证计算不会出现回溯影响.    </p>
+</li>
+<li><p>使用能保证计算确定性的浮点/定点数学库     </p>
+</li>
+</ul>
+<h3><span id="使用modifer完成对属性表中的项进行修改-并实现常见公式">使用Modifer完成对属性表中的项进行修改 并实现常见公式</span></h3><p>Modifier的核心是一个对称操作, 即在开始时进行修改操作,  在结束后保证复原, 为了保证这一点我们会采用整数存储所有项, 技术出来的面板属性值不会参与计算本身,  并通过对项的合理拆分与划分完成高阶的系数加和与系数连乘等公式 如下:    </p>
+<ul>
+<li><p>对属性进行加和修正    </p>
+<ul>
+<li>直接对加和项进行加和,  修改器结束后减去加上的数字即可.   </li>
+</ul>
+</li>
+<li><p>对属性进行系数加和修正   </p>
+<ul>
+<li>抽出来独立的项保存系数的分子(分布可定位万分或者百分等),  在计算结果时使用该项的和带入分母后进行乘法修正:   <ul>
+<li>BUFF A加攻击力30 %</li>
+<li>BUFF B加攻击力40 %</li>
+<li>BUFF A 和 B同时加攻击力是 攻击力 * (1 + 30 % + 40 %) = 攻击力 * 170%   </li>
+<li>BUFF A B生效后先移除A  则在项里减去30并重新计算:  攻击力 * (1+40%) = 攻击力 * 140%   </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>对属性进行系数连乘修正  </p>
+<ul>
+<li>抽出来独立的项进行累加该系数换算成的指数信息,  指数相加等于系数连乘   <ol>
+<li>对于要修正的系数取其对数, 然后放大到满足需求的精度位数后 保存为整数.    </li>
+<li>使用时, 先把结果带入分母取得连乘的积, 然后用之前计算的底进行指数计算 即可得到连乘结果  </li>
+<li>对称恢复时候, 拿到的仍然是系数, 所以需要进行对数计算后得到保存时的数字, 这里需要保证一致性.   </li>
+</ol>
+</li>
+<li>例:<ul>
+<li>BUFF A 减速20 %  </li>
+<li>BUFF B 减速40 %  </li>
+<li>BUFF A B同时生效, 结果为 基础移动 * (1-20%) * (1-40%) == &gt; 基础移动 * 48%   </li>
+<li>这里通常不用加和是因为需要一个平滑的收益递减的减速曲线而不是直接减到0 .    <ul>
+<li>例如两个减速50%用加法公式则减速到0   但是连乘公式则为基础的25%.   </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>通常, (十进制描述) 游戏中配置的比例修饰的精度为 万分之一,  有效位数4个即够用,  float的有效位为23 * log10(2) 约等于 6.9个十进制位   </p>
+<h3><span id="一级二级属性">一级二级属性</span></h3><p>一级属性的结果不直接参与战斗, 一级属性的结果通过换算公式成为不同二级属性中的项<br>例如力量按比例加攻击力 加防御值  </p>
+<ul>
+<li>一级属性换算二级属性的公式应当保证确定性   </li>
+<li>在修改一级属性的任意项后 都应该用原有的结果进行反向恢复二级属性中的项  然后重新计算结果并带入二级属性进行重刷  </li>
+</ul>
+<h3><span id="非战斗属性字段">非战斗属性字段</span></h3><p>这里指的是能量条类,   或者程序记录的某些key  id  等 都可以使用字段表,  但是这些字段的来源是动态逻辑并非属性表,  因此这部分字段是不进行属性导出和刷新的    </p>
+<h1><span id="数值模型">数值模型</span></h1><p>一般来说游戏的数值分为上游和下游两大块 下游主要跟战斗系统有关 是上游的基础   </p>
+<ul>
+<li>上游数值模型   <ul>
+<li>成长线规划  </li>
+<li>怪物数值  </li>
+<li>产出和消耗  </li>
+<li>商业化   </li>
+<li></li>
+</ul>
+</li>
+<li>下游数值模型   <ul>
+<li>伤害公式  </li>
+<li>战斗力公式  </li>
+<li>职业和属性  </li>
+<li>属性量化和拆解   </li>
+</ul>
+</li>
+</ul>
+<h2><span id="伤害公式">伤害公式</span></h2><p>一般有减法,乘法, 除法等公式<br>根据这几种公式的效益和多人表现<br>一般来说多人游戏类似MMO MOBA会采用乘法或者除法来规避不破防问题<br>人数少对数值比较敏感对抗比较激烈的可能会采用减法公式  </p>
+<ul>
+<li><p><strong>减法公式</strong><br>$$damage = attack - defence$$   </p>
+<ul>
+<li>等比缩放攻击力和防御力战斗结果不变  </li>
+<li>攻击力边际收益递减, 防御力边际收益递增, 容易出现不破防   <ul>
+<li>假设一个单位输出是10点伤害 受到10点伤害<ul>
+<li>攻击力伤害加成每点分别是1/10,   1/11 … 1/19  </li>
+<li>防御加成每点分别是1/10 ,  1/9,  …. 1/1</li>
+</ul>
+</li>
+<li>同等战力下攻防每一点变化都会带来极大影响   </li>
+<li>战斗力可能不传递  例如低攻高速不破高防, 但是打低防可以获得大量输出, 但是高防不一定能打过低防,  低防攻击高破防更多的情况下.    <ul>
+<li>虽然可以做一些循环克制, 但是群战时, 一个不破防可以秒大批低战力玩家.   </li>
+<li>防御价值太高        </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>乘法公式</strong><br>$$damage = attack * (1-f(defence)); $$<br>一般情况下<br>$$f(defence) = defence / (C + defence)  $$   </p>
+<ul>
+<li>战斗力可以单独计算 <code>hp*(1-f(defence))* attack</code>   </li>
+<li>攻击和免伤的效益都是边际递减, 没有减法的不破防问题  </li>
+<li>数值变化不明显  </li>
+<li>引入暴击值暴击率来修饰边际递减和数值不敏感问题  </li>
+<li>战力传递</li>
+</ul>
+</li>
+<li><p><strong>除法公式</strong><br>模型如下 但一般不会直接用, 因为线性投放伤害不变:<br>$$ damage = attack/ defence $$<br>变种版本 方差版本,  伤害值可能大于攻击力 一般也不用:<br>$$ damage = attack* attack / defence $$<br>一般用的比较多问题比较少的版本:<br>$$ damage = attack * attack / (defence + attack)$$  </p>
+<ul>
+<li>攻击价值递增  防御价值递减   </li>
+<li>没有不破防的问题 </li>
+<li>数值变化不敏感  </li>
+</ul>
+</li>
+</ul>
+<h2><span id="攻击判定流程瀑布判定和圆桌判定">攻击判定流程:瀑布判定和圆桌判定</span></h2><hr>
+<p>一般来说一个战斗单位会有多个进攻属性以及对应的多个防御属性形成多组判定和计算, 其中攻击判定指的是命中的类型分支判定:<br>例如说通常攻击有 命中率 暴击率 ,  防御有闪避率, 格挡, 招架等, 分支有 MISS, 闪避, 招架, 格挡, 暴击, 普通, 这些分支区分优先级, 例如闪避判定肯定优于暴击判定    </p>
+<p>面板数据举例:<br>| 攻击方   | 受击方 | 面板期望 | 瀑布算法 | 事件概率 | 圆桌算法 | 事件概率 |<br>|———-|——–|———-|———-|———-|———-|———-|<br>| 命中率   | 90%    | 90%      | 90%      |          | 90%      |          |<br>| 闪避率   | 20%    | 18.00%   | 72.00%   | 18.00%   | 72.00%   | 18.00%   |<br>| 招架     | 15%    | 13.500%  | 61.200%  | 10.800%  | 58.500%  | 13.500%  |<br>| 格挡     | 30%    | 27.00%   | 42.840%  | 18.3600% | 31.500%  | 27.000%  |<br>| 暴击率   | 25%    | 22.500%  | 32.1300% | 10.7100% | 9.0000%  | 22.5000% |<br>| 普通命中 |        | 9%       | 32.1300% |          |          | 9.0000%  |</p>
+<p>瀑布算法和圆桌算法的核心共同点都是对对抗组进行优先级划分, 并且高优先级在前 如果所有分支均为发生, 那么就是普通命中.</p>
+<p>区别在于瀑布判定会逐个分支判定, 因此越靠后的分支其发生概率的衰减越大   </p>
+<p>圆桌算法以命中率为桌面大小用各个分支的概率塞进去,  对于塞不进桌面的分支进行丢弃, 如果只塞进一部分则截断概率,  这样如果圆桌如果能放下 则和面板期望概率一致, 如果放不下 低优先级事件则被踢出 不可能出现.   </p>
+<p>再举个例子来说:<br>假设: 命中率是90%, 闪避率是50%, 招架是40%, 格挡是30%.  那么</p>
+<p>以命中率为桌面重新计算分支概率则是<br>命中率90% * 闪避50% = 45%<br>命中率90% * 招架40% = 36%<br>命中率90% * 格挡30% = 27%</p>
+<p>因此桌面依次是<br>| 闪避 | 招架 | 格挡 | 暴击 | 普通命中 |<br>|——|——|——|——|———-|<br>| 45%  | 36%  | 19%  | 0%   | 0%       |</p>
+<p>判定伪代码:</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">local</span> r = rand()%<span class="number">100</span>  </span><br><span class="line"><span class="keyword">if</span> r &lt; 闪避 <span class="keyword">then</span> </span><br><span class="line">  <span class="comment">--闪避 </span></span><br><span class="line"><span class="keyword">elseif</span> r &lt; 闪避+招架 <span class="keyword">then</span></span><br><span class="line">  <span class="comment">--招架</span></span><br><span class="line"><span class="keyword">elseif</span> <span class="keyword">elseif</span> r &lt; 闪避+招架+暴击 <span class="keyword">then</span></span><br><span class="line">  <span class="comment">--暴击</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/06/18/2020-06-18-skill-tag/" rel="next" title="技能系统中的标签机制">
+                <i class="fa fa-chevron-left"></i> 技能系统中的标签机制
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="夏天" />
+          <p class="site-author-name" itemprop="name">夏天</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">38</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">categories</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">战斗属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">战斗属性的设计和实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">2.1.</span> <span class="nav-text">字段表设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">2.2.</span> <span class="nav-text">属性表设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">2.3.</span> <span class="nav-text">对称计算的确定性和一致性保证</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">2.3.1.</span> <span class="nav-text">问题原因</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">2.3.2.</span> <span class="nav-text">解决方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">2.4.</span> <span class="nav-text">使用Modifer完成对属性表中的项进行修改 并实现常见公式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">2.5.</span> <span class="nav-text">一级二级属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">2.6.</span> <span class="nav-text">非战斗属性字段</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#"><span class="nav-number"></span> <span class="nav-text">数值模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">伤害公式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">攻击判定流程:瀑布判定和圆桌判定</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">夏天</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+    NexT.Gemini
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

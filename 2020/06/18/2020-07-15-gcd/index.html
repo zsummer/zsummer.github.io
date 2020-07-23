@@ -97,12 +97,12 @@
 <meta name="description" content="技能系统中的循环控制动作循环控制  动作类技能, 普攻等依赖战斗单位身体动作的技能, 其受影响的身体部位不能同时做出两个动作    根据技能的价值级别以及特色设计, 在可能导致冲突的两个动作之间需要明确打断关系      设计策略无论是时间线的设计还是多段设计亦或是朴素的单段多子技能设计,  我们需要标记出每段动作的影响部位, 其意义是在于我们对所有技能通过打标记的形式来获得’技能与技能之间是否存">
 <meta property="og:type" content="article">
 <meta property="og:title" content="技能系统中的输出循环和节奏控制">
-<meta property="og:url" content="https://zsummer.github.io/2020/07/15/2020-07-15-gcd/index.html">
+<meta property="og:url" content="https://zsummer.github.io/2020/06/18/2020-07-15-gcd/index.html">
 <meta property="og:site_name" content="关于夏天的一切">
 <meta property="og:description" content="技能系统中的循环控制动作循环控制  动作类技能, 普攻等依赖战斗单位身体动作的技能, 其受影响的身体部位不能同时做出两个动作    根据技能的价值级别以及特色设计, 在可能导致冲突的两个动作之间需要明确打断关系      设计策略无论是时间线的设计还是多段设计亦或是朴素的单段多子技能设计,  我们需要标记出每段动作的影响部位, 其意义是在于我们对所有技能通过打标记的形式来获得’技能与技能之间是否存">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2020-07-14T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-07-15T09:24:32.462Z">
+<meta property="article:published_time" content="2020-06-17T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-07-22T03:50:52.328Z">
 <meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
 
@@ -133,7 +133,7 @@
 
 
 
-  <link rel="canonical" href="https://zsummer.github.io/2020/07/15/2020-07-15-gcd/"/>
+  <link rel="canonical" href="https://zsummer.github.io/2020/06/18/2020-07-15-gcd/"/>
 
 
 
@@ -252,7 +252,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/07/15/2020-07-15-gcd/">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/06/18/2020-07-15-gcd/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="夏天">
@@ -281,8 +281,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-07-15T00:00:00+08:00">
-                2020-07-15
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-06-18T00:00:00+08:00">
+                2020-06-18
               </time>
             
 
@@ -428,9 +428,8 @@
 <li>GCD CD是以压制的形式进行循环控制 战斗单位在正常情况下可以放某技能但被压制而不能释放,   而连招则是战斗单位不能放某技能因为条件得到满足而可以释放.   </li>
 <li>CD和GCD一般是扁平独立关系,  而连招则是树形关系甚至是链表关系.     </li>
 <li>一般CD和GCD都是以技能释放成功即触发   而连招则可能是因为’命中&gt;=3个目标’等特殊条件后才会触发的一段窗口时间  </li>
-<li>CD和GCD一旦触发不会清除, 除非特殊指定流程,  连招窗口时间内如果触发了后续连招技能, 则会清除该连招窗口.     </li>
+<li>CD和GCD一旦触发不会清除, 除非特殊指定流程,  连招窗口时间内如果触发了后续连招技能, 则会清除该连招窗口.</li>
 </ul>
-<p>##</p>
 
       
     </div>
@@ -455,8 +454,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/18/2020-06-18-skill-tag/" rel="next" title="技能系统中的标签机制">
-                <i class="fa fa-chevron-left"></i> 技能系统中的标签机制
+              <a href="/2020/06/16/2020-06-16-lua-oop/" rel="next" title="游戏(技能)中的脚本设计">
+                <i class="fa fa-chevron-left"></i> 游戏(技能)中的脚本设计
               </a>
             
           </div>
@@ -464,6 +463,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/06/18/2020-06-18-skill-tag/" rel="prev" title="技能系统中的标签机制">
+                技能系统中的标签机制 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -540,7 +543,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">37</span>
+                <span class="site-state-item-count">38</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>

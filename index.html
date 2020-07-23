@@ -250,7 +250,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/07/15/2020-07-15-gcd/">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/07/21/2020-07-21-math_of_combat/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="夏天">
@@ -269,7 +269,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/07/15/2020-07-15-gcd/" itemprop="url">技能系统中的输出循环和节奏控制</a></h1>
+                <a class="post-title-link" href="/2020/07/21/2020-07-21-math_of_combat/" itemprop="url">数值模型 战斗属性和判定公式</a></h1>
         
 
         <div class="post-meta">
@@ -281,8 +281,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-07-15T00:00:00+08:00">
-                2020-07-15
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-07-21T00:00:00+08:00">
+                2020-07-21
               </time>
             
 
@@ -342,44 +342,29 @@
 
       
         
-          <h1 id="技能系统中的循环控制"><a href="#技能系统中的循环控制" class="headerlink" title="技能系统中的循环控制"></a>技能系统中的循环控制</h1><h2 id="动作循环控制"><a href="#动作循环控制" class="headerlink" title="动作循环控制"></a>动作循环控制</h2><hr>
+          <h2 id="战斗属性"><a href="#战斗属性" class="headerlink" title="战斗属性"></a>战斗属性</h2><p><strong>战斗属性属于战斗单位的简单数据字段,  提供基础的数据读写操作(相对于magic state而言).</strong><br>在实践中 一般战斗属性还包含从配置文件中load数据, 一级战斗属性到二级战斗属性的封装, 以及按照功能,战斗单位层级的划分等.    </p>
+<h2 id="战斗属性的设计和实现"><a href="#战斗属性的设计和实现" class="headerlink" title="战斗属性的设计和实现"></a>战斗属性的设计和实现</h2><h3 id="字段表设计"><a href="#字段表设计" class="headerlink" title="字段表设计"></a>字段表设计</h3><p>字段表在设计上隶属于’接口层’这个概念, 简单直接, 易于访问和同步处理时目的.    </p>
+<p>在C++中 通常考虑用一块静态数组的内存来表示<br>| A        | A   | A   | A   | A    | A           | A        | A         | A   |<br>|———-|—–|—–|—–|——|————-|———-|———–|—–|<br>| 字段名   | HP  | MP  | ATK | CRIT | RESIST CRIT | HIT RATE | MISS RATE | … |<br>| 转换类型 | INT | INT | INT | INT  | INT         | FLOAT    | FLOAT     | … |</p>
+<p>这种字段表的设计有以下优点和特性:</p>
 <ul>
-<li>动作类技能, 普攻等依赖战斗单位身体动作的技能, 其受影响的身体部位不能同时做出两个动作   </li>
-<li>根据技能的价值级别以及特色设计, 在可能导致冲突的两个动作之间需要明确打断关系    </li>
-</ul>
-<h3 id="设计策略"><a href="#设计策略" class="headerlink" title="设计策略"></a>设计策略</h3><p>无论是时间线的设计还是多段设计亦或是朴素的单段多子技能设计,  我们需要标记出每段动作的影响部位, 其意义是在于我们对所有技能通过打标记的形式来获得’技能与技能之间是否存在动作冲突’的信息.     </p>
-<p>其次, 我们需要对冲突的技能之间的 重叠释放问题,  这里本质上是一个压制规则问题.   </p>
-<ol>
-<li>冲突的动作类技能一旦释放成功,  一定打断掉所有相关旧的技能</li>
-<li>如果不做上下半身分离, 普通移动视为动作, 否则为下半身动作  </li>
-<li>不希望被某些类型打断的时候  要禁止这些类型的技能释放 即压制类标签     </li>
-</ol>
-<p>举例来说   </p>
-<ul>
-<li><p>跳击技能:  </p>
-<ul>
-<li>技能类型:      上半身动作, 下半身动作  </li>
-<li>前摇时间压制:  禁止普通移动 禁止下半身动作 禁止上半身动作   </li>
-</ul>
-</li>
-<li><p>出拳技能   </p>
-<ul>
-<li>技能类型: 上半身动作   </li>
-<li>前摇时间压制: 禁止上半身动作  </li>
-</ul>
-</li>
-<li><p>闪避技能   </p>
-<ul>
-<li>技能类型: 上半身动作 下半身动作   </li>
-<li>前摇时间压制: 禁止普通移动 禁止上半身移动 禁止下半身移动    </li>
+<li>性能非常高   </li>
+<li>可以直接操作,遍历内存 方便统一管理  </li>
+<li>以数组下标完成ID的设计, 并使用BIT位进行脏数据标记辅助进行增量同步  </li>
+<li>初始化约定为0,  进行初始同步时只同步非0数据即可,  后续采用增量同步, 减少同步量   </li>
+<li>字段表中的数据修改可以由属性表进行托管结算 也可以直接set   <ul>
+<li>通常战斗属性均为属性表托管结算和刷新 不能直接set   </li>
+<li>通常能量条类属性直接进行set </li>
+<li>复杂的属性一般由多个属性功能完成 例如<ul>
+<li>血量上限 (战斗属性)   </li>
+<li>当前血量 (属于能量条类, 则特殊条件下以’血量上限属性’为依据进行set  例如出生满血)   </li>
 </ul>
 </li>
 </ul>
-<p>注意:  有些闪避是特色玩法  则需要额外的标签和流程来完成<br>闪避技能进行条件判定时先使用脚本进行预判, 如果当前存在会因动作压制闪避的技能 则先进行打断, 防止被压制<br>所有动作类技能额外添加是否可被闪避技能打断的标签,  单独完成闪避相关的压制处理.   </p>
-<p>设计小结:   本质上动作类循环的控制, 在流程上首先是模拟动作状态机,  其次通过压制策略对状态机的切换策略进行控制    </p>
+</li>
+</ul>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2020/07/15/2020-07-15-gcd/#more" rel="contents">
+            <a class="btn" href="/2020/07/21/2020-07-21-math_of_combat/#more" rel="contents">
               Read more &raquo;
             </a>
           </div>
@@ -532,6 +517,186 @@
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2020/06/18/2020-06-18-skill-tag/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/06/18/2020-07-15-gcd/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/18/2020-07-15-gcd/" itemprop="url">技能系统中的输出循环和节奏控制</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-06-18T00:00:00+08:00">
+                2020-06-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="技能系统中的循环控制"><a href="#技能系统中的循环控制" class="headerlink" title="技能系统中的循环控制"></a>技能系统中的循环控制</h1><h2 id="动作循环控制"><a href="#动作循环控制" class="headerlink" title="动作循环控制"></a>动作循环控制</h2><hr>
+<ul>
+<li>动作类技能, 普攻等依赖战斗单位身体动作的技能, 其受影响的身体部位不能同时做出两个动作   </li>
+<li>根据技能的价值级别以及特色设计, 在可能导致冲突的两个动作之间需要明确打断关系    </li>
+</ul>
+<h3 id="设计策略"><a href="#设计策略" class="headerlink" title="设计策略"></a>设计策略</h3><p>无论是时间线的设计还是多段设计亦或是朴素的单段多子技能设计,  我们需要标记出每段动作的影响部位, 其意义是在于我们对所有技能通过打标记的形式来获得’技能与技能之间是否存在动作冲突’的信息.     </p>
+<p>其次, 我们需要对冲突的技能之间的 重叠释放问题,  这里本质上是一个压制规则问题.   </p>
+<ol>
+<li>冲突的动作类技能一旦释放成功,  一定打断掉所有相关旧的技能</li>
+<li>如果不做上下半身分离, 普通移动视为动作, 否则为下半身动作  </li>
+<li>不希望被某些类型打断的时候  要禁止这些类型的技能释放 即压制类标签     </li>
+</ol>
+<p>举例来说   </p>
+<ul>
+<li><p>跳击技能:  </p>
+<ul>
+<li>技能类型:      上半身动作, 下半身动作  </li>
+<li>前摇时间压制:  禁止普通移动 禁止下半身动作 禁止上半身动作   </li>
+</ul>
+</li>
+<li><p>出拳技能   </p>
+<ul>
+<li>技能类型: 上半身动作   </li>
+<li>前摇时间压制: 禁止上半身动作  </li>
+</ul>
+</li>
+<li><p>闪避技能   </p>
+<ul>
+<li>技能类型: 上半身动作 下半身动作   </li>
+<li>前摇时间压制: 禁止普通移动 禁止上半身移动 禁止下半身移动    </li>
+</ul>
+</li>
+</ul>
+<p>注意:  有些闪避是特色玩法  则需要额外的标签和流程来完成<br>闪避技能进行条件判定时先使用脚本进行预判, 如果当前存在会因动作压制闪避的技能 则先进行打断, 防止被压制<br>所有动作类技能额外添加是否可被闪避技能打断的标签,  单独完成闪避相关的压制处理.   </p>
+<p>设计小结:   本质上动作类循环的控制, 在流程上首先是模拟动作状态机,  其次通过压制策略对状态机的切换策略进行控制    </p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/06/18/2020-07-15-gcd/#more" rel="contents">
               Read more &raquo;
             </a>
           </div>
@@ -1870,210 +2035,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/12/11/2019-12-11-asm-syntax/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/12/11/2019-12-11-asm-syntax/" itemprop="url">汇编语法/寻址/寄存器/代码模型(GNU assembler)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-12-11T00:00:00+08:00">
-                2019-12-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="0-0-1-目录"><a href="#0-0-1-目录" class="headerlink" title="0.0.1. 目录"></a>0.0.1. 目录</h3><!-- TOC -->
-
-<ul>
-<li><a href="#目录">目录</a></li>
-<li><a href="#基础语法格式">基础语法格式</a></li>
-<li><a href="#常见寄存器以及作用">常见寄存器以及作用</a><ul>
-<li><a href="#通用寄存器">通用寄存器</a><ul>
-<li><a href="#寄存器使用惯例-原文">寄存器使用惯例 原文</a></li>
-<li><a href="#中文对照">中文对照</a></li>
-</ul>
-</li>
-<li><a href="#专用寄存器">专用寄存器</a><ul>
-<li><a href="#标志寄存器-rflags">标志寄存器 RFLAGS</a></li>
-<li><a href="#程序计数器pcrelative-instruction-pointerip">程序计数器(PC)(Relative Instruction-Pointer)(IP)</a></li>
-<li><a href="#指令寄存器">指令寄存器</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#汇编语法">汇编语法</a><ul>
-<li><a href="#汇编指令">汇编指令</a></li>
-<li><a href="#操作数格式与寻址">操作数格式与寻址</a><ul>
-<li><a href="#内存操作数">内存操作数</a></li>
-<li><a href="#寻址模式">寻址模式</a></li>
-<li><a href="#large-code-mode">large code mode:</a></li>
-<li><a href="#共享库中对g_static_so_data的访问">共享库中对g_static_so_data的访问</a></li>
-<li><a href="#small-code-mode">small code mode:</a></li>
-<li><a href="#备注说明">备注说明</a></li>
-<li><a href="#relro--relocation-read-only">RELRO  Relocation Read Only</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#调用惯例calling-conventions">调用惯例Calling Conventions</a><pre><code>- [参数压栈顺序](#参数压栈顺序)
-    - [Caller Save和Callee Save](#caller-save和callee-save)</code></pre></li>
-<li><a href="#工具">工具</a><ul>
-<li><a href="#peda插件">PEDA插件</a></li>
-</ul>
-</li>
-</ul>
-<!-- /TOC -->
-
-
-
-
-<h3 id="0-0-2-基础语法格式"><a href="#0-0-2-基础语法格式" class="headerlink" title="0.0.2. 基础语法格式"></a>0.0.2. 基础语法格式</h3><p>GAS汇编的格式阅读起来很自然 如下   </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[操作符]    [源]      [目标]   </span><br><span class="line">movl        $0,      -4(%rbp)</span><br></pre></td></tr></table></figure>
-
-
-<p>但是INTEL格式更贴近C语言的书写风格   </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[操作符]   [目标]    [源]  </span><br><span class="line">mov        esi,     DWORD PTR [rbp-0x4]</span><br></pre></td></tr></table></figure>
-
-<p>很像C语言的代码   </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int esi &#x3D; *(rbp-0x4);</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>本文基于X86-64架构体系整理了GAS风格的汇编语法, 如无特殊说明后续内容皆以环境为准.    </p>
-</blockquote>
-<p>“@”符号表示“将符号左边的变量钳制在符号右边的地址   </p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/12/11/2019-12-11-asm-syntax/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2124,7 +2085,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">37</span>
+                <span class="site-state-item-count">38</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>

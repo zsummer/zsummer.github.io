@@ -250,6 +250,210 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/12/11/2019-12-11-asm-syntax/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/12/11/2019-12-11-asm-syntax/" itemprop="url">汇编语法/寻址/寄存器/代码模型(GNU assembler)</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-12-11T00:00:00+08:00">
+                2019-12-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="0-0-1-目录"><a href="#0-0-1-目录" class="headerlink" title="0.0.1. 目录"></a>0.0.1. 目录</h3><!-- TOC -->
+
+<ul>
+<li><a href="#目录">目录</a></li>
+<li><a href="#基础语法格式">基础语法格式</a></li>
+<li><a href="#常见寄存器以及作用">常见寄存器以及作用</a><ul>
+<li><a href="#通用寄存器">通用寄存器</a><ul>
+<li><a href="#寄存器使用惯例-原文">寄存器使用惯例 原文</a></li>
+<li><a href="#中文对照">中文对照</a></li>
+</ul>
+</li>
+<li><a href="#专用寄存器">专用寄存器</a><ul>
+<li><a href="#标志寄存器-rflags">标志寄存器 RFLAGS</a></li>
+<li><a href="#程序计数器pcrelative-instruction-pointerip">程序计数器(PC)(Relative Instruction-Pointer)(IP)</a></li>
+<li><a href="#指令寄存器">指令寄存器</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#汇编语法">汇编语法</a><ul>
+<li><a href="#汇编指令">汇编指令</a></li>
+<li><a href="#操作数格式与寻址">操作数格式与寻址</a><ul>
+<li><a href="#内存操作数">内存操作数</a></li>
+<li><a href="#寻址模式">寻址模式</a></li>
+<li><a href="#large-code-mode">large code mode:</a></li>
+<li><a href="#共享库中对g_static_so_data的访问">共享库中对g_static_so_data的访问</a></li>
+<li><a href="#small-code-mode">small code mode:</a></li>
+<li><a href="#备注说明">备注说明</a></li>
+<li><a href="#relro--relocation-read-only">RELRO  Relocation Read Only</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#调用惯例calling-conventions">调用惯例Calling Conventions</a><pre><code>- [参数压栈顺序](#参数压栈顺序)
+    - [Caller Save和Callee Save](#caller-save和callee-save)</code></pre></li>
+<li><a href="#工具">工具</a><ul>
+<li><a href="#peda插件">PEDA插件</a></li>
+</ul>
+</li>
+</ul>
+<!-- /TOC -->
+
+
+
+
+<h3 id="0-0-2-基础语法格式"><a href="#0-0-2-基础语法格式" class="headerlink" title="0.0.2. 基础语法格式"></a>0.0.2. 基础语法格式</h3><p>GAS汇编的格式阅读起来很自然 如下   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[操作符]    [源]      [目标]   </span><br><span class="line">movl        $0,      -4(%rbp)</span><br></pre></td></tr></table></figure>
+
+
+<p>但是INTEL格式更贴近C语言的书写风格   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[操作符]   [目标]    [源]  </span><br><span class="line">mov        esi,     DWORD PTR [rbp-0x4]</span><br></pre></td></tr></table></figure>
+
+<p>很像C语言的代码   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int esi &#x3D; *(rbp-0x4);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>本文基于X86-64架构体系整理了GAS风格的汇编语法, 如无特殊说明后续内容皆以环境为准.    </p>
+</blockquote>
+<p>“@”符号表示“将符号左边的变量钳制在符号右边的地址   </p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/12/11/2019-12-11-asm-syntax/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/29/2019-12-06-is-a-and-has-a/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2158,169 +2362,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/09/16/2019-09-16-problem-domain/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/09/16/2019-09-16-problem-domain/" itemprop="url">问题的解决</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-16T00:00:00+08:00">
-                2019-09-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>在认知心理学中, 问题解决的思维过程被描述为: 在问题空间下, 经过思考与推理, 达到目的的心理历程.<br>该过程分为四个阶段  </p>
-<ul>
-<li>发现问题</li>
-<li>分析（明确）问题</li>
-<li>提出假设  </li>
-<li>验证假设  </li>
-</ul>
-<p>其中问题空间(问题域)是指问题解决者对所要解决的问题的一切可能的认识状态, 包括对问题的初始状态和目标状态的认识, 以及如何从初始状态转化为目标状态的认知操作等.    </p>
-<p>问题的解决就是对问题空间进行搜索, 找到一条从问题的初始状态到达目标状态的通路.   </p>
-<h2 id="问题解决的一般性阶段及其描述"><a href="#问题解决的一般性阶段及其描述" class="headerlink" title="问题解决的一般性阶段及其描述:"></a>问题解决的一般性阶段及其描述:</h2><ul>
-<li><strong>问题的存在,发现和提出</strong>  </li>
-<li><strong>定义问题域, 即定义问题集以及问题的约束集</strong>  </li>
-<li><strong>从问题域中递归的构造可演算的计算(概念)模型</strong>  </li>
-<li><strong>制定现实可执行的解决方案</strong>  </li>
-<li><strong>实施并植入问题域所在现实环境验证</strong>   </li>
-<li><strong>问题的解决</strong>  </li>
-</ul>
-<p>在这个过程中, 每个过程的推进都可能会伴随对其前向的阶段所做的处理发起修正, 在此过程中我们会不断的逼近’真正的问题’的问题定义, 以及’真正的问题解决’的结果, 从而采用形式化的方法寻找到最优的解决路径   </p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/09/16/2019-09-16-problem-domain/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2371,7 +2412,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">37</span>
+                <span class="site-state-item-count">38</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
