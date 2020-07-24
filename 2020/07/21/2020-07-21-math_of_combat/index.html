@@ -102,7 +102,7 @@
 <meta property="og:description" content="战斗属性战斗属性属于战斗单位的简单数据字段,  提供基础的数据读写操作(相对于magic state而言).在实践中 一般战斗属性还包含从配置文件中load数据, 一级战斗属性到二级战斗属性的封装, 以及按照功能,战斗单位层级的划分等.     战斗属性的设计和实现字段表设计字段表在设计上隶属于’接口层’这个概念, 简单直接, 易于访问和同步处理时目的.     在C++中 通常考虑用一块静态数组">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-07-20T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-07-23T14:33:24.795Z">
+<meta property="article:modified_time" content="2020-07-24T00:00:08.100Z">
 <meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
 
@@ -343,7 +343,44 @@
       
         <h2><span id="战斗属性">战斗属性</span></h2><p><strong>战斗属性属于战斗单位的简单数据字段,  提供基础的数据读写操作(相对于magic state而言).</strong><br>在实践中 一般战斗属性还包含从配置文件中load数据, 一级战斗属性到二级战斗属性的封装, 以及按照功能,战斗单位层级的划分等.    </p>
 <h2><span id="战斗属性的设计和实现">战斗属性的设计和实现</span></h2><h3><span id="字段表设计">字段表设计</span></h3><p>字段表在设计上隶属于’接口层’这个概念, 简单直接, 易于访问和同步处理时目的.    </p>
-<p>在C++中 通常考虑用一块静态数组的内存来表示<br>| A        | A   | A   | A   | A    | A           | A        | A         | A   |<br>|———-|—–|—–|—–|——|————-|———-|———–|—–|<br>| 字段名   | HP  | MP  | ATK | CRIT | RESIST CRIT | HIT RATE | MISS RATE | … |<br>| 转换类型 | INT | INT | INT | INT  | INT         | FLOAT    | FLOAT     | … |</p>
+<p>在C++中 通常考虑用一块静态数组的内存来表示   </p>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字段名</td>
+<td>HP</td>
+<td>MP</td>
+<td>ATK</td>
+<td>CRIT</td>
+<td>RESIST CRIT</td>
+<td>HIT RATE</td>
+<td>MISS RATE</td>
+<td>…</td>
+</tr>
+<tr>
+<td>转换类型</td>
+<td>INT</td>
+<td>INT</td>
+<td>INT</td>
+<td>INT</td>
+<td>INT</td>
+<td>FLOAT</td>
+<td>FLOAT</td>
+<td>…</td>
+</tr>
+</tbody></table>
 <p>这种字段表的设计有以下优点和特性:</p>
 <ul>
 <li>性能非常高   </li>
@@ -372,7 +409,51 @@
 <p>可能的一种计算通用计算公式(能满足大多数属性计算的公式), 提供了系数加和修正 系数连乘修正 值修正:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">基础系数加和修正 &#x3D; 基础层.基础值*(1+Σ(基础系数修正))</span><br><span class="line"></span><br><span class="line">基础系数连乘修正&#x3D;基础系数加和修正 * power(2, Σ(基础系数连乘修正指数))</span><br><span class="line"></span><br><span class="line">基础值值修正&#x3D;基础系数连乘修正+Σ(BASE VALUE + VALUE)  </span><br><span class="line"></span><br><span class="line">总值系数加和修正  连乘修正 总值修正 ...</span><br></pre></td></tr></table></figure>
 
-<p>表如下:<br>| A           | BASE VALUE | BASE RATE | BASE EXP | VALUE | TOTAL RATE | TOTAL EXP | TOTAL VAL |<br>|————-|————|———–|———-|——-|————|———–|———–|<br>| BASE LAYER  | —-       | —-      | —-     | —-  | —-       | —-      | -         |<br>| ITEM LAYER  | —-       | —-      | —-     | —-  | —-       | —-      | -         |<br>| SKILL LAYER | —-       | —-      | —-     | —-  | —-       | —-      | -         |</p>
+<p>表如下:  </p>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>BASE VALUE</th>
+<th>BASE RATE</th>
+<th>BASE EXP</th>
+<th>VALUE</th>
+<th>TOTAL RATE</th>
+<th>TOTAL EXP</th>
+<th>TOTAL VAL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>BASE LAYER</td>
+<td>—-</td>
+<td>—-</td>
+<td>—-</td>
+<td>—-</td>
+<td>—-</td>
+<td>—-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ITEM LAYER</td>
+<td>—-</td>
+<td>—-</td>
+<td>—-</td>
+<td>—-</td>
+<td>—-</td>
+<td>—-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>SKILL LAYER</td>
+<td>—-</td>
+<td>—-</td>
+<td>—-</td>
+<td>—-</td>
+<td>—-</td>
+<td>—-</td>
+<td>-</td>
+</tr>
+</tbody></table>
 <p>功能设计:   </p>
 <ul>
 <li>面板属性指的是通过属性表计算的字段, 该类字段对外关闭修改权限, 只能通过修改对应的属性表中的项来进行修改. 外部只读.    </li>
@@ -395,27 +476,25 @@
 </ul>
 </li>
 </ul>
-<h4><span id="解决方法">解决方法</span></h4><p>  基础策略  </p>
-<ul>
-<li><p>用整数处理  </p>
-</li>
-<li><p>用定义良好的定点数处理    </p>
-<ul>
+<h4><span id="解决方法">解决方法</span></h4><ul>
+<li>基础策略  <ul>
+<li>用整数处理  </li>
+<li>用定义良好的定点数处理    <ul>
 <li>一个简单的实现可能是<em>10000  或者</em> 2^N的大小 但是要保证放大倍数在有效的精度范围内并且不会溢出  </li>
 </ul>
 </li>
-<li><p>隔离浮点数, 一旦整数或者定点数转换为浮点数后, 就不应该参与原有需要保证重复计算一致性的流程   </p>
+<li>隔离浮点数, 一旦整数或者定点数转换为浮点数后, 就不应该参与原有需要保证重复计算一致性的流程   </li>
+<li>三角函数可以通过查表或者泰勒级数求值   </li>
+</ul>
 </li>
-<li><p>三角函数可以通过查表或者泰勒级数求值  </p>
-<p>实践策略:   </p>
-</li>
-<li><p>能用整数的尽量用整数   </p>
-</li>
-<li><p>范围比较小的浮点数通过缩放为整数进行计算和存储  并保证不会(定义好)溢出   </p>
-</li>
-<li><p>对业务进行拆解, 把无法避免的浮点计算部分改成单向导出模式,  保证计算不会出现回溯影响.    </p>
-</li>
-<li><p>使用能保证计算确定性的浮点/定点数学库     </p>
+</ul>
+<ul>
+<li>实践方案  <ul>
+<li>能用整数的尽量用整数   </li>
+<li>范围比较小的浮点数通过缩放为整数进行计算和存储  并保证不会(定义好)溢出   </li>
+<li>对业务进行拆解, 把无法避免的浮点计算部分改成单向导出模式,  保证计算不会出现回溯影响.    </li>
+<li>使用能保证计算确定性的浮点/定点数学库     </li>
+</ul>
 </li>
 </ul>
 <h3><span id="使用modifer完成对属性表中的项进行修改-并实现常见公式">使用Modifer完成对属性表中的项进行修改 并实现常见公式</span></h3><p>Modifier的核心是一个对称操作, 即在开始时进行修改操作,  在结束后保证复原, 为了保证这一点我们会采用整数存储所有项, 技术出来的面板属性值不会参与计算本身,  并通过对项的合理拆分与划分完成高阶的系数加和与系数连乘等公式 如下:    </p>
@@ -522,13 +601,102 @@
 </ul>
 <h2><span id="攻击判定流程瀑布判定和圆桌判定">攻击判定流程:瀑布判定和圆桌判定</span></h2><hr>
 <p>一般来说一个战斗单位会有多个进攻属性以及对应的多个防御属性形成多组判定和计算, 其中攻击判定指的是命中的类型分支判定:<br>例如说通常攻击有 命中率 暴击率 ,  防御有闪避率, 格挡, 招架等, 分支有 MISS, 闪避, 招架, 格挡, 暴击, 普通, 这些分支区分优先级, 例如闪避判定肯定优于暴击判定    </p>
-<p>面板数据举例:<br>| 攻击方   | 受击方 | 面板期望 | 瀑布算法 | 事件概率 | 圆桌算法 | 事件概率 |<br>|———-|——–|———-|———-|———-|———-|———-|<br>| 命中率   | 90%    | 90%      | 90%      |          | 90%      |          |<br>| 闪避率   | 20%    | 18.00%   | 72.00%   | 18.00%   | 72.00%   | 18.00%   |<br>| 招架     | 15%    | 13.500%  | 61.200%  | 10.800%  | 58.500%  | 13.500%  |<br>| 格挡     | 30%    | 27.00%   | 42.840%  | 18.3600% | 31.500%  | 27.000%  |<br>| 暴击率   | 25%    | 22.500%  | 32.1300% | 10.7100% | 9.0000%  | 22.5000% |<br>| 普通命中 |        | 9%       | 32.1300% |          |          | 9.0000%  |</p>
-<p>瀑布算法和圆桌算法的核心共同点都是对对抗组进行优先级划分, 并且高优先级在前 如果所有分支均为发生, 那么就是普通命中.</p>
-<p>区别在于瀑布判定会逐个分支判定, 因此越靠后的分支其发生概率的衰减越大   </p>
-<p>圆桌算法以命中率为桌面大小用各个分支的概率塞进去,  对于塞不进桌面的分支进行丢弃, 如果只塞进一部分则截断概率,  这样如果圆桌如果能放下 则和面板期望概率一致, 如果放不下 低优先级事件则被踢出 不可能出现.   </p>
-<p>再举个例子来说:<br>假设: 命中率是90%, 闪避率是50%, 招架是40%, 格挡是30%.  那么</p>
-<p>以命中率为桌面重新计算分支概率则是<br>命中率90% * 闪避50% = 45%<br>命中率90% * 招架40% = 36%<br>命中率90% * 格挡30% = 27%</p>
-<p>因此桌面依次是<br>| 闪避 | 招架 | 格挡 | 暴击 | 普通命中 |<br>|——|——|——|——|———-|<br>| 45%  | 36%  | 19%  | 0%   | 0%       |</p>
+<p>面板数据举例:   </p>
+<table>
+<thead>
+<tr>
+<th>攻击方</th>
+<th>受击方</th>
+<th>面板期望</th>
+<th>瀑布算法</th>
+<th>事件概率</th>
+<th>圆桌算法</th>
+<th>事件概率</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>命中率</td>
+<td>90%</td>
+<td>90%</td>
+<td>90%</td>
+<td></td>
+<td>90%</td>
+<td></td>
+</tr>
+<tr>
+<td>闪避率</td>
+<td>20%</td>
+<td>18.00%</td>
+<td>72.00%</td>
+<td>18.00%</td>
+<td>72.00%</td>
+<td>18.00%</td>
+</tr>
+<tr>
+<td>招架</td>
+<td>15%</td>
+<td>13.500%</td>
+<td>61.200%</td>
+<td>10.800%</td>
+<td>58.500%</td>
+<td>13.500%</td>
+</tr>
+<tr>
+<td>格挡</td>
+<td>30%</td>
+<td>27.00%</td>
+<td>42.840%</td>
+<td>18.3600%</td>
+<td>31.500%</td>
+<td>27.000%</td>
+</tr>
+<tr>
+<td>暴击率</td>
+<td>25%</td>
+<td>22.500%</td>
+<td>32.1300%</td>
+<td>10.7100%</td>
+<td>9.0000%</td>
+<td>22.5000%</td>
+</tr>
+<tr>
+<td>普通命中</td>
+<td></td>
+<td>9%</td>
+<td>32.1300%</td>
+<td></td>
+<td></td>
+<td>9.0000%</td>
+</tr>
+</tbody></table>
+<font color="#C32">
+瀑布算法和圆桌算法的核心共同点都是对对抗组进行优先级划分, 并且高优先级在前 如果所有分支均为发生, 那么就是普通命中.
+
+<p>区别在于瀑布判定会逐个分支判定, 因此越靠后的分支其发生概率的衰减越大, 但是都能生效 </p>
+<p>圆桌算法则是按照面板属性去逐个排好, 超过桌子大小的事件概率将会被截断和裁剪掉, 如果圆桌如果能放下 则和面板期望概率一致, 如果放不下 则已放入桌子的仍然能做到和面板期望一致, 但是被裁剪掉的讲不会有机会发生.<br></p></font><p></p>
+<p>再举个例子来说:  </p>
+<blockquote>
+<p>假设: 命中率是90%, 闪避率是50%, 招架是40%, 格挡是30%.<br>以命中率为桌面重新计算分支概率则是<br>命中率90% * 闪避50% = 45%<br>命中率90% * 招架40% = 36%<br>命中率90% * 格挡30% = 27%   </p>
+</blockquote>
+<p>因此桌面依次是  </p>
+<table>
+<thead>
+<tr>
+<th>闪避</th>
+<th>招架</th>
+<th>格挡</th>
+<th>暴击</th>
+<th>普通命中</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>45%</td>
+<td>36%</td>
+<td>19%</td>
+<td>0%</td>
+<td>0%</td>
+</tr>
+</tbody></table>
 <p>判定伪代码:</p>
 <figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">local</span> r = rand()%<span class="number">100</span>  </span><br><span class="line"><span class="keyword">if</span> r &lt; 闪避 <span class="keyword">then</span> </span><br><span class="line">  <span class="comment">--闪避 </span></span><br><span class="line"><span class="keyword">elseif</span> r &lt; 闪避+招架 <span class="keyword">then</span></span><br><span class="line">  <span class="comment">--招架</span></span><br><span class="line"><span class="keyword">elseif</span> <span class="keyword">elseif</span> r &lt; 闪避+招架+暴击 <span class="keyword">then</span></span><br><span class="line">  <span class="comment">--暴击</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
 

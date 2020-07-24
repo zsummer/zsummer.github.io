@@ -344,7 +344,44 @@
         
           <h2 id="战斗属性"><a href="#战斗属性" class="headerlink" title="战斗属性"></a>战斗属性</h2><p><strong>战斗属性属于战斗单位的简单数据字段,  提供基础的数据读写操作(相对于magic state而言).</strong><br>在实践中 一般战斗属性还包含从配置文件中load数据, 一级战斗属性到二级战斗属性的封装, 以及按照功能,战斗单位层级的划分等.    </p>
 <h2 id="战斗属性的设计和实现"><a href="#战斗属性的设计和实现" class="headerlink" title="战斗属性的设计和实现"></a>战斗属性的设计和实现</h2><h3 id="字段表设计"><a href="#字段表设计" class="headerlink" title="字段表设计"></a>字段表设计</h3><p>字段表在设计上隶属于’接口层’这个概念, 简单直接, 易于访问和同步处理时目的.    </p>
-<p>在C++中 通常考虑用一块静态数组的内存来表示<br>| A        | A   | A   | A   | A    | A           | A        | A         | A   |<br>|———-|—–|—–|—–|——|————-|———-|———–|—–|<br>| 字段名   | HP  | MP  | ATK | CRIT | RESIST CRIT | HIT RATE | MISS RATE | … |<br>| 转换类型 | INT | INT | INT | INT  | INT         | FLOAT    | FLOAT     | … |</p>
+<p>在C++中 通常考虑用一块静态数组的内存来表示   </p>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字段名</td>
+<td>HP</td>
+<td>MP</td>
+<td>ATK</td>
+<td>CRIT</td>
+<td>RESIST CRIT</td>
+<td>HIT RATE</td>
+<td>MISS RATE</td>
+<td>…</td>
+</tr>
+<tr>
+<td>转换类型</td>
+<td>INT</td>
+<td>INT</td>
+<td>INT</td>
+<td>INT</td>
+<td>INT</td>
+<td>FLOAT</td>
+<td>FLOAT</td>
+<td>…</td>
+</tr>
+</tbody></table>
 <p>这种字段表的设计有以下优点和特性:</p>
 <ul>
 <li>性能非常高   </li>
