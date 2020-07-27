@@ -20,7 +20,7 @@ permalink_defaults:
 
 # Directory
 source_dir: source
-public_dir: ../public/
+public_dir: ../zsummer.github.io/
 tag_dir: tags
 archive_dir: archives
 category_dir: categories
@@ -73,3 +73,15 @@ theme: next
 
 
 markdown: default
+# Math Equations Render Support
+math:
+  engine: 'mathjax' # or 'katex'
+  mathjax:
+    src: custom_mathjax_source
+    config:
+      # MathJax config
+  katex:
+    css: custom_css_source
+    js: custom_js_source # not used
+    config:
+      # KaTeX config

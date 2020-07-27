@@ -3,6 +3,7 @@ title: 多人游戏中的同步机制综述
 date: 2020-07-24
 categories: develop 
 author: yawei.zhang 
+mathjax: true
 ---
 
 ## 前言    
