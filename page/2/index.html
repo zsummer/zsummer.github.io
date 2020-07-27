@@ -7,7 +7,7 @@
 
 <html class="theme-next gemini use-motion" lang="en">
 <head>
-  <meta charset="UTF-8"/>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 <meta name="theme-color" content="#222">
@@ -151,7 +151,7 @@
 
 
 
-<meta name="generator" content="Hexo 4.2.1"></head>
+<meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
 
@@ -160,7 +160,7 @@
     
   
 
-  <div class="container sidebar-position-left 
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left 
    page-home 
  ">
     <div class="headband"></div>
@@ -236,6 +236,233 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/12/16/2019-12-16-elf-link/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/12/16/2019-12-16-elf-link/" itemprop="url">ELF静态链接过程和动态链接过程中的GOT表的作用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-12-16T00:00:00+08:00">
+                2019-12-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <font color=#ff6688>  
+
+<h3 id="1-目录"><a href="#1-目录" class="headerlink" title="..1. 目录"></a>..1. 目录</h3><!-- TOC -->
+
+<ul>
+<li><a href="#1-目录">..1. 目录</a></li>
+<li><a href="#2-准备工具和基础汇编知识">..2. 准备工具和基础汇编知识</a></li>
+<li><a href="#3-编译链接过程的基本原理和流程">..3. 编译链接过程的基本原理和流程</a><ul>
+<li><a href="#31-gcc中编译一个源文件可以拆分为4个部分">..3.1. gcc中编译一个源文件可以拆分为4个部分</a></li>
+<li><a href="#32-编译单元translation-environment-编译的转换阶段-">..3.2. 编译单元(Translation environment), 编译的转换阶段 :</a></li>
+<li><a href="#33-pic-pie-位置无关代码">..3.3. PIC PIE 位置无关代码</a></li>
+<li><a href="#34-got-plt-全局偏移表-链接过程表">..3.4. GOT PLT 全局偏移表 链接过程表</a></li>
+<li><a href="#35-符号表和符号">..3.5. 符号表和符号</a><ul>
+<li><a href="#351-全局符号和局部符号">..3.5.1. 全局符号和局部符号</a></li>
+<li><a href="#352-外部符号和内部符号">..3.5.2. 外部符号和内部符号</a></li>
+<li><a href="#353-和字符串表的关系">..3.5.3. 和字符串表的关系</a></li>
+</ul>
+</li>
+<li><a href="#36-静态链接过程">..3.6. 静态链接过程</a></li>
+<li><a href="#37-动态链接过程">..3.7. 动态链接过程</a></li>
+</ul>
+</li>
+<li><a href="#4-跟踪调测">..4. 跟踪调测</a><ul>
+<li><a href="#41-测试源码">..4.1. 测试源码</a></li>
+<li><a href="#42-位置有关的重定位分析">..4.2. 位置有关的重定位分析</a><ul>
+<li><a href="#421-分析结论如下">..4.2.1. 分析结论如下:</a></li>
+<li><a href="#422-系统源码参考">..4.2.2. 系统源码参考:</a></li>
+<li><a href="#423-字符串数据">..4.2.3. 字符串数据</a></li>
+<li><a href="#424-节信息">..4.2.4. 节信息</a></li>
+<li><a href="#425-text数据">..4.2.5. text数据</a></li>
+</ul>
+</li>
+<li><a href="#43-位置无关的重定位分析">..4.3. 位置无关的重定位分析</a><ul>
+<li><a href="#431-分析说明">..4.3.1. 分析说明</a></li>
+<li><a href="#432-全局数据访问代码分析">..4.3.2. 全局数据访问代码分析</a></li>
+<li><a href="#433-全局函数访问代码分析">..4.3.3. 全局函数访问代码分析</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#动态库装载过程">动态库装载过程</a><ul>
+<li><a href="#elf的辅助向量-auxv">ELF的辅助向量 AUXV</a></li>
+<li><a href="#load_elf_binary函数">load_elf_binary函数</a></li>
+</ul>
+</li>
+</ul>
+<!-- /TOC -->
+
+<h3 id="2-准备工具和基础汇编知识"><a href="#2-准备工具和基础汇编知识" class="headerlink" title="..2. 准备工具和基础汇编知识"></a>..2. 准备工具和基础汇编知识</h3><ul>
+<li>readelf -a  查看elf信息  </li>
+<li>objdump -S 查看汇编指令  </li>
+<li>ldd 查看动态加载   </li>
+<li>xxd - make a hexdump or do the reverse.</li>
+<li>gdb  <ul>
+<li>gdb 通过<code>layout regs</code>打开寄存器显示, 通过<code>set disassemble-next-line on</code>打开汇编  </li>
+<li>gdb 通过peda插件字节显示汇编和寄存器  和上面的原生方式选择一个即可    </li>
+<li>gdb关闭ASLR：<ul>
+<li>set disable-randomization on</li>
+</ul>
+</li>
+<li>开启ASLR：<ul>
+<li>set disable-randomization off</li>
+</ul>
+</li>
+<li>查看ASLR状态：<ul>
+<li>show disable-randomization</li>
+</ul>
+</li>
+<li>disas反汇编命令，直接disas是反汇编当前函数<ul>
+<li>disas /r (显示汇编指令对应十六进制值)   </li>
+<li>disas /m (如果有源码，显示对应行源码)   </li>
+</ul>
+</li>
+<li>intel语法<ul>
+<li>set disassembly-flavor intel</li>
+<li>set disassembly-flavor att  </li>
+</ul>
+</li>
+</ul>
+</li>
+<li>详细工具和汇编的基础知识见上一篇文章: <a href="https://zsummer.github.io/2019/12/11/2019-12-11-asm-syntax/">汇编语法/寻址/寄存器/代码模型(GNU assembler) </a>  </li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/12/16/2019-12-16-elf-link/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -2206,162 +2433,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/10/01/2019-10-01-sdm/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/10/01/2019-10-01-sdm/" itemprop="url">SDM模型</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-01T00:00:00+08:00">
-                2019-10-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="SDM框架对系统发展生命周期的过程描述"><a href="#SDM框架对系统发展生命周期的过程描述" class="headerlink" title="SDM框架对系统发展生命周期的过程描述"></a>SDM框架对系统发展生命周期的过程描述</h3><p>SDM(软件开发方法)框架是在SDLC在软件开发早起</p>
-<ul>
-<li>(SDM框架)软件开发过程有以下基本的核心活动内容<ul>
-<li>需求分析 (Requirements analysis)  </li>
-<li>领域设计 (Software design)  </li>
-<li>系统设计 (Software engineering)  </li>
-<li>编码开发 (Software construction)  </li>
-<li>功能验证 (Software testing)  </li>
-<li>错误修正 (Debugging)    </li>
-<li>部署交付 (Software deployment)  </li>
-<li>维护 (Software maintenance)
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/10/01/2019-10-01-sdm/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2412,7 +2483,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">38</span>
+                <span class="site-state-item-count">39</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -2578,7 +2649,24 @@
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
 
 
 
