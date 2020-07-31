@@ -94,15 +94,15 @@
 
 
 
-<meta name="description" content="前言本文中所有内容默认都基于逻辑描述, 逻辑状态,逻辑处理的逻辑游戏世界,  纯本地表现类, 总是通过逻辑世界单向导出的渲染计算等, 均不在本篇文章讨论范畴.   同步问题的产生和基本策略机制在多人游戏或者基于CS网络模型的游戏中, 玩家所在的游戏世界并非全由本地生成和修改, 必须不断从服务器或者其他玩家获得最新的信息来完成游戏世界的共享体验, 在多人实时交互的游戏中,  相当于每个人都维护一个’">
+<meta name="description" content="前言 同步问题的产生和基本策略机制 同步模型的一般性描述 游戏中的状态一致性问题 同步过程中的抖动和延迟问题 优化网络延迟和抖动 当前的网络环境 工具 链路层延迟的优化 TCP还是UDP TCP下的延迟和抖动优化 UDP的优化   时钟选择和时钟同步 实现   移动: 影子跟随算法和优化(内插) 常见的延迟隐藏手段 移动: 航位推测法(外推) 插值和外推, 以及常用算法 内插值常用算法 外插">
 <meta property="og:type" content="article">
 <meta property="og:title" content="多人游戏中的同步机制综述">
 <meta property="og:url" content="https://zsummer.github.io/2020/07/24/2020-07-24-state_sync/index.html">
 <meta property="og:site_name" content="关于夏天的一切">
-<meta property="og:description" content="前言本文中所有内容默认都基于逻辑描述, 逻辑状态,逻辑处理的逻辑游戏世界,  纯本地表现类, 总是通过逻辑世界单向导出的渲染计算等, 均不在本篇文章讨论范畴.   同步问题的产生和基本策略机制在多人游戏或者基于CS网络模型的游戏中, 玩家所在的游戏世界并非全由本地生成和修改, 必须不断从服务器或者其他玩家获得最新的信息来完成游戏世界的共享体验, 在多人实时交互的游戏中,  相当于每个人都维护一个’">
+<meta property="og:description" content="前言 同步问题的产生和基本策略机制 同步模型的一般性描述 游戏中的状态一致性问题 同步过程中的抖动和延迟问题 优化网络延迟和抖动 当前的网络环境 工具 链路层延迟的优化 TCP还是UDP TCP下的延迟和抖动优化 UDP的优化   时钟选择和时钟同步 实现   移动: 影子跟随算法和优化(内插) 常见的延迟隐藏手段 移动: 航位推测法(外推) 插值和外推, 以及常用算法 内插值常用算法 外插">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-07-23T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-07-29T10:22:35.363Z">
+<meta property="article:modified_time" content="2020-07-31T08:45:59.771Z">
 <meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
 
@@ -341,7 +341,51 @@
       
 
       
-        <h2><span id="前言">前言</span></h2><p>本文中所有内容默认都基于逻辑描述, 逻辑状态,逻辑处理的逻辑游戏世界,  纯本地表现类, 总是通过逻辑世界单向导出的渲染计算等, 均不在本篇文章讨论范畴.  </p>
+        <!-- toc -->
+
+<ul>
+<li><a href="#前言">前言</a></li>
+<li><a href="#同步问题的产生和基本策略机制">同步问题的产生和基本策略机制</a></li>
+<li><a href="#同步模型的一般性描述">同步模型的一般性描述</a></li>
+<li><a href="#游戏中的状态一致性问题">游戏中的状态一致性问题</a></li>
+<li><a href="#同步过程中的抖动和延迟问题">同步过程中的抖动和延迟问题</a></li>
+<li><a href="#优化网络延迟和抖动">优化网络延迟和抖动</a><ul>
+<li><a href="#当前的网络环境">当前的网络环境</a></li>
+<li><a href="#工具">工具</a></li>
+<li><a href="#链路层延迟的优化">链路层延迟的优化</a></li>
+<li><a href="#tcp还是udp">TCP还是UDP</a></li>
+<li><a href="#tcp下的延迟和抖动优化">TCP下的延迟和抖动优化</a></li>
+<li><a href="#udp的优化">UDP的优化</a></li>
+</ul>
+</li>
+<li><a href="#时钟选择和时钟同步">时钟选择和时钟同步</a><ul>
+<li><a href="#实现">实现</a></li>
+</ul>
+</li>
+<li><a href="#移动-影子跟随算法和优化内插">移动: 影子跟随算法和优化(内插)</a></li>
+<li><a href="#常见的延迟隐藏手段">常见的延迟隐藏手段</a></li>
+<li><a href="#移动-航位推测法外推">移动: 航位推测法(外推)</a></li>
+<li><a href="#插值和外推-以及常用算法">插值和外推, 以及常用算法</a><ul>
+<li><a href="#内插值常用算法">内插值常用算法</a></li>
+<li><a href="#外插值常用算法">外插值常用算法</a></li>
+</ul>
+</li>
+<li><a href="#命中-延迟补偿">命中: 延迟补偿</a><ul>
+<li><a href="#延迟补偿的局限">延迟补偿的局限</a></li>
+</ul>
+</li>
+<li><a href="#逻辑预演和客户端提交命中">逻辑预演和客户端提交命中</a><ul>
+<li><a href="#满足进攻者的精彩时刻">满足进攻者的精彩时刻</a></li>
+</ul>
+</li>
+<li><a href="#提高tickrate">提高TickRate</a></li>
+<li><a href="#预演-回退-快进-和解">预演 回退  快进  和解</a></li>
+<li><a href="#案例分析部分">案例分析部分</a></li>
+<li><a href="#引用文献">引用文献</a></li>
+</ul>
+<!-- tocstop -->
+
+<h2><span id="前言">前言</span></h2><p>本文中所有内容默认都基于逻辑描述, 逻辑状态,逻辑处理的逻辑游戏世界,  纯本地表现类, 总是通过逻辑世界单向导出的渲染计算等, 均不在本篇文章讨论范畴.  </p>
 <h2><span id="同步问题的产生和基本策略机制">同步问题的产生和基本策略机制</span></h2><p><strong>在多人游戏或者基于CS网络模型的游戏中, 玩家所在的游戏世界并非全由本地生成和修改, 必须不断从服务器或者其他玩家获得最新的信息来完成游戏世界的共享体验, 在多人实时交互的游戏中,  相当于每个人都维护一个’完整世界’的副本, 并保证每个人维护的副本之间一致性和实时性, 不同游戏对副本的规模复杂度以及对一致性和实时性的要求不同, 在不同的历史时期的演进下则产生了多种同步方案来实现这一要求.</strong>   </p>
 <p>在所有的同步方案中, 有两种最基础也最常见的同步机制, 即状态同步和帧同步, 其基本机制和区别为:  </p>
 <ul>
@@ -375,7 +419,7 @@
 <li>服务器收到所有控制信息后广播给所有客户端  </li>
 <li>客户端用服务器发来的更新消息中的控制信息进行游戏(如果是对称网络, 这个过程则是广播和搜集所有其他客户端的信息)     </li>
 <li>如果客户端进行到下一个关键帧(5帧后)时没有收到服务器的更新消息则等待   </li>
-<li>如果客户端进行到下一个关键帧时已经接收到了服务器的更新消息，则将上面的数据用于游戏，并采集当前鼠标键盘输入发送给服务器，同时继续进行下去   </li>
+<li>如果客户端进行到下一个关键帧时已经接收到了服务器的更新消息, 则将上面的数据用于游戏, 并采集当前鼠标键盘输入发送给服务器, 同时继续进行下去   </li>
 <li>服务端采集到所有数据后再次发送下一个关键帧更新消息   </li>
 </ul>
 </li>
@@ -455,7 +499,7 @@
 </tr>
 <tr>
 <td>大量网络实体时的性能情况</td>
-<td>较差, 因为客户端需要运算所有逻辑。如果大部分网络实体有“Sleep”的可能, 则有优化空间</td>
+<td>较差, 因为客户端需要运算所有逻辑。如果大部分网络实体有 “Sleep” 的可能, 则有优化空间</td>
 <td>如果客户端可观察到的网络实体较少, 则较好, 比如PUBG等BattleRoyale类型；否则如果客户端可观测到的网络实体较多, 则较差, 比如Starcraft等RTS</td>
 </tr>
 <tr>
@@ -486,7 +530,7 @@
 </tbody></table>
 <p>需要注意的是, <strong>这两者并不冲突并能相互借鉴补充</strong>, 在上述的简单描述中通过灰色部分注明了一部分常见的相互补充方式,  通常在具体的实践中会对同步策略进行细节的定制以及相互补充来达到相对项目最好的同步效果, 典型的是DS服务器和存在完整逻辑演算的帧同步服务器.      </p>
 <h2><span id="同步模型的一般性描述">同步模型的一般性描述</span></h2><p>在锁步同步中, 逻辑帧一般称为Tick, 而渲染帧被称为Frame,  在确定性的帧同步中不会引入物理时间, 其时间的尺度即是逻辑帧的步.<br>在确定性锁步帧同步中, 其逻辑处理是一个逻辑帧一个逻辑帧执行的,  可以抽象为以下公式:   </p>
-<p>$$<br>S_k=\begin{cases}<br>g(P, C), \qquad if \quad K &gt; 0 \\<br>t(S_{k-1}, C, I_k),  \quad if \quad K \geq 0<br>\end{cases}<br>$$</p>
+<p>$$<br>S_k=\begin{cases}<br>g(P, C), \qquad if \quad k = 0 \\<br>t(S_{k-1}, C, I_k),  \quad if \quad k \geq 1<br>\end{cases}<br>$$</p>
 <p>I是游戏状态变化的根本原因的集合 往往是各个玩家(按键)操作<br>S是游戏状态的集合 由众多状态子集组成  </p>
 <p>该公式的描述: </p>
 <ul>
@@ -537,7 +581,7 @@
 <ul>
 <li>在帧同步的逻辑计算中, 我们需要严格按照公式保证所有客户端以拥有一致性的初始化, 一致性的处理逻辑, 一致性的输入, 一旦存在任何偏差, 都会在后续的每一个step中累积 最终导致完全不同的计算结果.     </li>
 <li>一致的随机数发生器,  要保证每个副本计算所用到的随机数发生器在计算过程中随机出的值一致.   </li>
-<li>计算机的浮点数计算并不保证一致性, 因此涉及到浮点数计算的场合需要改为整数, 或者采用一些确定性的定点数计算   </li>
+<li>计算机的浮点数计算并不保证一致性,(最近偶数) 因此涉及到浮点数计算的场合需要改为整数, 或者采用一些确定性的定点数计算   </li>
 <li>容器的增删改查,排序和遍历需要确定性   <ul>
 <li>std::sort非稳定排序 需要用std::stable_sort    </li>
 <li>std::unorder_map之类的hash map的插入位置和遍历顺序等为实现定义, 不同的版本可能存在差异   </li>
@@ -549,15 +593,10 @@
 </li>
 </ul>
 <h2><span id="同步过程中的抖动和延迟问题">同步过程中的抖动和延迟问题</span></h2><ul>
-<li><p>输入采样延迟:  </p>
+<li><p>输入采样延迟和事件响应延迟:  </p>
 <ul>
 <li>例如客户端的处理帧率是30帧, 平均采样延迟就有16.5ms  </li>
-<li>这个通过提高帧率可以改善   </li>
-</ul>
-</li>
-<li><p>指令逐帧处理延迟:  </p>
-<ul>
-<li>这个其实对应的是采样延迟, 如果不是基于实时事件响应的, 无论是按键输入还是网络包的处理 都会有平均半帧的延迟   </li>
+<li>一般通过提高帧率可以改善   </li>
 </ul>
 </li>
 <li><p>逻辑处理延迟   </p>
@@ -612,8 +651,8 @@
 <thead>
 <tr>
 <th>环境类型</th>
-<th>平均时延（ms）</th>
-<th>抖动时延（ms）</th>
+<th>平均时延(ms)</th>
+<th>抖动时延(ms)</th>
 <th>丢包率</th>
 <th>上行带宽</th>
 <th>下行带宽</th>
@@ -981,7 +1020,113 @@
 </ul>
 </li>
 </ul>
-<h2><span id="同步的基础校时工作">同步的基础校时工作</span></h2><h2><span id="隐藏等待-博弈">隐藏等待  博弈</span></h2><h2><span id="预演-回退-快进-和解">预演 回退  快进  和解</span></h2><h2><span id="案例部分">案例部分</span></h2><h2><span id="综合实践案例">综合实践案例</span></h2><h2><span id="引用文献">引用文献</span></h2><ul>
+<h2><span id="时钟选择和时钟同步">时钟选择和时钟同步</span></h2><p>在所有的同步方案中, 时钟校时是一个前提工作.  </p>
+<p><strong>在时钟的选择上自顶向下分为两大类</strong>   </p>
+<ul>
+<li><p>逻辑时钟   </p>
+<ul>
+<li>和现实时间不相关, 通常帧同步中的step即是一种典型的逻辑时钟   </li>
+<li>逻辑时钟关注的是事件的时序关系, 而不关心是否和真实时间映射    </li>
+<li>可以方便做缩放处理, 例如帧同步中的快播处理,  以及帧同步中的动态调整turn/step/bucket间隔   </li>
+<li>和物理时钟相比实现和同步联调会比较麻烦</li>
+</ul>
+</li>
+<li><p>物理时钟   </p>
+<ul>
+<li>和系统时间相关或者直接采用std::chrono::system_clock或者std::chrono::steady_clock  </li>
+<li>和逻辑时钟相比实现简单直观 联调方便 同步问题排查也方便 </li>
+</ul>
+</li>
+</ul>
+<p><strong>有了时钟后就是校时, 让所有客户端和服务器的时钟对齐到时间线下</strong><br>时钟校时基于两个前提:   </p>
+<ul>
+<li>RTT时间是相对稳定的   </li>
+<li>RTT往返即上行和下行延迟是接近的    </li>
+</ul>
+<p><strong>校时的原理是通过这两个前提, 我们通过记录RTT时间并获得服务器下行的时间戳, 即可推算出服务器的时钟. 然后客户端以对齐后的时钟进行使用.</strong>     </p>
+<h3><span id="实现">实现</span></h3><p>校时工作的具体实现一般分为两步    </p>
+<ul>
+<li><p>初始校时   </p>
+<ul>
+<li>一般通过多次采样, 并通过合适的手段尽量规避掉因为DELAY ACK, NAGLE算法, MSS合并等带来的采样问题,  通过统计学的原理进行统计并获的一个小的范围 取中间值    </li>
+</ul>
+</li>
+<li><p>动态校时   </p>
+<ul>
+<li>网络质量存在抖动和变化, 动态校时尽量减少抖动带来的误差并跟进网络延迟的变化    </li>
+<li>参考linux早期的SRTT平滑算法  每次动态按照偏差修正一定比例 而不是覆盖    </li>
+<li>$SRTT = (α \times SRTT) + ((1-α)*RTT), \quad  0.8 \leq α \geq 0.9$</li>
+</ul>
+</li>
+</ul>
+<h2><span id="移动-影子跟随算法和优化内插">移动: 影子跟随算法和优化(内插)</span></h2><p>核心流程如下:  </p>
+<ol>
+<li>屏幕上现实的实体(entity)只是不停的追逐它的 “影子” (shadow)</li>
+<li>服务器向各客户端发送各个影子的状态改变(坐标, 方向, 速度, 时间)</li>
+<li>各个客户端收到以后按照当前重新插值修正影子状态</li>
+<li>影子状态是跳变的, 但实体追赶影子是连续的, 故整个过程是平滑的</li>
+</ol>
+<p>影子跟随算法同其名, 影子总是滞后于实体的真实位置的,  从实践上来看, 一般还需要进行一定帧的相位滞后来保证网络抖动情况下的平滑性, 延迟感会比较大, 算法本质上是 内插值+相位滞后,  因此该算法自然简单粗暴, 并且能得到非常高的一致性保证, 缺点是延迟大.         </p>
+<h2><span id="常见的延迟隐藏手段">常见的延迟隐藏手段</span></h2><p>原则上, 通过快速反馈的视觉特效, 声音特效, 不影响逻辑的动作表现, 衣物抖动, 以及可容忍的不同步状态变化等设计, 把需要等待这部分的时间分梯度过渡掉, 让玩家有整体上的及时顺畅的体验.     </p>
+<ul>
+<li>移动的惯性加速和停止的减速  参考CS    </li>
+<li>垫步动作偷位移  </li>
+<li>施法时的抬手动作过渡  </li>
+<li>受击假特效 例如客户端在子弹位置放击中的声效而不是等服务器通知   </li>
+<li>震屏   </li>
+<li>顿帧  </li>
+</ul>
+<h2><span id="移动-航位推测法外推">移动: 航位推测法(外推)</span></h2><p>相位滞后+内插值来实现的影子追随算法的主要区别是在于, 航位推测法主要利用了外插值预测未来移动路线, 来达到本地位置和时间线和服务器位置与时间线的拟合,  但由于外插值的误差问题以及关键状态的瞬间改变,  航位推测法需要更多的细节优化和辅助手段来达到比较好的效果.<br>通常航位预测法比较好的情景是低速或者小角速度的情景, 例如船舶航行, 赛车 .  </p>
+<p>举例来说:<br>一辆快速行驶的汽车的轨迹是可预测的, 例如它以100米/秒的速度前行, 那么1秒钟后它大概的位置在它出发点的前方100米处, 之所以这么说, 主要是因为汽车在这一秒钟内可能会有一点加速或者一点减速, 可能有一点偏航, 但汽车不会突然静止或者180度掉头(小概率正面撞山可能取决于设计需求以及进行回滚或者和解), <strong>高速行驶的汽车的坐标高度依赖于它上一个时刻的坐标,速度,方向.</strong>    </p>
+<p>而类似CS这样的游戏, 玩家可以在任意时刻转弯, 并进行任意角度发生不符合现实的加速度, 外推法的意义非常有限.   </p>
+<h2><span id="插值和外推-以及常用算法">插值和外推, 以及常用算法</span></h2><p>内插值和外插值援引至数学上的概念,  一般来说都是通过已知的离散点拉一个曲线, 从曲线中获取期望的新的点.<br>在游戏移动过程中, 曲线对应移动轨迹, 内插值相当于在两次移动点中间推算过程点,  而外插值则是通过已知的移动点求未来即将移动到的点  .    </p>
+<h3><span id="内插值常用算法">内插值常用算法</span></h3><ul>
+<li>片段插值</li>
+<li>线性插值</li>
+<li>多项式插值</li>
+<li>样条曲线插值</li>
+<li>三角内插法</li>
+<li>有理内插</li>
+<li>小波内插</li>
+</ul>
+<h3><span id="外插值常用算法">外插值常用算法</span></h3><ul>
+<li>线性外推</li>
+<li>多项式外推</li>
+<li>锥形外推</li>
+<li>云形外推</li>
+</ul>
+<h2><span id="命中-延迟补偿">命中: 延迟补偿</span></h2><p>前面说过, 外推法不适合CS类游戏, 那么现实其他玩家只能尽可能的用内插法, 这样就带来一个流畅性问题.   </p>
+<p>一般来说, 玩家更多的会关注于自己的按键和反馈, 无法感知别人的按键只能感知别人的反馈,  因此选择差异性的做法,  即玩家总是根据自身的按键进行预演(自身的移动总是先于服务器), 使用内插法来显示其他玩家(其他玩家总是落后于服务器), 这样可以达到最大的流畅性. 但是这样就造就了一个新的需要解决的问题, 命中判定的双方不在一个时间轴上: </p>
+<p>玩家总是站在未来攻击历史上的玩家, 如果大家都在移动 那么在这样的情景下就无法正确的处理命中.    </p>
+<p>解决这个问题的方法就成为延迟补偿,  基本策略为服务器收到了玩家的开火请求后, 根据开火请求的时间,网络延迟和差值量, 把其他玩家拉回到该玩家看货这一刻所看到的位置, 然后执行命中判定, 最后再把相应的所有玩家恢复到当前的正确位置   </p>
+<p>步骤如下:  </p>
+<ul>
+<li>为玩家计算一个相当精确的延迟时间</li>
+<li>对每个玩家 从服务器历史信息中找一个已发送给这个玩家并且这个玩家已收到的的world update  这个world update是在这个玩家将要执行这个movement command之前的world update    </li>
+<li>对于每一个玩家 将其从上述的world update处拉回到这个玩家生成此user command的更新时间中执行用户命令  这个回退时间需要考虑到命令执行的时候的网络延时和插值量     </li>
+<li>执行玩家命令 包括武器开火等     </li>
+<li>将所有移动的、错位的玩家移动到他们当前正确位置</li>
+</ul>
+<h3><span id="延迟补偿的局限">延迟补偿的局限</span></h3><ol>
+<li>延迟补偿在延迟超过一定时间后开始失效.   </li>
+<li>对于像PUBG战场这样的超远距离, 延迟补偿也会失去预期的作用    </li>
+</ol>
+<h2><span id="逻辑预演和客户端提交命中">逻辑预演和客户端提交命中</span></h2><p>在PUBG这种100名玩家的绝地岛中 想达到CS一样的延迟补偿效果是不太可能的,  一个是人数众多难以提高帧率, 另外一个是场景开阔,  失之毫厘谬以千里.<br>同样类似的场景例如写实类实时动作游戏, 轻微的延迟和误差都会造成受击部位的不同, 受击时命中法线的不同, 以至于后续逻辑发生不同的分支..   </p>
+<p>对于这种情况, 一般来说权威服务器会进一步下放权限, 客户端预演并提交命中, 服务器进行后校验.  例如PUBG的命中完全由客户端来提交.    </p>
+<p>这样虽然解决了流畅性和精度问题, 但是也同时引出了其他的一些问题:   </p>
+<ul>
+<li>两个玩家在延迟不同,看到的位置都有误差的情况下都提交了命中,  相信哪一个?    </li>
+<li>预演失败的玩家如何进行状态纠正处理,  回滚?和解? 拉扯?  </li>
+<li>客户端作弊怎么办? </li>
+</ul>
+<h4><span id="满足进攻者的精彩时刻">满足进攻者的精彩时刻</span></h4><p>大部分时间都会优先满足进攻者 除非受害者做了什么事情缓和（mitigate）了这次进攻  </p>
+<h2><span id="提高tickrate">提高TickRate</span></h2><p>在PUBG的ServerTick中<br>前5分钟的的通信频率约12~24  之后会达到30帧并根据具体情况进行动态自适应调整 .  </p>
+<h2><span id="预演-回退-快进-和解">预演 回退  快进  和解</span></h2><p>对于帧同步而言, 一般来说会记录历史的状态切片和, 一旦出现预演失败则回退到之前的位置使用正确的输入进行快播追帧,然后进入新的预测状态<br>守望先锋中:   </p>
+<ul>
+<li>通过确定性的算法来提高预测的正确率</li>
+<li>预测失败后<br> 在守望先锋中采用和解方法而不是直接拉扯(覆盖), 即像帧同步一样 守望先锋中的移动代码是确定性的 , 一旦出现预测失败则会进行重算所有输入直到追上当前时刻 并做一个平滑的处理 </li>
+</ul>
+<h2><span id="案例分析部分">案例分析部分</span></h2><h2><span id="引用文献">引用文献</span></h2><ul>
 <li><a href="https://zsummer.github.io/2020/07/24/2020-07-24-state_sync/">多人游戏中的同步机制综述</a></li>
 <li><a href="https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_MRG/1.2/html/Realtime_Tuning_Guide/sect-Realtime_Tuning_Guide-Application_Tuning_and_Deployment-TCP_NODELAY_and_Small_Buffer_Writes.html" target="_blank" rel="noopener">TCP_NODELAY and Small Buffer Writes</a></li>
 <li><a href="http://baus.net/on-tcp_cork" target="_blank" rel="noopener">TCP_CORK: More than you ever wanted to know</a></li>
@@ -1012,30 +1157,15 @@
 <li><a href="https://en.wikipedia.org/wiki/5G#Performance_targets" target="_blank" rel="noopener">“5G”, Available: </a> [Accessed: 2019-02-15]</li>
 <li><a href="https://www.jianshu.com/p/6ae1a6f81b01" target="_blank" rel="noopener">网络游戏同步技术概述</a>   </li>
 <li><a href="https://www.jianshu.com/p/6ae1a6f81b01" target="_blank" rel="noopener">实时对战游戏的同步——问题分析</a></li>
-</ul>
-<ul>
-<li>“ENet: An UDP networking layer for the multiplayer first person shooter cube,” <a href="http://enet.cubik.org/" target="_blank" rel="noopener">http://enet.cubik.org/</a>.</li>
-<li>“FAQ - Multiplayer and Network Programming,” GameDev.Net, 2004. [Online]. Available: <a href="http://www.gamedev.net/" target="_blank" rel="noopener">http://www.gamedev.net/</a></li>
-<li>M. Allman, V. Paxson, and W. Stevens, “TCP congestion control,” RFC 2581, Apr. 1999.</li>
-<li>R. Braden, “Requirements for internet hosts - communication layers,” RFC 1122, Oct. 1989.</li>
-<li>K.-T. Chen, P. Huang, and C.-L. Lei, “Game Traffic Analysis: An MMORPG Perspective,” Computer Networks, vol. 50, no. 16, pp. 3002-3023, Nov 2006.</li>
-<li>–, “How Sensitive are Online Gamers to Network Quality??” Communications of the ACM, vol. 49, no. 11, pp. 34-38, Nov 2006.</li>
-<li>–, “Effect of network quality on player departure behavior in online games,” IEEE Transactions on Parallel and Distributed Systems, vol. 20, no. 5, pp. 593-606, May 2009.</li>
-<li>M. Claypool, “The effect of latency on user performance in real-time strategy games,” Elsevier Computer Networks, special issue on Networking Issues in Entertainment Computing, vol. 49, no. 1, Sep 2005.</li>
-<li>M. Claypool and K. Claypool, “Latency and player actions in online games,” Communications of the ACM, vol. 49, no. 11, Nov 2006.</li>
-<li>S. Floyd and E. Kohler, “Profile for datagram congestion control protocol (DCCP) congestion control ID 2: TCP-like congestion control,” RFC 4341, March 2006.</li>
-<li>S. Floyd, E. Kohler, and J. Padhye, “Profile for datagram congestion control protocol (DCCP) congestion control ID 3: Tcp-friendly rate control (TFRC),” RFC 4342, March 2006.</li>
-<li>“OpenTNL: The Torque network library,” GarageGames, April 2004, <a href="http://www.opentnl.org/" target="_blank" rel="noopener">http://www.opentnl.org/</a>.</li>
-<li>C. Griwodz and P. Halvorsen, “The fun of using TCP for an MMORPG,” in NOSSDAV ‘06: Proceedings of the 2006 international workshop on Network and operating systems support for digital audio and video, 2006, pp. 1-7.</li>
-<li>S. Harcsik, A. Petlund, C. Griwodz, and P. Halvorsen, “Latency evaluation of networking mechanisms for game traffic,” in NetGames ‘07: Proceedings of the 6th ACM SIGCOMM Workshop on Network and System Support for Games, 2007, pp. 129-134.</li>
-<li>E. Kohler, M. Handley, and S. Floyd, “Datagram congestion control protocol (DCCP),” RFC 4340, March 2006.</li>
-<li>M. Mathis, J. Mahdavi, S. Floyd, and A. Romanow, “TCP selective acknowledgement options,” RFC 2018, Oct. 1996.</li>
-<li>S. Pack, E. Hong, Y. Choi, llkyu Park, J.-S. Kim, and D. Ko, “Game transport protocol: lightweight reliable transport protocol for massive interactive on-line game,” in Proceedings of the SPIE, vol. 4861, 2002, pp. 83-94.</li>
-<li>S. Shirmohammadi and N. D. Georganas, “An end-to-end communication architecture for collaborative virtual environments,” Computer Networks, vol. 35, no. 2-3, pp. 351-367, 2001.</li>
-<li>R. W. Stevens, TCP/IP Illustrated, Volume 2: The Implementation.    Addison-Wesley, 1995.</li>
-<li>R. Stewart, “Stream control transmission protocol,” RFC 4960, September 2007.</li>
-<li>“ShenZhou Online,” UserJoy Technology Co., Ltd., <a href="http://www.ewsoft.com.tw/" target="_blank" rel="noopener">http://www.ewsoft.com.tw/</a>.</li>
-<li>B. S. Woodcock, “An analysis of MMOG subscription growth - version 23.0.” [Online]. Available: <a href="http://www.mmogchart.com/" target="_blank" rel="noopener">http://www.mmogchart.com/</a></li>
+<li><a href="http://www.skywind.me/blog/archives/131" target="_blank" rel="noopener">帧锁定同步算法</a></li>
+<li><a href="https://www.raychase.net/5768" target="_blank" rel="noopener">从物理时钟到逻辑时钟</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/130702310" target="_blank" rel="noopener">细谈网络同步在游戏历史中的发展变化</a>  </li>
+<li><a href="https://zhuanlan.zhihu.com/p/141681355" target="_blank" rel="noopener">图像插值算法</a></li>
+<li><a href="http://www.skywind.me/blog/archives/1145" target="_blank" rel="noopener">影子跟随算法</a></li>
+<li><a href="https://hulinhong.com/2016/01/06/latency_compensating_methods_in_client_server_in_game_protocol_design_and_optimization/" target="_blank" rel="noopener">C/S游戏架构中延迟补偿的设计和优化方法</a></li>
+<li><a href="https://gameinstitute.qq.com/community/detail/114122" target="_blank" rel="noopener">《守望先锋》中的网络脚本化的武器和技能系统</a></li>
+<li><a href="https://www.bilibili.com/video/av14551705/" target="_blank" rel="noopener">《守望先锋》中的网络同步技术</a></li>
+<li><a href="https://gameinstitute.qq.com/community/detail/114516" target="_blank" rel="noopener">《守望先锋》架构设计与网络同步 – GDC2017 精品分享实录</a></li>
 </ul>
 
       
@@ -1194,7 +1324,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">同步问题的产生和基本策略机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">3.</span> <span class="nav-text">同步模型的一般性描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">4.</span> <span class="nav-text">游戏中的状态一致性问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">5.</span> <span class="nav-text">同步过程中的抖动和延迟问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">6.</span> <span class="nav-text">优化网络延迟和抖动</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.1.</span> <span class="nav-text">当前的网络环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.2.</span> <span class="nav-text">工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.3.</span> <span class="nav-text">链路层延迟的优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.4.</span> <span class="nav-text">TCP还是UDP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.5.</span> <span class="nav-text">TCP下的延迟和抖动优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.6.</span> <span class="nav-text">UDP的优化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">7.</span> <span class="nav-text">同步的基础校时工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">8.</span> <span class="nav-text">隐藏等待  博弈</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">9.</span> <span class="nav-text">预演 回退  快进  和解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">10.</span> <span class="nav-text">案例部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">11.</span> <span class="nav-text">综合实践案例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">12.</span> <span class="nav-text">引用文献</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">同步问题的产生和基本策略机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">3.</span> <span class="nav-text">同步模型的一般性描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">4.</span> <span class="nav-text">游戏中的状态一致性问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">5.</span> <span class="nav-text">同步过程中的抖动和延迟问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">6.</span> <span class="nav-text">优化网络延迟和抖动</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.1.</span> <span class="nav-text">当前的网络环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.2.</span> <span class="nav-text">工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.3.</span> <span class="nav-text">链路层延迟的优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.4.</span> <span class="nav-text">TCP还是UDP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.5.</span> <span class="nav-text">TCP下的延迟和抖动优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.6.</span> <span class="nav-text">UDP的优化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">7.</span> <span class="nav-text">时钟选择和时钟同步</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">7.1.</span> <span class="nav-text">实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">8.</span> <span class="nav-text">移动: 影子跟随算法和优化(内插)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">9.</span> <span class="nav-text">常见的延迟隐藏手段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">10.</span> <span class="nav-text">移动: 航位推测法(外推)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">11.</span> <span class="nav-text">插值和外推, 以及常用算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">11.1.</span> <span class="nav-text">内插值常用算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">11.2.</span> <span class="nav-text">外插值常用算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">12.</span> <span class="nav-text">命中: 延迟补偿</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">12.1.</span> <span class="nav-text">延迟补偿的局限</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">13.</span> <span class="nav-text">逻辑预演和客户端提交命中</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">13.0.1.</span> <span class="nav-text">满足进攻者的精彩时刻</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">14.</span> <span class="nav-text">提高TickRate</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">15.</span> <span class="nav-text">预演 回退  快进  和解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">16.</span> <span class="nav-text">案例分析部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">17.</span> <span class="nav-text">引用文献</span></a></li></ol></div>
             
 
           </div>
