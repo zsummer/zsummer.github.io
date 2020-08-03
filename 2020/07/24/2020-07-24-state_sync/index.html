@@ -102,7 +102,7 @@
 <meta property="og:description" content="前言 同步问题的产生和基本策略机制 同步模型的一般性描述 游戏中的状态一致性问题 同步过程中的抖动和延迟问题 优化网络延迟和抖动 当前的网络环境 工具 链路层延迟的优化 TCP还是UDP TCP下的延迟和抖动优化 UDP的优化   时钟选择和时钟同步 实现   移动: 影子跟随算法和优化(内插) 常见的延迟隐藏手段 移动: 航位推测法(外推) 插值和外推, 以及常用算法 内插值常用算法 外插">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-07-23T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-07-31T08:45:59.771Z">
+<meta property="article:modified_time" content="2020-08-03T08:13:33.947Z">
 <meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
 
@@ -379,7 +379,7 @@
 </ul>
 </li>
 <li><a href="#提高tickrate">提高TickRate</a></li>
-<li><a href="#预演-回退-快进-和解">预演 回退  快进  和解</a></li>
+<li><a href="#回退-快播-和解">回退 快播 和解</a></li>
 <li><a href="#案例分析部分">案例分析部分</a></li>
 <li><a href="#引用文献">引用文献</a></li>
 </ul>
@@ -404,14 +404,11 @@
 </li>
 </ul>
 <ul>
-<li><p><strong>帧同步: 直接描述其基本原理则为: 通过一致的初始副本和一致的输入事件与一致的逻辑处理, 来保证游戏世界副本的一致性</strong>  </p>
+<li><p><strong>帧同步: 直接描述其基本原理则为: 通过一致的初始副本和一致的输入事件与一致的逻辑处理, 来保证游戏世界副本的一致性</strong>    </p>
 <ul>
-<li><p>帧同步的变种和演化分支比较多</p>
-<ul>
-<li>是否锁步分为帧锁定同步和定时不等待的乐观锁同步两种模式   </li>
-<li>网络拓扑是对等还是CS模式, 鼻祖DOOM1最开始为P2P对等网络的锁步同步, 后来改为CS模式的锁步同步  </li>
-<li>是否存在权威节点, 分为主机模式和非主机模式  </li>
-</ul>
+<li><p>该术语为泛指, 所有通过确定性算法,以保证输入一致来得出相同游戏流程结果的同步均可泛称为帧同步.   </p>
+</li>
+<li><p>最早有对等网络的锁步同步, 发展为非对等网络的主机锁步同步, 再到后来的bucket同步以及现在比较流行的定时不等待乐观帧同步  </p>
 </li>
 <li><p>锁步同步:  </p>
 <ul>
@@ -432,6 +429,7 @@
 </ul>
 </li>
 </ul>
+<p><strong>这两者并不冲突只是两种基础的同步模型, 在细节上会相互补充优化,  常见的为在状态同步这种弱一致性框架下添加确定性演算来增加同步的准确性, 在确定性的帧同步下隔离出来部分状态进行优化增加流畅性,  从模型角度来说, 在复杂的同步需求中, 状态同步总是比帧同步有更多的扩展和调优空间, 典型的案例如UE4和UNITY中的DS服务器.</strong>   </p>
 <a id="more"></a>   
 
 <table>
@@ -528,7 +526,6 @@
 <td>较容易, 因为第三方库不须确保确定性</td>
 </tr>
 </tbody></table>
-<p>需要注意的是, <strong>这两者并不冲突并能相互借鉴补充</strong>, 在上述的简单描述中通过灰色部分注明了一部分常见的相互补充方式,  通常在具体的实践中会对同步策略进行细节的定制以及相互补充来达到相对项目最好的同步效果, 典型的是DS服务器和存在完整逻辑演算的帧同步服务器.      </p>
 <h2><span id="同步模型的一般性描述">同步模型的一般性描述</span></h2><p>在锁步同步中, 逻辑帧一般称为Tick, 而渲染帧被称为Frame,  在确定性的帧同步中不会引入物理时间, 其时间的尺度即是逻辑帧的步.<br>在确定性锁步帧同步中, 其逻辑处理是一个逻辑帧一个逻辑帧执行的,  可以抽象为以下公式:   </p>
 <p>$$<br>S_k=\begin{cases}<br>g(P, C), \qquad if \quad k = 0 \\<br>t(S_{k-1}, C, I_k),  \quad if \quad k \geq 1<br>\end{cases}<br>$$</p>
 <p>I是游戏状态变化的根本原因的集合 往往是各个玩家(按键)操作<br>S是游戏状态的集合 由众多状态子集组成  </p>
@@ -1121,10 +1118,10 @@
 </ul>
 <h4><span id="满足进攻者的精彩时刻">满足进攻者的精彩时刻</span></h4><p>大部分时间都会优先满足进攻者 除非受害者做了什么事情缓和（mitigate）了这次进攻  </p>
 <h2><span id="提高tickrate">提高TickRate</span></h2><p>在PUBG的ServerTick中<br>前5分钟的的通信频率约12~24  之后会达到30帧并根据具体情况进行动态自适应调整 .  </p>
-<h2><span id="预演-回退-快进-和解">预演 回退  快进  和解</span></h2><p>对于帧同步而言, 一般来说会记录历史的状态切片和, 一旦出现预演失败则回退到之前的位置使用正确的输入进行快播追帧,然后进入新的预测状态<br>守望先锋中:   </p>
+<h2><span id="回退-快播-和解">回退 快播 和解</span></h2><p>对于帧同步而言, 一般来说会记录历史的状态切片和, 一旦出现预演失败则回退到之前的位置使用正确的输入进行快播追帧,然后进入新的预测状态<br>守望先锋中:   </p>
 <ul>
 <li>通过确定性的算法来提高预测的正确率</li>
-<li>预测失败后<br> 在守望先锋中采用和解方法而不是直接拉扯(覆盖), 即像帧同步一样 守望先锋中的移动代码是确定性的 , 一旦出现预测失败则会进行重算所有输入直到追上当前时刻 并做一个平滑的处理 </li>
+<li>预测失败后<br> 在守望先锋中采用和解方法而不是直接拉扯(覆盖), 即像帧同步一样 守望先锋中的移动代码是保证确定性的 , 一旦出现预测失败则会进行重算所有输入直到追上当前时刻 并做一个平滑的处理   </li>
 </ul>
 <h2><span id="案例分析部分">案例分析部分</span></h2><h2><span id="引用文献">引用文献</span></h2><ul>
 <li><a href="https://zsummer.github.io/2020/07/24/2020-07-24-state_sync/">多人游戏中的同步机制综述</a></li>
@@ -1324,7 +1321,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">同步问题的产生和基本策略机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">3.</span> <span class="nav-text">同步模型的一般性描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">4.</span> <span class="nav-text">游戏中的状态一致性问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">5.</span> <span class="nav-text">同步过程中的抖动和延迟问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">6.</span> <span class="nav-text">优化网络延迟和抖动</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.1.</span> <span class="nav-text">当前的网络环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.2.</span> <span class="nav-text">工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.3.</span> <span class="nav-text">链路层延迟的优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.4.</span> <span class="nav-text">TCP还是UDP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.5.</span> <span class="nav-text">TCP下的延迟和抖动优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.6.</span> <span class="nav-text">UDP的优化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">7.</span> <span class="nav-text">时钟选择和时钟同步</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">7.1.</span> <span class="nav-text">实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">8.</span> <span class="nav-text">移动: 影子跟随算法和优化(内插)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">9.</span> <span class="nav-text">常见的延迟隐藏手段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">10.</span> <span class="nav-text">移动: 航位推测法(外推)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">11.</span> <span class="nav-text">插值和外推, 以及常用算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">11.1.</span> <span class="nav-text">内插值常用算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">11.2.</span> <span class="nav-text">外插值常用算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">12.</span> <span class="nav-text">命中: 延迟补偿</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">12.1.</span> <span class="nav-text">延迟补偿的局限</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">13.</span> <span class="nav-text">逻辑预演和客户端提交命中</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">13.0.1.</span> <span class="nav-text">满足进攻者的精彩时刻</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">14.</span> <span class="nav-text">提高TickRate</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">15.</span> <span class="nav-text">预演 回退  快进  和解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">16.</span> <span class="nav-text">案例分析部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">17.</span> <span class="nav-text">引用文献</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">同步问题的产生和基本策略机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">3.</span> <span class="nav-text">同步模型的一般性描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">4.</span> <span class="nav-text">游戏中的状态一致性问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">5.</span> <span class="nav-text">同步过程中的抖动和延迟问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">6.</span> <span class="nav-text">优化网络延迟和抖动</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.1.</span> <span class="nav-text">当前的网络环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.2.</span> <span class="nav-text">工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.3.</span> <span class="nav-text">链路层延迟的优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.4.</span> <span class="nav-text">TCP还是UDP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.5.</span> <span class="nav-text">TCP下的延迟和抖动优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.6.</span> <span class="nav-text">UDP的优化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">7.</span> <span class="nav-text">时钟选择和时钟同步</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">7.1.</span> <span class="nav-text">实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">8.</span> <span class="nav-text">移动: 影子跟随算法和优化(内插)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">9.</span> <span class="nav-text">常见的延迟隐藏手段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">10.</span> <span class="nav-text">移动: 航位推测法(外推)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">11.</span> <span class="nav-text">插值和外推, 以及常用算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">11.1.</span> <span class="nav-text">内插值常用算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">11.2.</span> <span class="nav-text">外插值常用算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">12.</span> <span class="nav-text">命中: 延迟补偿</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">12.1.</span> <span class="nav-text">延迟补偿的局限</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">13.</span> <span class="nav-text">逻辑预演和客户端提交命中</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">13.0.1.</span> <span class="nav-text">满足进攻者的精彩时刻</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">14.</span> <span class="nav-text">提高TickRate</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">15.</span> <span class="nav-text">回退 快播 和解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">16.</span> <span class="nav-text">案例分析部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">17.</span> <span class="nav-text">引用文献</span></a></li></ol></div>
             
 
           </div>
