@@ -250,6 +250,178 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/12/17/2019-12-17-elf-load/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/12/17/2019-12-17-elf-load/" itemprop="url">ELF装载和动态链接过程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-12-17T00:00:00+08:00">
+                2019-12-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="1-目录"><a href="#1-目录" class="headerlink" title="..1. 目录"></a>..1. 目录</h3><!-- TOC -->
+
+<ul>
+<li><a href="#目录">目录</a><ul>
+<li><a href="#动态链接过程">动态链接过程</a><ul>
+<li><a href="#基础宏定义">基础宏定义</a></li>
+<li><a href="#重定位定义">重定位定义</a></li>
+<li><a href="#符号表定义">符号表定义</a></li>
+<li><a href="#动态段定义">动态段定义</a></li>
+<li><a href="#rscopeelem-定义">rscopeelem 定义</a></li>
+<li><a href="#linkmap">linkmap</a></li>
+<li><a href="#dlfixup-函数定义和分析">dlfixup 函数定义和分析</a></li>
+<li><a href="#符号版本">符号版本</a></li>
+<li><a href="#强弱符号">强弱符号</a></li>
+<li><a href="#强弱引用">强弱引用</a></li>
+<li><a href="#符号的作用域">符号的作用域</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#动态库装载过程">动态库装载过程</a><ul>
+<li><a href="#elf的辅助向量-auxv">ELF的辅助向量 AUXV</a></li>
+<li><a href="#elf的装载有三种方法">ELF的装载有三种方法</a></li>
+</ul>
+</li>
+</ul>
+<!-- /TOC -->
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/12/17/2019-12-17-elf-load/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/12/16/2019-12-16-elf-link/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2263,176 +2435,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/04/2019-11-04-kernel-thread/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/11/04/2019-11-04-kernel-thread/" itemprop="url">linux多线程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-04T00:00:00+08:00">
-                2019-11-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="1-多线程"><a href="#1-多线程" class="headerlink" title="..1. 多线程"></a>..1. 多线程</h3><ol>
-<li>老的LinuxThreads (管理线程机制) 设计中线程栈的位置在 HEAP之下 的高位 导致无法可信的设置heap大小  </li>
-<li>新的NPTL解决了老的线程机制中的管理单点问题 信号问题 内存布局问题等 顺便实现了PTHREAD_PROCESS_SHARED </li>
-<li>pthread_attr_setstackaddr可指定线程栈的地址(mmap)   </li>
-<li>pthread的创建和销毁 <ol>
-<li>创建   <ol>
-<li>使用用户提供的stack创建线程并加入__stack_user </li>
-<li>nptl 先尝试获取stack_cache中tid为0大小合适的空闲stack, 如果失败则从mmap分配新的stack, 然后加入stack_used  </li>
-<li>tid list等信息存储在stack内存的高地址端的头部  </li>
-</ol>
-</li>
-<li>start_thread执行完用户函数后会进行数据回收和清理(但无法销毁自身)   <ol>
-<li>如果该线程非detach 则等待join  (没有join则会一直保留)  </li>
-<li>如果该线程被detach 则执行__free_tcb   <ol>
-<li>如果是用户分配的stack 从stack_user链表中移除并清理tls 线程局部存储  </li>
-<li>如果是自动分配的stack 从stack_used链表中移除, 然后加入stack_cache中, 清理tls线程局部存储(此时tid不为0)   </li>
-<li>检查当前stack_cache的总大小, 超过阈值则遍历一次stack_cache并释放掉(tid为0)空闲的stack, 如果小于阈值则提前break该次遍历   </li>
-</ol>
-</li>
-</ol>
-</li>
-<li>内核在该线程结束后 会对该线程的tid清零(创建线程时CLONE_CHILD_CLEARTID参数会让内存清除某标记内存), 此后该资源可以安全销毁.        </li>
-</ol>
-</li>
-<li>brk和mmap的分配由glibc确定 默认规则是小于M_MMAP_THRESHOLD宏走brk  但是新系统的算法可能会让大于这个参数的临时分配也走brk
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/11/04/2019-11-04-kernel-thread/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2483,7 +2485,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">39</span>
+                <span class="site-state-item-count">40</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
