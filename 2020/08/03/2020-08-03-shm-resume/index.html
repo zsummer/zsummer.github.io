@@ -94,15 +94,15 @@
 
 
 
-<meta name="description" content="前言 共享内存RESUME出现的情景 MMOACT相比传统互联网的异同 技术选型 架构拆分   解决方案 第一个问题 状态和逻辑分离 第二个问题 最小实现验证 实现 first global state 建立一部分规范 确定共享内存的选址等 技术难点   实现对象池 实现基础容器   通用性上的挑战 当前效果    前言共享内存RESUME机制是指的: 通过将游戏状态数据保存在共享内存中,">
+<meta name="description" content="前言 共享内存RESUME出现的背景: 为什么选择共享内存RESUME而不是集群冗余+故障转移 MMOACT相比传统互联网的异同 方案对比和决策   可行性分析和验证 隔离业务状态数据与非业务环境数据 隔离业务状态和业务逻辑数据和逻辑分离 最小化验证, FIRST GLOBAL STATE   解决方案和实践 RESUME状态重建&#x2F;恢复的基础问题 基础问题以及解决策略 附: 在随机化的ASL">
 <meta property="og:type" content="article">
 <meta property="og:title" content="共享内存RESUME综述">
 <meta property="og:url" content="https://zsummer.github.io/2020/08/03/2020-08-03-shm-resume/index.html">
 <meta property="og:site_name" content="关于夏天的一切">
-<meta property="og:description" content="前言 共享内存RESUME出现的情景 MMOACT相比传统互联网的异同 技术选型 架构拆分   解决方案 第一个问题 状态和逻辑分离 第二个问题 最小实现验证 实现 first global state 建立一部分规范 确定共享内存的选址等 技术难点   实现对象池 实现基础容器   通用性上的挑战 当前效果    前言共享内存RESUME机制是指的: 通过将游戏状态数据保存在共享内存中,">
+<meta property="og:description" content="前言 共享内存RESUME出现的背景: 为什么选择共享内存RESUME而不是集群冗余+故障转移 MMOACT相比传统互联网的异同 方案对比和决策   可行性分析和验证 隔离业务状态数据与非业务环境数据 隔离业务状态和业务逻辑数据和逻辑分离 最小化验证, FIRST GLOBAL STATE   解决方案和实践 RESUME状态重建&#x2F;恢复的基础问题 基础问题以及解决策略 附: 在随机化的ASL">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-08-02T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-08-05T11:12:48.313Z">
+<meta property="article:modified_time" content="2020-08-11T11:58:38.516Z">
 <meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
 
@@ -341,34 +341,47 @@
       
 
       
-        <!-- toc -->
+        <!-- TOC -->
 
 <ul>
-<li><a href="#前言">前言</a></li>
-<li><a href="#共享内存resume出现的情景">共享内存RESUME出现的情景</a><ul>
-<li><a href="#mmoact相比传统互联网的异同">MMOACT相比传统互联网的异同</a></li>
-<li><a href="#技术选型">技术选型</a></li>
-<li><a href="#架构拆分">架构拆分</a></li>
+<li><a href="#%E5%89%8D%E8%A8%80">前言</a></li>
+<li><a href="#%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98resume%E5%87%BA%E7%8E%B0%E7%9A%84%E8%83%8C%E6%99%AF-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%89%E6%8B%A9%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98resume%E8%80%8C%E4%B8%8D%E6%98%AF%E9%9B%86%E7%BE%A4%E5%86%97%E4%BD%99%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB">共享内存RESUME出现的背景: 为什么选择共享内存RESUME而不是集群冗余+故障转移</a><ul>
+<li><a href="#mmoact%E7%9B%B8%E6%AF%94%E4%BC%A0%E7%BB%9F%E4%BA%92%E8%81%94%E7%BD%91%E7%9A%84%E5%BC%82%E5%90%8C">MMOACT相比传统互联网的异同</a></li>
+<li><a href="#%E6%96%B9%E6%A1%88%E5%AF%B9%E6%AF%94%E5%92%8C%E5%86%B3%E7%AD%96">方案对比和决策</a></li>
 </ul>
 </li>
-<li><a href="#解决方案">解决方案</a><ul>
-<li><a href="#第一个问题-状态和逻辑分离">第一个问题 状态和逻辑分离</a></li>
-<li><a href="#第二个问题-最小实现验证-实现-first-global-state">第二个问题 最小实现验证 实现 first global state</a></li>
-<li><a href="#建立一部分规范-确定共享内存的选址等">建立一部分规范 确定共享内存的选址等</a><ul>
-<li><a href="#技术难点">技术难点</a></li>
+<li><a href="#%E5%8F%AF%E8%A1%8C%E6%80%A7%E5%88%86%E6%9E%90%E5%92%8C%E9%AA%8C%E8%AF%81">可行性分析和验证</a><ul>
+<li><a href="#%E9%9A%94%E7%A6%BB%E4%B8%9A%E5%8A%A1%E7%8A%B6%E6%80%81%E6%95%B0%E6%8D%AE%E4%B8%8E%E9%9D%9E%E4%B8%9A%E5%8A%A1%E7%8E%AF%E5%A2%83%E6%95%B0%E6%8D%AE">隔离业务状态数据与非业务环境数据</a></li>
+<li><a href="#%E9%9A%94%E7%A6%BB%E4%B8%9A%E5%8A%A1%E7%8A%B6%E6%80%81%E5%92%8C%E4%B8%9A%E5%8A%A1%E9%80%BB%E8%BE%91%E6%95%B0%E6%8D%AE%E5%92%8C%E9%80%BB%E8%BE%91%E5%88%86%E7%A6%BB">隔离业务状态和业务逻辑数据和逻辑分离</a></li>
+<li><a href="#%E6%9C%80%E5%B0%8F%E5%8C%96%E9%AA%8C%E8%AF%81-first-global-state">最小化验证, FIRST GLOBAL STATE</a></li>
 </ul>
 </li>
-<li><a href="#实现对象池-实现基础容器">实现对象池 实现基础容器</a></li>
+<li><a href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%92%8C%E5%AE%9E%E8%B7%B5">解决方案和实践</a><ul>
+<li><a href="#resume%E7%8A%B6%E6%80%81%E9%87%8D%E5%BB%BA%E6%81%A2%E5%A4%8D%E7%9A%84%E5%9F%BA%E7%A1%80%E9%97%AE%E9%A2%98">RESUME状态重建/恢复的基础问题</a></li>
+<li><a href="#%E5%9F%BA%E7%A1%80%E9%97%AE%E9%A2%98%E4%BB%A5%E5%8F%8A%E8%A7%A3%E5%86%B3%E7%AD%96%E7%95%A5">基础问题以及解决策略</a><ul>
+<li><a href="#%E9%99%84-%E5%9C%A8%E9%9A%8F%E6%9C%BA%E5%8C%96%E7%9A%84aslr%E4%B8%AD%E7%A1%AE%E7%AB%8B%E7%A1%AE%E5%AE%9A%E6%80%A7%E7%9A%84%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4">附: 在随机化的ASLR中确立确定性的地址空间</a></li>
 </ul>
 </li>
-<li><a href="#通用性上的挑战">通用性上的挑战</a></li>
-<li><a href="#当前效果">当前效果</a></li>
+<li><a href="#%E5%AF%B9%E8%B1%A1%E6%B1%A0%E5%92%8C%E5%9F%BA%E7%A1%80%E5%AE%B9%E5%99%A8%E7%AD%89%E9%80%9A%E7%94%A8%E6%80%A7%E8%AE%BE%E8%AE%A1">对象池和基础容器等通用性设计</a><ul>
+<li><a href="#%E5%AF%B9%E8%B1%A1%E6%B1%A0%E5%AE%9A%E9%95%BF%E5%86%85%E5%AD%98%E6%B1%A0%E5%AF%B9%E8%B1%A1%E5%88%86%E9%85%8D%E5%9B%9E%E6%94%B6%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%9F%BA%E7%A1%80%E8%AE%BE%E8%AE%A1">对象池定长内存池+对象分配回收接口的基础设计</a></li>
+<li><a href="#%E5%9C%B0%E5%9D%80%E6%97%A0%E5%85%B3%E7%9A%84%E5%AE%B9%E5%99%A8%E5%AE%9E%E7%8E%B0">地址无关的容器实现</a></li>
 </ul>
-<!-- tocstop -->
+</li>
+</ul>
+</li>
+<li><a href="#%E5%B0%8F%E7%BB%93">小结</a><ul>
+<li><a href="#%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E5%85%B6%E4%BB%96%E9%97%AE%E9%A2%98">需要注意的其他问题</a></li>
+<li><a href="#%E9%80%9A%E7%94%A8%E6%80%A7%E4%B8%8A%E7%9A%84%E6%8C%91%E6%88%98-%E5%9C%A8%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98%E4%B8%8A%E6%9E%84%E5%BB%BA%E9%80%9A%E7%94%A8%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E5%99%A8">通用性上的挑战: 在共享内存上构建通用内存管理器</a></li>
+</ul>
+</li>
+</ul>
+<!-- /TOC -->
+
 
 <h2><span id="前言">前言</span></h2><p><strong>共享内存RESUME机制是指的: 通过将游戏状态数据保存在共享内存中, 当游戏进程crash后通过重启游戏服务器并attach已有的共享内存来恢复游戏状态, 以此达到玩家游戏体验在出现宕机时的连贯性, 提升游戏的容灾能力.</strong>       </p>
-<h2><span id="共享内存resume出现的情景">共享内存RESUME出现的情景</span></h2><h3><span id="mmoact相比传统互联网的异同">MMOACT相比传统互联网的异同</span></h3><p>在web领域中,  业务和数据分离, 从而达成’业务无状态化’, 开发人员专注于业务本身, 状态数据的一致性问题和容灾问题转移到可以较为独立解决的数据存储领域, 这个领域有非常多的论文和解决方案, 以及成熟的服务等.     </p>
-<p>而对于游戏领域来说, 互联网成熟的解决的方案很难在这个地方生效,  当然 对于外围系统来说, 我们仍然可以按照互联网成熟的解决方案进行布局, 例如聊天系统, 好友系统,  邮件系统, 日志系统,  或者一些游戏中的公会系统等.     </p>
+<h2><span id="共享内存resume出现的背景-为什么选择共享内存resume而不是集群冗余故障转移">共享内存RESUME出现的背景: 为什么选择共享内存RESUME而不是集群冗余+故障转移</span></h2><h3><span id="mmoact相比传统互联网的异同">MMOACT相比传统互联网的异同</span></h3><p>在web领域中,  业务和数据分离, 从而达成’业务无状态化’, 开发人员专注于业务本身, 状态数据的一致性问题和容灾问题转移到可以较为独立解决的数据存储领域, 这个领域有非常多的论文和解决方案, 以及成熟的服务等.     </p>
+<p>而对于游戏领域来说, 互联网成熟的解决的方案很难在这个地方应用,  当然 对于外围系统来说, 我们仍然可以按照互联网成熟的解决方案进行布局, 例如聊天系统, 好友系统,  邮件系统, 日志系统,  或者一些游戏中的公会系统等.     </p>
+<a id="more"></a>
 <p>MMOACT的特性:  </p>
 <ul>
 <li><p><strong>CPU计算密集</strong>   </p>
@@ -436,7 +449,7 @@
 </blockquote>
 <p>大部分互联网核心业务都能很好的进行业务和状态存储上的解耦, 以stateless形式在现有成熟的数据库相关的存储服务之上通过已有的成熟的解决方案来订制解决, 其核心往往是通过牺牲响应速度, 提高解决方案的复杂度来实现大规模高一致性的互联网需求.   </p>
 <p>(12306的业务也不算复杂 但是难在大规模并发下, 状态之间难以解耦进行传统的分而治之而造成的)</p>
-<p>而游戏服务, 很多时候游戏服务可以看成一个庞大的非确定状态机, 有非常庞大的状态集合, 实时响应所有玩家的请求并不断的推演下去,  并且其业务变更非常频繁,  往往是通过牺牲一定程度的可靠性和一致性来做到在有限的开发周期和资源里, 把一个尽可能满足策划设计和玩家体验的游戏做出来.<br>实际上大部分的游戏项目也都在解决这个问题, 也因此互联网成熟的解决方案, 流行的解决方案 往往都离游戏项目比较远, 但是意思也并不是无关,  在靠近外围的架构和服务节点上, 我们仍然可以追着互联网潮流进行演进, 例如微服务.    </p>
+<p>而游戏服务, 很多时候游戏服务可以看成一个复杂的非确定状态机, 有非常庞大的状态集合, 实时响应所有玩家的请求并不断的推演下去,  并且其业务变更非常频繁,  往往是通过牺牲一定程度的可靠性和一致性来做到在有限的开发周期和资源里, 把一个尽可能满足策划设计和玩家体验的游戏做出来.<br>实际上大部分的游戏项目也都在解决这个问题, 也因此互联网成熟的解决方案, 流行的解决方案 往往很难在游戏项目得到及时的应用, 尽管如此, 在靠近外围的架构和服务节点上, 我们仍然可以追着互联网潮流进行演进, 例如微服务.    </p>
 <p>附图, MMO技能的基本流程如下:   </p>
 <ul>
 <li>技能释放条件  –&gt; 判断自身脚本 –&gt;判断目标是否有脚本有则等待执行结果   </li>
@@ -469,8 +482,8 @@
 <li>技能即将结束  –&gt; 判定  </li>
 <li>技能已经结束   –&gt;判定   </li>
 </ul>
-<p>通常1V1战斗一次可能需要保证时序的同步点大约就有20个 而混战情况下则会有N倍的提升,  在非分布式的情况下, 所有的同步点带来的处理复杂度都是一次分支判定,  但是如果是分布式则会是一次rpc   .<br>如果是共享内存下的消息队列实现  一次rpc来回则有10ms的延迟  </p>
-<h3><span id="技术选型">技术选型</span></h3><p>有成功案例的两种做法:   </p>
+<p>通常1V1战斗一次可能需要保证时序的同步点大约就有20个 而混战情况下则会有N倍的提升,  在非分布式的情况下, 所有的同步点带来的处理复杂度都是一次分支判定,  但是如果是分布式则会是一次rpc   .<br>如果是共享内存下的消息队列实现(大吞吐)  一次rpc来回则可能有平均10ms的延迟, 那么在不牺牲时序逻辑的情况下, 则可能带来几百ms的巨大延迟.  </p>
+<h3><span id="方案对比和决策">方案对比和决策</span></h3><p>有成功案例的两种做法:   </p>
 <p>一种不常见的BIGWORLD的做法(冗余系统&amp;故障切换):   </p>
 <ul>
 <li><p>以战斗单位进行解耦, 不同的战斗单位可以分布在不同节点   </p>
@@ -499,7 +512,7 @@
 <li>RESUME后保持业务的连贯性, 对用户体验非常友好   </li>
 <li>原理简单容易(分阶段)实现, 且每阶段都可验证,  有较多成功案例.   </li>
 </ul>
-<p>可行性决策:   </p>
+<p>方案差异:   </p>
 <ul>
 <li>提高可靠性   <ul>
 <li>多点备份  故障转移     <ul>
@@ -526,7 +539,8 @@
 </ul>
 </li>
 </ul>
-<h3><span id="架构拆分">架构拆分</span></h3><ul>
+<p>方案选定:  </p>
+<ul>
 <li><p>尽可能的拆分外围服务 以stateless集群+数据库存储方案来实现   </p>
 <ul>
 <li>例如好友 聊天 邮件等   </li>
@@ -534,45 +548,73 @@
 </li>
 <li><p>对无法做到stateless又难以拆分的管理节点和战斗节点进行RESUME设计.   </p>
 <ul>
-<li>World管理节点  Scene战斗场景  </li>
+<li>World管理节点  战斗场景  </li>
 </ul>
 </li>
 </ul>
-<h2><span id="解决方案">解决方案</span></h2><h3><span id="第一个问题-状态和逻辑分离">第一个问题  状态和逻辑分离</span></h3><p>这种分离并不一定是要用ECS框架, 只要我们在写代码时候明确的知道在写什么, 但是从规范角度来说 如果一开始采用近似ECS的框架, 那么可能更有助于新人对RESUME框架的认识    </p>
+<h2><span id="可行性分析和验证">可行性分析和验证</span></h2><h3><span id="隔离业务状态数据与非业务环境数据">隔离业务状态数据与非业务环境数据</span></h3><p>第一个问题是, 哪些数据应该放在共享内存中, 哪些数据不能放在共享内存中, 这个问题决定了具体的业务恢复情况.  </p>
 <ul>
-<li><p>业务恢复级别  </p>
+<li><p><strong>在游戏业务的RESUME机制中, 我们不做指令级的恢复,  也就是说, 首先 栈数据我们不会存放在共享内存中而是故障时直接丢弃</strong>    </p>
 <ul>
-<li>RESUME机制并不做指令级的RESUME, 例如当前程序call一个函数执行到某处crash 并不会在crash处直接恢复   <ul>
-<li>如果考虑这种级别的恢复 我们应该做的是一个语言级别的VM  </li>
+<li>一旦把栈放在共享内存中, 意味着我们要记录所有的指令状态和序列以及执行情况, 以及这意味着我们在发明一套新的支持resume的vm语言(这种发明有没有现实意义是另外一个新的问题) 而不是在C/C++语言之上resume我们的业务.    </li>
+<li>crash可以发生在任意时刻的代码处理中, 难以避免的产生一些状态错误.    <ul>
+<li>规范: 不能在共享内存中的对象或者内存中 有存在指向任何栈上或者堆上的指针   </li>
+<li>规范: 不能在共享内存中的对象或者内存中 有存在指向函数或者虚函数的指针 如果无法避免则需要在RESUME的时候恢复为正确的指针  </li>
+<li>规范: 如非必要, 不能有被栈管理的共享内存资源  <ul>
+<li><font color="#999">例如使用智能指针获取共享内存上的某个对象, 然后经过一段复杂且经常变化的业务代码后release 控制权交给位于共享内存的map进行管理等.  这种情况一旦crash 这个对象无论crash多少次都会被永久挂起.</font>   </li>
 </ul>
 </li>
-<li>业务恢复时候会丢弃导致crash的调用栈, 从最初的逻辑循环处重新开始新的TICK.    <ul>
-<li>受crash影响的调用堆栈中可能会导致相关逻辑出现一定程度的破坏, 因此在写代码时候要做好状态的兜底/超时处理       </li>
-<li>例如  <ul>
-<li>客户端在从地图A进入地图B的过程中会进行多次状态变更以保证能安全的进入地图B, 但是过程中一旦宕机导致中间的一个过程消息包的处理丢失(未完成),  那么应该有TICK定时检测这种状态, 超出正常的处理事件后自动清理流程, 以恢复玩家状态(防止状态被永远改变), 这个服务器编写代码的基本意识, RESUME同样也强调这一点.      </li>
-<li>假设策划想同时对某个单位上两个BUFF, 其中一个是功能BUFF, 另外一个事件开关BUFF用来开关功能,  策划要的效果可能是设置一个永久功能BUFF 直到某事件发生则移除功能BUFF,  但是从防御性角度来讲, 一旦出现意外例如条件配置错误 互斥逻辑未考虑充分, 控制BUFF因为resume丢失,  就会出现永久BUFF,  那么实践中我们通常会让策划配置成 开关BUFF定时刷新功能buff  条件不符合时不再刷新,  典型的光环实现, 如果必须要永久 则要有其他的兜底保护 .   这种防御性思想在服务端编程中也是一种基础要求,  RESUME机制也期望这种要求.    </li>
+<li>规范: 尽可能的做好结构和流程的局部化设计, 并且做好兜底设计:<font color="#999">   <ul>
+<li>例如 技能错误不影响战斗单位, 战斗单位错误不应该影响其他玩家等   </li>
+<li>例如, 创建一个技能实例:  <ul>
+<li>获取创建实例的信息   </li>
+<li>用准备好的信息数据创建一个实例并填充一个基础状态, 再接下来的复杂逻辑中一旦crash, resume之后仍然能检测到技能实例的异常状态或者到期后自动清理   </li>
+<li>进行新实例创建后的脚本触发, 其他模块的同步调用通知等  </li>
+</ul>
+</li>
+<li>例如 技能中修改属性   <ul>
+<li>获取好单位的属性位置, 计算好要修改的值信息等   </li>
+<li>没有任何错误和异常的话 进行连续的赋值修改等 (这种操作通常不会crash)    </li>
+<li>执行一些变更通知 或者其他逻辑等  </li>
+<li>技能实例到期销毁, 根据记录的属性修改记录进行反向恢复  </li>
+</ul>
+</li>
+<li>例如技能状态切换过程中出现错误  RESUME后正Tick检测到会再次执行切换操作</li></ul></font>  </li>
+</ul>
+</li>
+<li>规范: 内部分阶段REVIEW新人的代码 检查是否有不符合RESUME或者带来隐患的设计</li>
 </ul>
 </li>
 </ul>
-</li>
-</ul>
-</li>
-<li><p>聚合业务状态 隔离程序相关的栈状态和全局状态   </p>
+
+<li><p><strong>隔离一些不能resume的三方库或者逻辑</strong>    </p>
 <ul>
-<li>全局状态启服会被刷新 栈状态会丢失   </li>
+<li>例如PROTOBUF不能做RESUME  那么就需要禁止在任何业务状态中有存储指向pbin的指针, 必须是用时查找读取, 启服初始化时或者RESUME时重新加载.   </li>
+</ul>
+</li>
+
+<ul>
+<li><strong>消息/事件/任务队列等进行逻辑处理时应先标记当前’消息/事件/任务’在队列中已经被处理, 然后执行具体的逻辑. 一旦发生crash后不会重复执行该任务, 跳过故障流程</strong>   <ul>
+<li>如果需要关注处理结果则应该有对应的处理超时机制, resume后等待一段时间后进行超时处理   </li>
 </ul>
 </li>
 </ul>
-<p>这个更多的是规范和意识问题  项目之初这个情况就比较好 </p>
-<p>一些处理中的问题通过, 一旦执行则标记处理,  crash后执行跳过当前正在执行的任务,  通过update和timeout修复导致crash的流程    </p>
-<h3><span id="第二个问题-最小实现验证-实现-first-global-state">第二个问题  最小实现验证 实现 first global state</span></h3><ul>
+<h3><span id="隔离业务状态和业务逻辑数据和逻辑分离">隔离业务状态和业务逻辑(数据和逻辑分离)</span></h3><p>并不是一定要用ECS框架, 但是ECS框架或者类似的框架可以很好起到协助规范的执行情况   </p>
+<ul>
+<li>业务状态和逻辑代码拆分后, 可以直观的观测和追溯状态的拓扑结构变更    </li>
+<li>共享内存RESUME机制是对代码热更友好的, 如果考虑线上代码热更, 则方便进行数据结构的拓扑对比     </li>
+<li>编写业务时因状态数据单独存放, 会起到’业务状态是放在共享内存而不是本地内存’的提醒作用, 减少心智负担.    </li>
+<li>方便进行REVIEW检查   </li>
+</ul>
+<h3><span id="最小化验证-first-global-state">最小化验证, FIRST GLOBAL STATE</span></h3><p>基础原理为, 定义单独的抽象类作为单个服务节点的索引起点(框架),  该节点下所有共享内存上的状态均以对象,静态内存数组等数据成员的形式聚合为该类的数据成员.<br>在启服时候通过简单的静态计算算出来总大小并分配共享内存, 以此跑在共享内存之上,  在RESUME时则查找该共享内存并把框架类的指针指向共享内存区域.    </p>
+<ul>
 <li><p>基础的shmget/shmat流程   </p>
 <ul>
 <li>启服创建共享内存, 并把global state指针指向共享内存完成构造初始化  </li>
 <li>启服绑定共享内存, 并把global state指针指向共享内存完成绑定和resume回调等  </li>
 </ul>
 </li>
-<li><p>所有游戏从global state这个类中聚合   例如  </p>
+<li><p>所有游戏从global state这个Server类中聚合   例如  </p>
 <ul>
 <li>global state: scene server  <ul>
 <li>map&lt;场景&gt;   <ul>
@@ -602,24 +644,242 @@
 </ul>
 </li>
 </ul>
-<h3><span id="建立一部分规范-确定共享内存的选址等">建立一部分规范 确定共享内存的选址等</span></h3><h4><span id="技术难点">技术难点</span></h4><ul>
-<li>内存管理   </li>
-<li>代码段因代码变更或者ASLR随机化   <ul>
-<li>函数指针变化 虚函数位置变化</li>
+<h2><span id="解决方案和实践">解决方案和实践</span></h2><h3><span id="resume状态重建恢复的基础问题">RESUME状态重建/恢复的基础问题</span></h3><ul>
+<li>代码段因代码变更或者ASLR随机化发生改变   <ul>
+<li>函数指针变化 虚函数位置变化   </li>
 </ul>
 </li>
-<li>数据段因ASLR随机化   <ul>
-<li>地址指针错误  </li>
-<li>虚函数表位置变化  </li>
+</ul>
+<font color="#888">
+* 共享内存地址不固定情况下每次shmat会导致共享内存映射的地址发生变化   
+  * 记录的地址指针错误
+  * 只能使用地址无关的容器 例如std::array    
+</font>
+
+<ul>
+<li>共享内存地址固定会因ASLR的HEAP/MMAP随机化而导致RESUME后冲突  <ul>
+<li>关闭ASLR并估算一个不会冲突的位置  (版本更新, 新的so库 都会带来小的改变 但是只要能启服成功 RESUME也会成功)   </li>
+<li>不关闭ASLR并寻找一个不会被ASLR影响到区间  </li>
 </ul>
 </li>
-<li>数据段因代码变更发生新的定义导致错误  </li>
-<li>共享内存选址位置RESUME后和stack/heap等冲突   </li>
-<li>STL常用容器无法跑在共享内存下 并且是基础数据结构  </li>
-<li>队列超时问题  </li>
-<li>三方库的隔离  </li>
 </ul>
-<h3><span id="实现对象池-实现基础容器">实现对象池  实现基础容器</span></h3><h2><span id="通用性上的挑战">通用性上的挑战</span></h2><h2><span id="当前效果">当前效果</span></h2><p>性能对比</p>
+<h3><span id="基础问题以及解决策略">基础问题以及解决策略</span></h3><p>共享内存RESUME方案需要配合一定的代码规范, 或者说共享内存方案本身需要让系统具备状态可恢复这种机制上, 一定会多多少少带来代码和设计上的约束,  我们会通过以下策略尽量减少这套机制对业务层的感知和对开发人员的限制.</p>
+<ul>
+<li>数据结构和算法的地址无关化设计  <ul>
+<li>避免出现指针, 特别是可能指向系统堆栈, 代码段等非共享内存位置的指针.  </li>
+<li>能使用相对偏移量代替地址的尽量用偏移量   <ul>
+<li>例如下标 长度等信息    </li>
+</ul>
+</li>
+<li>尽量使用静态容器代替包含有动态内存分配的容器, 如果没有就实现一个   <ul>
+<li>使用数组方案, 或者std::array以及手动实现的static array来代替std::vector </li>
+</ul>
+</li>
+<li>业务上尽量使用无地址的解决方案   <ul>
+<li>例如现在有个事件队列, 我们手动定义事件枚举A,B,C,D   <ul>
+<li>在入队时, 我们根据需求push进去对应的事件ID和参数    </li>
+<li>在出队时, 我们获取到事件ID进行switch case 事件枚举: 并调用指定的处理函数   </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>固定虚拟地址空间中共享内存的映射地址   <ul>
+<li>让所有指向共享内存中的数据地址指针在RESUME后直接可用, 从共享内存RESUME整体出发降低系统的复杂度.  </li>
+<li>需要关闭ASLR或者固定一个不会出现地址冲突问题的地址   </li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>间接地址方案, 隔离运行环境的真实地址  </p>
+<ul>
+<li>基础思路为, 不直接使用和保存(函数)地址, 而是在第一次启动初始化时或者RESUME启动时把要使用的地址预先注册到某个公共位置, 使用时从这个位置读取正确的地址进行使用.   </li>
+<li>情景1: 参考网络消息序列化的一般手段: 注册消息号和处理函数的映射关系  <ul>
+<li>函数类型相同   </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>地址重定位方案, 直接修改失效的地址为当前执行环境的有效地址     </p>
+<ul>
+<li>基础思路为: 记录下每个使用某(函数)地址的位置, 在RESUME后使用正确的(函数)地址替换掉记录中旧的记录     </li>
+<li>例如我们记录下使用中所有带虚函数的对象位置, 在RESUME后对该对象的虚表指针进行替换.   </li>
+</ul>
+</li>
+<li><p>面向RESUME机制的手动编程, 不算兜底的兜底方案   </p>
+<ul>
+<li>对于可以复用的底层框架代码或者容器代码, 我们会针对性的进行流程和框架上的封装, 或者提供支持RESUME容器实现来减少业务层对RESUME系统的感知以提高业务开发效率.   </li>
+<li>但是无可避免的, 我们还是会遇到一些复杂的问题因为过于业务具体没有复用的价值, 或者无法预期进行集成, 因此一定程度上, 我们需要保留一定的开放性让用户自己去实现初始化和RESUME代码      <ul>
+<li>例如我们记录下所有包含OnResume方法的有效对象, 在RESUME后执行这些对象的OnResume方法来完成一些用户自定义的RESUME方案   <ul>
+<li>例如一些战斗单位绑定了RVO, 而这个RVO库并不运行在共享内存上, 那么这些战斗单位需要在OnResume里面进行重置操作或者根据当前的坐标移动信息重新绑定RVO库 </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4><span id="附-在随机化的aslr中确立确定性的地址空间">附: 在随机化的ASLR中确立确定性的地址空间</span></h4><table>
+<thead>
+<tr>
+<th>- 用户空间布局 -</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0x0</td>
+</tr>
+<tr>
+<td>保留区</td>
+</tr>
+<tr>
+<td>代码段(PLT代码表部分)</td>
+</tr>
+<tr>
+<td>代码段</td>
+</tr>
+<tr>
+<td>数据段(GOT) 只读</td>
+</tr>
+<tr>
+<td>数据段(.got.plt) 惰性加载机制</td>
+</tr>
+<tr>
+<td>数据段(Data)</td>
+</tr>
+<tr>
+<td>数据段(BSS)</td>
+</tr>
+<tr>
+<td>堆空间(Heap)</td>
+</tr>
+<tr>
+<td>↓</td>
+</tr>
+<tr>
+<td>未分配区域</td>
+</tr>
+<tr>
+<td>↑</td>
+</tr>
+<tr>
+<td>内存映射区域(mmap)</td>
+</tr>
+<tr>
+<td>栈空间(进程栈)</td>
+</tr>
+<tr>
+<td>TASK_SIZE</td>
+</tr>
+</tbody></table>
+<p>地址空间配置随机加载（英语：Address space layout randomization，缩写ASLR，又称地址空间配置随机化、地址空间布局随机化）是一种通过随机放置进程关键数据区域的地址空间来防止攻击者能可靠地跳转到内存的特定位置, 从而防范这类内存损坏漏洞被利用的计算机安全技术, 例如常见的Return-to-libc攻击.  </p>
+<p>这些数据区域一般包括代码段 数据段 堆区 栈区 mmap  动态库等,  其中涉及代码段的随机一般需要代码位置无关化的支持(PIC PIE机制), 不同版本的操作系统和内核版本, 在ASLR的实现上以及默认系统选项都会有细节的不同, 在X86-64位最高等级下, 我们可以找到不会被随机到但是可以通过mmap建立有效映射的(0x0000 7F00 0000 0000 ~ 0x0000 5655 5555 5555)大约44T的地址空间(128T的1/3), 前者为mmap开始位置 后者为HEAP(BRK)开始位置.   </p>
+<p>在实践中, 我们把共享内存的位置设置在靠中间的位置, 给系统mmap和heap留有足够的空间.   例如 0x0000 7000 0000 000,  这样和MMAP区域有17T的间隙, 充分安全, 无论ASLR开什么级别RESUME多少次 始终不会和共享内存选定的地址产生冲突   </p>
+<p>细节内核代码分析见:<a href="https://zsummer.github.io/2019/11/04/2019-11-04-aslr/">linux内存布局和ASLR下的可分配地址空间</a></p>
+<h3><span id="对象池和基础容器等通用性设计">对象池和基础容器等通用性设计</span></h3><h4><span id="对象池定长内存池对象分配回收接口的基础设计">对象池(定长内存池+对象分配回收接口)的基础设计</span></h4><p>设计目的:   </p>
+<ul>
+<li>静态内存一次性分配, 动态分配和回收固定大小的内存   </li>
+<li>解决虚表失效问题   <ul>
+<li>解决单继承和多重继承问题  </li>
+</ul>
+</li>
+<li>提供自定义的OnResume接口进行自定义的恢复 提高易用性和扩展性  <ul>
+<li>向用户层抛出一个自定义解决方案 </li>
+</ul>
+</li>
+<li>提供FOREACH的分批轮询机制 平滑负载峰值  </li>
+</ul>
+<p>实现方案:<br>接口层实现:  </p>
+<ul>
+<li>类型枚举定义   </li>
+<li>注册(绑定)类型信息, 对象大小, 对象上限数量, 是否有虚表需要恢复, 是否需要支持OnResume    </li>
+<li>对象分配和回收接口  </li>
+</ul>
+<p>对象池管理器(管理头): </p>
+<ul>
+<li>FREE索引ID(FREE LIST),  CHUNK大小(包含fence-next-id和obj), 数量上限, 虚表标志, OnResume标志, 起始地址偏移, BITMAP使用标志位图位置等    </li>
+</ul>
+<p>对象池:  </p>
+<ul>
+<li>FENCE-HEAD-OBJ 数组   </li>
+</ul>
+<p>分配和回收流程:<br>分配:  </p>
+<ul>
+<li>POP FREE HEAD指向的CHUNK   </li>
+<li>进行原地构造  </li>
+<li>设置BITMAP的使用标记   </li>
+</ul>
+<p>回收:  </p>
+<ul>
+<li>根据指针换算成CHUNK的索引ID   </li>
+<li>检测BITMAP的使用标记并移除标记  </li>
+<li>执行析构函数 </li>
+<li>PUSH到FREE LIST中(设置为新的FREE HEAD)   </li>
+</ul>
+<p>FOREACH轮询流程:<br>按STEP数量遍历BITMAP使用标记并执行对象指定的轮询回调   </p>
+<ul>
+<li>例如对于一个每秒执行一次OnTick的对象,  可以拆分成100ms执行1/10的使用中对象的OnTick, 分10次在1秒内完成. 这样可以平滑CPU的负载, 并且不会出现迭代器失效等隐患问题    </li>
+</ul>
+<p>INIT和OnResume流程<br>一般放在对象池中的对象可以正在的构造函数中去完成初始化处理, Init这种二次初始化由用户去定义即可.<br>如果该对象需要在Resume中做一些自定义的检测或者恢复处理, 则需要定义该回调并进行标记  </p>
+<h4><span id="地址无关的容器实现">地址无关的容器实现</span></h4><p>这里放在一起说, 第一优先级是数组 其次是map和list.   </p>
+<ul>
+<li><p>数组容器的实现  </p>
+<ul>
+<li>一般情况下可以用std::array或者原生数组来开发, 本身是地址无关的可以直接RESUME   </li>
+<li>为了更方便和更通用, 实现了STATIC ARRAY,  接口和std::vector基本对齐, 但是元素数量上限是确定的</li>
+</ul>
+</li>
+<li><p>MAP容器   </p>
+<ul>
+<li>hash map的实现比较简单, 第一个版本中首先提供支持的就是hash map  </li>
+<li>基本做法是分配上限大小的桶并以FREE LIST形式串联, 再分配上限大小的桶位(指向桶索引ID的编号数组), 在插入KV结构时hash到对应的桶位, 如果有冲突则在该位置串联.  查找删除时候过程相似.  </li>
+<li>std::map未实现 通过基于共享内存分配器实现的allocator直接对std::map进行支持  </li>
+</ul>
+</li>
+<li><p>LIST容器   </p>
+<ul>
+<li>相比数组容器, 这个提供了稳定的迭代器和搞性能的插入删除性能   </li>
+</ul>
+</li>
+</ul>
+<h2><span id="小结">小结</span></h2><p>通过框架和通用底层的数据结构实现, 以及对象池, 链表 数组 HASH_MAP等<br>已经实现了非常易用的一套基于共享内存RESUME的框架和系统  </p>
+<p>整体结构为两部分:   </p>
+<p>| GLOBAL SERVER |  OBJECT POOLS |   </p>
+<p>在服务的main入口通过对共享内存的启动BOOT封装, 完成自动化的共享内存的创建和恢复机制.<br>开发人员在开发新的服务节点时, 通过继承GLOBAL SERVER把所有数据以静态的形式聚合在GLOBAL SERVER下即可,  对于涉及到动态分配和管理的, 使用提供好的map/list/array即可.    </p>
+<h3><span id="需要注意的其他问题">需要注意的其他问题</span></h3><ul>
+<li>RESUME检测和恢复时间带来的超时问题和业务连贯性问题   <ul>
+<li>RESUME恢复时间  <ul>
+<li>进程crash检测间隔  </li>
+<li>共享内存上的状态恢复(通常非常快)  </li>
+<li>被隔离的代码和模块的重新加载和初始化   <ul>
+<li>不在共享内存上的资源重新load  </li>
+</ul>
+</li>
+</ul>
+</li>
+<li>被时间影响的功能   <ul>
+<li>大量移动包在RESUME成功之前无法处理消耗造成   <ul>
+<li>逻辑服没有移动包 战斗服是产生移动包的位置 其他节点结构简单不容易宕机 </li>
+</ul>
+</li>
+<li>异步请求出现超时</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><span id="通用性上的挑战-在共享内存上构建通用内存管理器">通用性上的挑战: 在共享内存上构建通用内存管理器</span></h3><ul>
+<li>移植stl的容器而非去独立实现(一劳永逸的兜底方案)   <ul>
+<li>实现shm allocator</li>
+</ul>
+</li>
+<li>移植更多的三方库到共享内存上    <ul>
+<li>通用的内存分配器是基础</li>
+</ul>
+</li>
+</ul>
 
       
     </div>
@@ -777,7 +1037,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">共享内存RESUME出现的情景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">2.1.</span> <span class="nav-text">MMOACT相比传统互联网的异同</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">2.2.</span> <span class="nav-text">技术选型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">2.3.</span> <span class="nav-text">架构拆分</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">3.</span> <span class="nav-text">解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">3.1.</span> <span class="nav-text">第一个问题  状态和逻辑分离</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">3.2.</span> <span class="nav-text">第二个问题  最小实现验证 实现 first global state</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">3.3.</span> <span class="nav-text">建立一部分规范 确定共享内存的选址等</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">3.3.1.</span> <span class="nav-text">技术难点</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">3.4.</span> <span class="nav-text">实现对象池  实现基础容器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">4.</span> <span class="nav-text">通用性上的挑战</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">5.</span> <span class="nav-text">当前效果</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">共享内存RESUME出现的背景: 为什么选择共享内存RESUME而不是集群冗余+故障转移</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">2.1.</span> <span class="nav-text">MMOACT相比传统互联网的异同</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">2.2.</span> <span class="nav-text">方案对比和决策</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">3.</span> <span class="nav-text">可行性分析和验证</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">3.1.</span> <span class="nav-text">隔离业务状态数据与非业务环境数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">3.2.</span> <span class="nav-text">隔离业务状态和业务逻辑(数据和逻辑分离)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">3.3.</span> <span class="nav-text">最小化验证, FIRST GLOBAL STATE</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">4.</span> <span class="nav-text">解决方案和实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">4.1.</span> <span class="nav-text">RESUME状态重建&#x2F;恢复的基础问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">4.2.</span> <span class="nav-text">基础问题以及解决策略</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.2.1.</span> <span class="nav-text">附: 在随机化的ASLR中确立确定性的地址空间</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">4.3.</span> <span class="nav-text">对象池和基础容器等通用性设计</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.3.1.</span> <span class="nav-text">对象池(定长内存池+对象分配回收接口)的基础设计</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.3.2.</span> <span class="nav-text">地址无关的容器实现</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">5.</span> <span class="nav-text">小结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">5.1.</span> <span class="nav-text">需要注意的其他问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">5.2.</span> <span class="nav-text">通用性上的挑战: 在共享内存上构建通用内存管理器</span></a></li></ol></li></ol></div>
             
 
           </div>
