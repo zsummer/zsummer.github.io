@@ -96,13 +96,13 @@
 
 <meta name="description" content="前言 共享内存RESUME出现的背景: 为什么选择共享内存RESUME而不是集群冗余+故障转移 MMOACT相比传统互联网的异同 方案对比和决策   可行性分析和验证 隔离业务状态数据与非业务环境数据 隔离业务状态和业务逻辑数据和逻辑分离 最小化验证, FIRST GLOBAL STATE   解决方案和实践 RESUME状态重建&#x2F;恢复的基础问题 基础问题以及解决策略 附: 在随机化的ASL">
 <meta property="og:type" content="article">
-<meta property="og:title" content="共享内存RESUME综述">
+<meta property="og:title" content="共享内存RESUME机制综述">
 <meta property="og:url" content="https://zsummer.github.io/2020/08/03/2020-08-03-shm-resume/index.html">
 <meta property="og:site_name" content="关于夏天的一切">
 <meta property="og:description" content="前言 共享内存RESUME出现的背景: 为什么选择共享内存RESUME而不是集群冗余+故障转移 MMOACT相比传统互联网的异同 方案对比和决策   可行性分析和验证 隔离业务状态数据与非业务环境数据 隔离业务状态和业务逻辑数据和逻辑分离 最小化验证, FIRST GLOBAL STATE   解决方案和实践 RESUME状态重建&#x2F;恢复的基础问题 基础问题以及解决策略 附: 在随机化的ASL">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-08-02T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-08-11T11:58:38.516Z">
+<meta property="article:modified_time" content="2020-08-12T03:46:22.390Z">
 <meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
 
@@ -139,7 +139,7 @@
 
 
 
-  <title>共享内存RESUME综述 | 关于夏天的一切</title>
+  <title>共享内存RESUME机制综述 | 关于夏天的一切</title>
   
 
 
@@ -269,7 +269,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">共享内存RESUME综述</h1>
+          <h1 class="post-title" itemprop="name headline">共享内存RESUME机制综述</h1>
         
 
         <div class="post-meta">
@@ -599,7 +599,7 @@
 </ul>
 </li>
 </ul>
-<h3><span id="隔离业务状态和业务逻辑数据和逻辑分离">隔离业务状态和业务逻辑(数据和逻辑分离)</span></h3><p>并不是一定要用ECS框架, 但是ECS框架或者类似的框架可以很好起到协助规范的执行情况   </p>
+<h3><span id="隔离业务状态和业务逻辑数据和逻辑分离">隔离业务状态和业务逻辑(数据和逻辑分离)</span></h3><p>一般来说, 我们在写可resumable的代码时要注意自己使用到的状态是不是放在共享内存中以及如何聚合在resumable框架中的,  但是为了减少开发人员的犯错机会以及心智负担, 我们可以参考ECS框架来单独的聚合所有resumable状态数据,  或者更进一步的, 所有状态数据都通过schema以单独的描述文件进行生成, 通过这种明确的定义和聚合形式, 做到让开发人员难以写出错误的代码, 以及可以更准确的跟踪resumable结构的变更(有利于热修复的风险控制).   </p>
 <ul>
 <li>业务状态和逻辑代码拆分后, 可以直观的观测和追溯状态的拓扑结构变更    </li>
 <li>共享内存RESUME机制是对代码热更友好的, 如果考虑线上代码热更, 则方便进行数据结构的拓扑对比     </li>
@@ -914,6 +914,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2020/08/11/2020-08-11-shm-allocator/" rel="prev" title="一种适合共享内存RESUME方案的通用内存分配器设计方案和实现">
+                一种适合共享内存RESUME方案的通用内存分配器设计方案和实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -989,7 +993,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-count">41</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>

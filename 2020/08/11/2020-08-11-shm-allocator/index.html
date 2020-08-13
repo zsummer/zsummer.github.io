@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前言 基本原理 内存分配器的基本概念 显示和隐式分配器 设计要求和目标 内部碎片和外部碎片问题     基础分配策略 基础存储方式 Sequential Fit  连续适配 Segregated List 分离列表 Indexed  Fit   路径匹配策略 Best fit Worst fit First fit     设计方案 设计需求: 设计方式: 代码规模和最终性能       前">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一种适合共享内存RESUME方案的通用内存分配器设计方案和实现">
+<meta property="og:url" content="https://zsummer.github.io/2020/08/11/2020-08-11-shm-allocator/index.html">
+<meta property="og:site_name" content="关于夏天的一切">
+<meta property="og:description" content="前言 基本原理 内存分配器的基本概念 显示和隐式分配器 设计要求和目标 内部碎片和外部碎片问题     基础分配策略 基础存储方式 Sequential Fit  连续适配 Segregated List 分离列表 Indexed  Fit   路径匹配策略 Best fit Worst fit First fit     设计方案 设计需求: 设计方式: 代码规模和最终性能       前">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-08-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-08-13T13:54:58.543Z">
+<meta property="article:author" content="夏天">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zsummer.github.io/2020/08/11/2020-08-11-shm-allocator/"/>
+
+
+
+
+
+  <title>一种适合共享内存RESUME方案的通用内存分配器设计方案和实现 | 关于夏天的一切</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">关于夏天的一切</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我总觉得对你的爱很美</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/08/11/2020-08-11-shm-allocator/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">一种适合共享内存RESUME方案的通用内存分配器设计方案和实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-08-11T00:00:00+08:00">
+                2020-08-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <!-- TOC -->
+
+<ul>
+<li><a href="#%E5%89%8D%E8%A8%80">前言</a></li>
+<li><a href="#%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86">基本原理</a></li>
+<li><a href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E5%99%A8%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5">内存分配器的基本概念</a><ul>
+<li><a href="#%E6%98%BE%E7%A4%BA%E5%92%8C%E9%9A%90%E5%BC%8F%E5%88%86%E9%85%8D%E5%99%A8">显示和隐式分配器</a></li>
+<li><a href="#%E8%AE%BE%E8%AE%A1%E8%A6%81%E6%B1%82%E5%92%8C%E7%9B%AE%E6%A0%87">设计要求和目标</a><ul>
+<li><a href="#%E5%86%85%E9%83%A8%E7%A2%8E%E7%89%87%E5%92%8C%E5%A4%96%E9%83%A8%E7%A2%8E%E7%89%87%E9%97%AE%E9%A2%98">内部碎片和外部碎片问题</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E5%9F%BA%E7%A1%80%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5">基础分配策略</a><ul>
+<li><a href="#%E5%9F%BA%E7%A1%80%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F">基础存储方式</a><ul>
+<li><a href="#sequential-fit--%E8%BF%9E%E7%BB%AD%E9%80%82%E9%85%8D">Sequential Fit  连续适配</a></li>
+<li><a href="#segregated-list-%E5%88%86%E7%A6%BB%E5%88%97%E8%A1%A8">Segregated List 分离列表</a></li>
+<li><a href="#indexed--fit">Indexed  Fit</a></li>
+</ul>
+</li>
+<li><a href="#%E8%B7%AF%E5%BE%84%E5%8C%B9%E9%85%8D%E7%AD%96%E7%95%A5">路径匹配策略</a><ul>
+<li><a href="#best-fit">Best fit</a></li>
+<li><a href="#worst-fit">Worst fit</a></li>
+<li><a href="#first-fit">First fit</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%A1%88">设计方案</a><ul>
+<li><a href="#%E8%AE%BE%E8%AE%A1%E9%9C%80%E6%B1%82">设计需求:</a></li>
+<li><a href="#%E8%AE%BE%E8%AE%A1%E6%96%B9%E5%BC%8F">设计方式:</a></li>
+<li><a href="#%E4%BB%A3%E7%A0%81%E8%A7%84%E6%A8%A1%E5%92%8C%E6%9C%80%E7%BB%88%E6%80%A7%E8%83%BD">代码规模和最终性能</a></li>
+</ul>
+</li>
+</ul>
+<!-- /TOC -->
+
+
+<h2><span id="前言">前言</span></h2><p>在之前的文章我比较全面的介绍了一个完整的resume机制的阐述, 也提到了一些开发成本和三方库移植的问题, 这篇文章主要介绍如何在共享内存上实现一套可动态扩容的通用内存分配器, 以及如何利用通用内存分配器进行三方库包括stl中容器类的快速resumable化.       </p>
+<p>通用动态内存分配器的实现可以很好的对共享内存RESUME机制进行一个补充,  例如可以简单的基于分配器实现stl的allocator, 从而直接得到resumable的vector, list, queue, map, multi_map, unorder_map等;   也可以简单的将一些本身就比较容易resumable化的三方库和算法替换其allocator来简单快速的完成移植工作而非重写他们.   例如常见的资源解析rapidxml   移动避免算法库rvo等  .  </p>
+<p>当然, 处理易用性和快速移植三方库这些优点外, 从项目角度考虑也有一些缺点需要关注并进行合理范围的使用.   </p>
+<p>相比静态内存机制下的resumable方案 </p>
+<ul>
+<li><p>较难估算内存峰值用量  </p>
+<ul>
+<li>有些场合下该难点是业务需求带来的, 比如说我们普通玩家可以设置可绑定的上限buff100个就够用, 但是对于一些GVE的大型BOSS团本来说, 100个就容易超限,  在扁平化的设计中, 如果我们用静态内存方案那么所有单位的内存使用量都是’上限’, 但是改成动态方案 则是根据真实情况动态波动的.  我们可以根据策划配置通过软上限来进行计算, 但是业务功能量级铺设上来后 则很难全面的评估这些地方对内存使用的真实情况.     </li>
+<li>静态内存中在启服时可以一次性的计算好所有内存大小, 整个游戏无论负载情况其内存占用是始终稳定且直观的 .   </li>
+</ul>
+</li>
+<li><p>内存安全性不如静态内存   </p>
+<ul>
+<li>静态内存基本上不存在野指针 越界等问题  也不存在内存不够用的情况   </li>
+<li>例如说我实现了<code>static_list</code>; <ul>
+<li>定义声明了OBJ和总大小 <code>static_list&lt;Buff, MAX_BUFF_SIZE&gt; buffs;</code>  </li>
+<li>然后我引用了一个指针指向其中一个已有的元素进行当前被动动作标记, 在受击出现的时候<code>Buff* act = &amp;受击BUFF;</code>  在受击结束时候在移除act;  这里虽然用到了指针 但是在使用的时候, static_list中所有的元素都在一个连续的静态内存区域内, 并且该指针可以通过偏移检测和bitmap计算是否是有效的obj指针, obj是不是有效的buff等, 并不会因为是指针出现越界访问问题.  </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>定位一些内存访问相关的问题可能会更麻烦一些   </p>
+<ul>
+<li>例如:  所有战斗单位位于共享内存xxx–yyy地址内以大小X对齐, 每个单位内聚合有技能模块移动模块属性模块.  假如现在出现了一个读取属性错误的问题, 我们很容易根据有限的地址信息去推测出出问题的范围, 并且方便进行基于内存地址的修改情况进行监听断点等  </li>
+</ul>
+</li>
+<li><p>性能相比静态方案一般会有性能上的损失,  动态内存的分配和回收有一个适配的成本开销.   </p>
+</li>
+<li><p>长期运行可能有内存碎片问题</p>
+<ul>
+<li>这个问题反而比较乐观, 因为在静态内存池方案上 内存利用率往往是非常低的, 而动态内存分配器的碎片率一般根据情况大约都控制在25%以下, 像dlmalloc则在实践中能控制在95%左右.  </li>
+<li>静态内存一般来说, 对象池与对象池之间是内存隔离的, 即相互之间的空闲内存不能共用    </li>
+<li>无论是对象池还是容器, 其规模都是直接以’上限’在定义阶段确定的, 一般情景下都会有大量的富余容量浪费  </li>
+</ul>
+</li>
+</ul>
+<a id="more"></a>
+<h2><span id="基本原理">基本原理</span></h2><p>在共享内存紧邻静态内存区域, 划分出动态管理区域并支持动态增长扩容的区域     </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">|global state|  obj pools  |  dyn mgr |                     |  dyn segment 1 | dyn segment N ...   </span><br><span class="line">| &lt;-- 启服时候根据配置直接计算出大小 --&gt; |  &lt;-- alian size --&gt; | &lt;---   动态分段内存  -----&gt;  ...</span><br></pre></td></tr></table></figure>
+
+<h2><span id="内存分配器的基本概念">内存分配器的基本概念</span></h2><h3><span id="显示和隐式分配器">显示和隐式分配器</span></h3><p>这是一个基础的分类,  无论显式分配器还是隐式分配器都需要显式指定分配,  但是显式分配器还需要显式指定回收.   </p>
+<p>一般我们经常接触到的malloc/free (ptmalloc分配器),  tcmalloc  jemalloc等都是显示分配器  </p>
+<p>而不需要显式指定回收的内存分配器, 通常我们称之为垃圾收集器, 隐式分配器会自动回收不再被使用内存,  也因此通常其实现需要语言级别的支持和配合. </p>
+<h3><span id="设计要求和目标">设计要求和目标</span></h3><p>要求:  </p>
+<ul>
+<li>处理任意请求序列   <ul>
+<li>对于任意的请求和回收序列都能正确执行   </li>
+</ul>
+</li>
+<li>立即响应请求<ul>
+<li>对于内存分配请求需要立刻响应 不能缓存</li>
+</ul>
+</li>
+<li>只使用堆   <ul>
+<li>对于给系统用的内存分配器 只使用堆可以有更好的移植性   </li>
+<li>对于共享内存RESUME而言, 对应的是 我们只能使用共享内存  </li>
+</ul>
+</li>
+<li>对齐块   <ul>
+<li>一般来说通用内存分配器会提供两倍CPU位宽的对齐以保证对任意类型数据访问的支持, 一个错误的实现假设例如 在64位下只提供32位的对齐  那么去读取一个void*指针  则特定情况可能会导致CPU两次读取带来额外的性能开销甚至可能产生硬件异常.    </li>
+</ul>
+</li>
+<li>不修改/移动已分配块<ul>
+<li>没有缺页中断这类机制支持 修改或者移动已分配块会直接导致上层功能异常 </li>
+</ul>
+</li>
+</ul>
+<p>目标:  </p>
+<ul>
+<li>最大化吞吐率</li>
+<li>最大化内存利用率, 减少管理内存大小, 减少内部碎片, 减少外部碎片</li>
+</ul>
+<h4><span id="内部碎片和外部碎片问题">内部碎片和外部碎片问题</span></h4><p>内部碎片:简单描述就是已分配块中的无效负荷部分   </p>
+<ul>
+<li>例如因为对齐要求, 当用户分配9字节数据时候, 给出的已分配块为16,  那么就产生了7字节的内部碎片   </li>
+<li>通常内部碎片的问题简单明了容易量化, 只要在可接受范围都可以.<br>外部碎片: 空闲内存合计能满足请求, 但是因为非连续, 导致没有任何一块单独的空闲内存能满足需求.   </li>
+<li>例如在1M的空闲内存以512k大小分散在两个地方,  这个时候任何大于512k的请求都无法成功分配   </li>
+<li>在通用的内存分配器中要求中, 外部碎片无法避免并且难以量化, 更准确的描述是, 外部碎片的产生不仅取决于之前请求的模式和分配器实现方式, 还取决于未来即将发生的请求的模式.    <ul>
+<li>举例来说 我们从1M内存中开采512k后再开采1K, 那么如果后续的请求中释放了512k的这个分配块 就出现了外部碎片问题.   </li>
+</ul>
+</li>
+<li>通常 如果我们对请求加以限制, 例如规定开采粒度都是512k  那么就可以通过内部碎片来优化一部分外部碎片问题.   </li>
+<li>对于一个长期运行的系统来讲, 外部碎片是一个非常值得留意的问题.    </li>
+</ul>
+<h2><span id="基础分配策略">基础分配策略</span></h2><h3><span id="基础存储方式">基础存储方式</span></h3><h4><span id="sequential-fit-连续适配">Sequential Fit  (连续适配)</span></h4><p> 是基于一个单向或双向链表管理各个blocks的基础算法，因为和blocks的个数有关，性能比较差。这一类算法包括Fast-Fit, First-Fit, Next-Fit, and Worst-Fit。  </p>
+<h4><span id="segregated-list-分离列表">Segregated List (分离列表)</span></h4><p> 将所有的空闲块，放入到一组链表中，每一个链表中只包含某一个大小范围的空闲块  </p>
+<ul>
+<li>Buddy System (Sequential Fit变种)  <ul>
+<li>内部碎片化问题比较严重   </li>
+<li>Binary Buddies  </li>
+<li>Fibonacci Buddies  </li>
+<li>Weighted Buddies   </li>
+</ul>
+</li>
+</ul>
+<h4><span id="indexed-fit">Indexed  Fit</span></h4><p> 通过一些高阶的数据结构来索引（Index）空闲的内存块。例如基于平衡树的“Best Fit”算法。</p>
+<ul>
+<li>使用Balanced Tree的Best Fit allocator</li>
+<li>使用Cartesian tree 的Stephenson Fast-Fit allocator</li>
+<li>Bitmap Fit (Indexed Fit 变种)<br>Indexed Fit算法的变种，通过一小段内存的位图来标记对应的内存是空闲的还是使用中。  </li>
+</ul>
+<h3><span id="路径匹配策略">路径匹配策略</span></h3><p>对于操作系统而言, 除了管理进程之外, 还需要有效的管理计算机的主内存, 管理主内存的共享使用和最小化内存访问时间是内存管理器的基本目标. 虽然使用了各种不同的策略来为争夺内存的进程分配空间，但最流行的三种策略是最佳匹配、最不适合匹配和首次匹配.    </p>
+<h4><span id="best-fit">Best fit</span></h4><p>  The allocator places a process in the smallest block of unallocated memory in which it will fit. For example, suppose a process requests 12KB of memory and the memory manager currently has a list of unallocated blocks of 6KB, 14KB, 19KB, 11KB, and 13KB blocks. The best-fit strategy will allocate 12KB of the 13KB block to the process.<br>  最佳匹配:<br>  这种匹配策略中, 分配器会从满足匹配要求的未分配内存中选择最小的块.<br>  例如程序请求一个12kb的内存, 而当前的内存管理器有一个未分配的内存块列表, 分别为14k, 19k, 11k, 13k, 那么best-fit讲从13k的内存块中分配内存给程序.  </p>
+<h4><span id="worst-fit">Worst fit</span></h4><p>  The memory manager places a process in the largest block of unallocated memory available. The idea is that this placement will create the largest hold after the allocations, thus increasing the possibility that, compared to best fit, another process can use the remaining space. Using the same example as above, worst fit will allocate 12KB of the 19KB block to the process, leaving a 7KB block for future use.<br>  最不适合匹配<br>  内存管理器总是选择获得的最大的那个未分配内存块.<br>  这种策略在每次分配后总是持有最大的内存块, 从而增加匹配的可能性. 与最佳匹配相比, 其他的请求可以使用剩余的空间.(最佳匹配的剩余内存往往无法利用)<br>  同上例, 最坏匹配会从19k的那个内存块中分配, 并留下7k的内存留给将来使用.  </p>
+<h4><span id="first-fit">First fit</span></h4><p>  There may be many holes in the memory, so the operating system, to reduce the amount of time it spends analyzing the available spaces, begins at the start of primary memory and allocates memory from the first hole it encounters large enough to satisfy the request. Using the same example as above, first fit will allocate 12KB of the 14KB block to the process.<br>  通常内存中会存在很多空洞, 所以操作系统为了减少分析可用空间的性能(时间)消耗, 会从主要内存或者 第一个足够大并且满足求要的可分配内存的起始位置相应请求.<br>  同上例中, 首先匹配会从14k的block中分配12k的请求.<br>  First Fit的一个改良版本叫做Next Fit, 即在下次请求时会从上次中断的地方的开始搜索, 从而避免总是从起始的空闲内存开始查找. (Designated victim), First Fit的策略会倾向于总是把大块切的更零碎也因此带来更多的外部碎片问题, 也因为总是从空闲内存的头部开始切造成更多的内部碎片,  而Next Fit的做法会避免(改良)这些问题, 并且速度比Firt 以及 Best更快.  </p>
+<h2><span id="设计方案">设计方案</span></h2><p>如何设计一个适用于共享内存上支持resumable的通用动态内存管理系统?  这里借鉴了linux下的设计布局.<br>参考我之前写的两篇文章:<br><a href="https://zsummer.github.io/2020/02/07/2020-02-07-shared-memory-buddy_system/">基于共享内存的通用内存分配器</a><br><a href="https://zsummer.github.io/2020/02/07/2020-02-03-shared-memory-resume-overview/">基于共享内存的对象池管理方案</a></p>
+<h3><span id="设计需求">设计需求:</span></h3><ul>
+<li>不考虑多线程  </li>
+<li>RESUMABLE支持  </li>
+<li>通用内存分配器的必要条件必须全部满足   <ul>
+<li>任意大小任意序列的请求支持  </li>
+<li>立即响应请求   </li>
+<li>保证内存的对齐要求 </li>
+<li>不移动压缩已分配块    </li>
+</ul>
+</li>
+</ul>
+<h3><span id="设计方式">设计方式:</span></h3><ul>
+<li>大块共享内存的连续地址空间下的动态扩容</li>
+<li>buddy system算法来作为底层实现  <ul>
+<li>满足任意大小的请求序列</li>
+<li>通过约束上层小内存分配器的批发粒度来降低外部碎片的发生   </li>
+<li>满足大内存对齐而不产生内部碎片 (对于现代tcmalloc mimalloc等meta方案进行支持)    </li>
+</ul>
+</li>
+<li>zmalloc小内存分配方案  <ul>
+<li>1k以下的内存使用朴素的分箱方案(Segregated List)   <ul>
+<li>best fit 方案 </li>
+</ul>
+</li>
+<li>1k以上的内存请求使用$2^{n-3}$进行对齐, 即最大浪费约12.5%的内存进行分箱   <ul>
+<li>best fit 方案  </li>
+<li>dlmalloc使用$2^{n-2}$进行分箱, 箱内使用一个刚刚好够用的bit前缀树进行空间内不同大小的已分配块管理, 可以达到接近100%的利用率 而对齐只要一行代码即可完成.   性能上理论上比对齐方式略差  实测基本上没有什么差距.  </li>
+<li>tcmalloc mimalloc均采用对齐这种方案</li>
+</ul>
+</li>
+<li>超过大小内存请求上限大小的内存, 则’直接’交给底层的buddy system完成, zmalloc只提供统一接口.   </li>
+<li>牺牲块开采    <ul>
+<li>这是进行了first fit优化的一个关键点 也是性能的关键    </li>
+<li>在best fit的快速bitmap判定失败后会从牺牲块进行开采, 如果没有牺牲块则批发一个大块作为牺牲块进行开采.   </li>
+<li>这里采用牺牲块有更良好的通用性性能,  指令路径短, cpu cache友好   </li>
+<li>这里没采用tcmalloc/mimalloc的page设计, 在相同大小的连续请求中会比这种方案要好, 但是牺牲块的设计则通用性上更好, 性能差距即使针对性的情景下也很难超过5%  </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><span id="代码规模和最终性能">代码规模和最终性能</span></h3><p>这两种方案核心代码都是几百行级别, 但是考虑到coverage测试代码, 必要的辅助流程代码和assert调测(单元代码不在实现文件中), buddy system和zmalloc的实现部分代码均在1000行出头即可完成.<br>性能测试中, 同dlmalloc mimalloc tcmalloc的生产环境中性能差距均小于5%,  在项目整体的压测中无可观测的性能波动.   </p>
+<p>(tcmalloc相比ptmalloc的提升明显的部分在多线程部分的设计, 现代分配器tcmalloc/jemalloc/mimalloc等均做了局部化处理, 老的ptmalloc则只是在dlmalloc上做了多线程支持和细节优化 所以差距会比较明显)</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/08/03/2020-08-03-shm-resume/" rel="next" title="共享内存RESUME机制综述">
+                <i class="fa fa-chevron-left"></i> 共享内存RESUME机制综述
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="夏天" />
+          <p class="site-author-name" itemprop="name">夏天</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">categories</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">基本原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">3.</span> <span class="nav-text">内存分配器的基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">3.1.</span> <span class="nav-text">显示和隐式分配器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">3.2.</span> <span class="nav-text">设计要求和目标</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">3.2.1.</span> <span class="nav-text">内部碎片和外部碎片问题</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">4.</span> <span class="nav-text">基础分配策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">4.1.</span> <span class="nav-text">基础存储方式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.1.1.</span> <span class="nav-text">Sequential Fit  (连续适配)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.1.2.</span> <span class="nav-text">Segregated List (分离列表)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.1.3.</span> <span class="nav-text">Indexed  Fit</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">4.2.</span> <span class="nav-text">路径匹配策略</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.2.1.</span> <span class="nav-text">Best fit</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.2.2.</span> <span class="nav-text">Worst fit</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.2.3.</span> <span class="nav-text">First fit</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">5.</span> <span class="nav-text">设计方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">5.1.</span> <span class="nav-text">设计需求:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">5.2.</span> <span class="nav-text">设计方式:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">5.3.</span> <span class="nav-text">代码规模和最终性能</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">夏天</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+    NexT.Gemini
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>
