@@ -1,5 +1,5 @@
 ---
-title: 一种适合共享内存RESUME方案的通用内存分配器设计方案和实现 
+title: 一种适合共享内存RESUME方案的通用内存分配器设计方法和实现 
 date: 2020-08-11
 categories: develop 
 author: yawei.zhang 
