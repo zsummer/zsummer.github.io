@@ -250,6 +250,159 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/02/07/2020-02-03-shared-memory-resume-overview/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/02/07/2020-02-03-shared-memory-resume-overview/" itemprop="url">基于共享内存的对象池管理方案</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-02-07T00:00:00+08:00">
+                2020-02-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="1-目录"><a href="#1-目录" class="headerlink" title="..1. 目录"></a>..1. 目录</h3><h3 id="通用的对象池方案"><a href="#通用的对象池方案" class="headerlink" title="通用的对象池方案"></a>通用的对象池方案</h3><p>该方案本质上一个简单分离存储的内存分配方案:<br>分配器维护多个空闲链表, 每个空闲链表包含大小相等的空闲块 每个块的大小为这个大小类中最大元素的大小, 不分割不合并.    </p>
+<p><img src="/images/objpools.png" alt="buddy_system">  </p>
+<h4 id="数据结构定义"><a href="#数据结构定义" class="headerlink" title="数据结构定义"></a>数据结构定义</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">对象池管理器</span><br><span class="line">  [对象A条目IDX]: 对象是否包含虚函数(是否需要重建虚函数表):  对象类型(对应条目IDX): 对象大小: 对象个数: 该条目总长: 条目对应内存地址:  条目对应对象起始地址: 空闲对象下标ID : 已分配计数   </span><br><span class="line">  [对象B条目IDX]: 对象是否包含虚函数(是否需要重建虚函数表):  对象类型(对应条目IDX): 对象大小: 对象个数: 该条目总长: 条目对应内存地址:  条目对应对象起始地址: 空闲对象下标ID : 已分配计数   </span><br><span class="line">  [对象C条目IDX]: 对象是否包含虚函数(是否需要重建虚函数表):  对象类型(对应条目IDX): 对象大小: 对象个数: 该条目总长: 条目对应内存地址:  条目对应对象起始地址: 空闲对象下标ID : 已分配计数   </span><br><span class="line">  [对象D条目IDX]: 对象是否包含虚函数(是否需要重建虚函数表):  对象类型(对应条目IDX): 对象大小: 对象个数: 该条目总长: 条目对应内存地址:  条目对应对象起始地址: 空闲对象下标ID : 已分配计数</span><br></pre></td></tr></table></figure>
+
+<p>单个条目指向的起始地址结构:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flag|flag|flag : ...  FENCE SIZE: NODE SIZE :   FENCE SIZE: NODE SIZE :   ...</span><br></pre></td></tr></table></figure>
+<p>条目指向的地址会首先保存flag标志标明该对象是否在使用中, 用于请求和释放时候的判定标志<br>NODE SIZE会进行8字节对齐, FENCE SIZE也选择8字节 这样整个对象池的地址都是保证8字节对齐的<br>FENCE写入特殊固定的魔法数值 用于溢出检测<br>分配出去的对象 NODE SIZE的起始地址即为对象的地址<br>空闲的对象, 其NODE SIZE的第一个U32保存的是下一个空闲内存 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">: NODE SIZE: 对应下面结构</span><br><span class="line">: FREE IDX, NODE SIZE- FENCE SIZE:</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/02/07/2020-02-03-shared-memory-resume-overview/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/02/07/2020-02-07-shared-memory-buddy_system/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2135,216 +2288,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/05/2019-11-05-fast-check-linux/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/11/05/2019-11-05-fast-check-linux/" itemprop="url">linux快速排查问题的命令</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-05T00:00:00+08:00">
-                2019-11-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="全局分析和统计"><a href="#全局分析和统计" class="headerlink" title="全局分析和统计"></a>全局分析和统计</h3><ul>
-<li><p>top命令   </p>
-<ul>
-<li>free 查看内存使用信息  </li>
-<li>vmstate [delay时间]  按照delay时间打印内存使用 io读写 CPU用量等信息  </li>
-<li>iostat -m -x [时间] [次数]   io读写详细信息</li>
-</ul>
-</li>
-<li><p>sar 系统活动情况报告 追溯统计数据 从最近的0点0分开始显示数据   </p>
-<ul>
-<li>sar -A 所有  </li>
-<li>sar -u CPU  </li>
-<li>sar -q 负载</li>
-<li>sar -r 内存</li>
-<li>CPU存在瓶颈，可用 sar -u 和 sar -q 等来查看</li>
-<li>内存存在瓶颈，可用sar -B、sar -r 和 sar -W 等来查看</li>
-<li>I/O存在瓶颈，可用 sar -b、sar -u 和 sar -d 等来查看</li>
-</ul>
-</li>
-<li><p>df 查看当前硬盘存储</p>
-<ul>
-<li>du -h  –max-depth=1 [./]   统计当前目录树下的文件大小  </li>
-</ul>
-</li>
-<li><p>IPC资源查询   </p>
-<ul>
-<li>ipcs -m 查看共享内存资源  </li>
-<li>ipcsrm -M [shmkey]  删除共享内存资源  </li>
-<li>ipcsrm -m [shmid]    删除shmid标识的共享内存资源  </li>
-</ul>
-</li>
-<li><p>ulimit -a   配置位置 /etc/security/limits.conf  </p>
-<ul>
-<li>coredump文件的大小</li>
-<li>线程栈的大小  </li>
-<li>单进程最大设备数<ul>
-<li>单进程最大设备数的硬性限制在/proc/sys/fs/nr_open 中配置  </li>
-<li>系统配置的最大设备数可查看/proc/sys/fs/file-max 中配置  </li>
-<li>系统配置的最大设备数修改/etc/sysctl.conf |  fs.file-max = 1000000</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>全局线程总数 </p>
-<ul>
-<li>查看位置 /proc/sys/kernel/threads-max  </li>
-</ul>
-</li>
-<li><p>单个进程最大线程数 PTHREAD_THREADS_MAX  新的NPTL实现中不存在该限制   </p>
-<ul>
-<li>查看位置 /usr/include/bits/local_lim.h </li>
-<li>查看位置 /usr/include/x86_64-linux-gnu/bits/local_lim.h</li>
-</ul>
-</li>
-<li><p>whereis   查看命令所在位置  </p>
-</li>
-<li><p>lsof [文件/路径]  查看占用该文件/该目录下文件的进程  </p>
-</li>
-<li><p>lsof -i  查看当前活动的网络连接 包括TCP / UDP</p>
-</li>
-<li><p>lsof -p [pid] 查看当前进程所有打开的文件/设备</p>
-</li>
-<li><p>ulimit -s 栈大小  </p>
-</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/11/05/2019-11-05-fast-check-linux/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2395,7 +2338,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-count">42</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>

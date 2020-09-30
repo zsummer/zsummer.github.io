@@ -96,13 +96,13 @@
 
 <meta name="description" content="前言 基本原理 内存分配器的基本概念 显示和隐式分配器 设计要求和目标 内部碎片和外部碎片问题     基础分配策略 基础存储方式 Sequential Fit  连续适配 Segregated List 分离列表 Indexed  Fit   路径匹配策略 Best fit Worst fit First fit     设计方案 设计需求: 设计方式: 代码规模和最终性能       前">
 <meta property="og:type" content="article">
-<meta property="og:title" content="一种适合共享内存RESUME方案的通用内存分配器设计方案和实现">
+<meta property="og:title" content="一种适合共享内存RESUME方案的通用内存分配器设计方法和实现">
 <meta property="og:url" content="https://zsummer.github.io/2020/08/11/2020-08-11-shm-allocator/index.html">
 <meta property="og:site_name" content="关于夏天的一切">
 <meta property="og:description" content="前言 基本原理 内存分配器的基本概念 显示和隐式分配器 设计要求和目标 内部碎片和外部碎片问题     基础分配策略 基础存储方式 Sequential Fit  连续适配 Segregated List 分离列表 Indexed  Fit   路径匹配策略 Best fit Worst fit First fit     设计方案 设计需求: 设计方式: 代码规模和最终性能       前">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-08-10T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-08-13T13:54:58.543Z">
+<meta property="article:modified_time" content="2020-08-20T11:37:24.699Z">
 <meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
 
@@ -139,7 +139,7 @@
 
 
 
-  <title>一种适合共享内存RESUME方案的通用内存分配器设计方案和实现 | 关于夏天的一切</title>
+  <title>一种适合共享内存RESUME方案的通用内存分配器设计方法和实现 | 关于夏天的一切</title>
   
 
 
@@ -269,7 +269,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">一种适合共享内存RESUME方案的通用内存分配器设计方案和实现</h1>
+          <h1 class="post-title" itemprop="name headline">一种适合共享内存RESUME方案的通用内存分配器设计方法和实现</h1>
         
 
         <div class="post-meta">
@@ -417,7 +417,7 @@
 </ul>
 <a id="more"></a>
 <h2><span id="基本原理">基本原理</span></h2><p>在共享内存紧邻静态内存区域, 划分出动态管理区域并支持动态增长扩容的区域     </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">|global state|  obj pools  |  dyn mgr |                     |  dyn segment 1 | dyn segment N ...   </span><br><span class="line">| &lt;-- 启服时候根据配置直接计算出大小 --&gt; |  &lt;-- alian size --&gt; | &lt;---   动态分段内存  -----&gt;  ...</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">|global state|  obj pools  |  dyn mgr |                     |  dyn segment 1 | dyn segment N ...   </span><br><span class="line">| &lt;-- 启服时候根据配置直接计算出大小 --&gt; |  &lt;-- alian size --&gt; | &lt;---   动态分段扩容  -----&gt;  ...</span><br></pre></td></tr></table></figure>
 
 <h2><span id="内存分配器的基本概念">内存分配器的基本概念</span></h2><h3><span id="显示和隐式分配器">显示和隐式分配器</span></h3><p>这是一个基础的分类,  无论显式分配器还是隐式分配器都需要显式指定分配,  但是显式分配器还需要显式指定回收.   </p>
 <p>一般我们经常接触到的malloc/free (ptmalloc分配器),  tcmalloc  jemalloc等都是显示分配器  </p>
@@ -562,6 +562,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2020/09/30/2020-09-30-git-lfs/" rel="prev" title="git和git-lfs编译与使用">
+                git和git-lfs编译与使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -637,7 +641,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-count">42</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
