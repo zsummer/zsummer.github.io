@@ -248,93 +248,68 @@ https://gist.github.com/wen-long/8644243
 
 
 
+## wifi 5G时区问题   
+可能导致找不到wifi信号或者连上去后很快断开   
 
-
-
-
-
-
-
-
-
+修改/etc/config/system
 ```
-root@OpenWrt:~# fdisk /dev/mmcblk0
-
-Welcome to fdisk (util-linux 2.36).
-Changes will remain in memory only, until you decide to write them.
-Be careful before using the write command.
-
-
-Command (m for help): p
+config system
+        option timezone 'CST-8'
+        option zonename 'Asia/Shanghai'
+```
+修改/etc/config/wireless
+```
+        option country 'CN'
 ```
 
-```
-wget https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.25.2.tar.gz
-tar -xvf git-2.25.2.tar.gz
-cd git-2.25.2
-make configure NO_OPENSSL=1
-./configure --prefix=/usr/local/git  all
-make 
-make install
-echo "export PATH=/usr/local/git/bin:$PATH" >> /etc/profile
-source /etc/profile
-```
-<!-- more -->
+中国开放的5G频道为
+36, 40, 44, 48, 52, 56, 60, 64, 149,153, 157, 161, 165  
 
-### 编译git-lfs
-```
-go build
-go install
-```
+opkg安装iw  iwinfo命令  
 
-### 手动下载安装包
-```
-tar xf git-lfs-*.tar.gz
-cd git-lfs-*
-sudo ./install.sh
-```
+通过```iwinfo wlan0 ***``` 可以查看无线网卡的当前信息 以及支持的信号强度  模式等   
 
-### 存放到git bin目录后执行
-```
-git lfs install
-```
+例如通过```iwinfo wlan0 htmodelist```可以查看支持的htmode  
+例如通过```iwinfo wlan0 freqlist```可以查看支持的频段  
 
+通过iw list查看设备支持的工作模式 
+iw wlan0 info
+iw phy0 info
 
-### 使用git-lfs
+iw reg get 获取频段和信道宽度
+### 补充信息 
+https://openwrt.org/docs/guide-user/network/wifi/basic#htmodethe_wi-fi_channel_width   
 
-添加跟踪
+HT20 High Throughput 20MHz, 802.11n
+HT40 High Throughput 40MHz, 802.11n
+HT40- High Throughput 40MHz, 802.11n, control channel is bellow extension channel.
+HT40+ High Throughput 40MHz, 802.11n, control channel is above extension channel.
+VHT20 Very High Throughput 20MHz, Supported by 802.11ac
+VHT40 Very High Throughput 40MHz, Supported by 802.11ac
+VHT80 Very High Throughput 80MHz, Supported by 802.11ac
+VHT160 Very High Throughput 160MHz, Supported by 802.11ac
+NOHT disables 11n
+
+可能得组合 
+
 ```
-git lfs track "*.so"
-git lfs track "resource/*"
+config	wifi-device		'radio0'
+	option	channel		'104'
+	option	hwmode		'11a'
+	option	htmode		'HT20'
 ```
 
-
-
-一定要先track然后再进行add commit操作  
-
-其他命令
 ```
-# 查看当前使用 Git LFS 管理的匹配列表
-git lfs track
-
-# 使用 Git LFS 管理指定的文件
-git lfs track "*.psd"
-
-# 不再使用 Git LFS 管理指定的文件
-git lfs untrack "*.psd"
-
-# 类似 `git status`，查看当前 Git LFS 对象的状态
-git lfs status
-
-# 枚举目前所有被 Git LFS 管理的具体文件
-git lfs ls-files
-
-# 检查当前所用 Git LFS 的版本
-git lfs version
-
-# 针对使用了 LFS 的仓库进行了特别优化的 clone 命令，显著提升获取
-# LFS 对象的速度，接受和 `git clone` 一样的参数。 [1] [2]
-git lfs clone https://github.com/user/repo.git
+config	wifi-device		'radio0'
+	option	channel		'7'
+	option	hwmode		'11ng'
+	option	htmode		'HT40+'
 ```
 
+```
+config	wifi-device		'radio0'
+	option	channel		'36'
+	option	hwmode		'11na'
+	option	htmode		'HT40+'
+```
 
