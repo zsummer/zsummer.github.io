@@ -250,6 +250,197 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/09/2019-11-12-elf-section-symbol/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/11/09/2019-11-12-elf-section-symbol/" itemprop="url">ELF文件的SECTIO分析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-09T00:00:00+08:00">
+                2019-11-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><hr>
+<!-- TOC -->
+
+<ul>
+<li><a href="#目录">目录</a></li>
+<li><a href="#elf文件类型和描述">ELF文件类型和描述</a><ul>
+<li><a href="#文件类型">文件类型</a></li>
+<li><a href="#链接器视图编译器-汇编器-链接器">链接器视图(编译器 汇编器 链接器)</a></li>
+<li><a href="#加载器视图-系统加载器">加载器视图 (系统加载器)</a></li>
+<li><a href="#基本测试命令">基本测试命令</a></li>
+<li><a href="#基础术语知识">基础术语知识</a><ul>
+<li><a href="#目标文件格式的比较和说明">目标文件格式的比较和说明</a></li>
+<li><a href="#其他词汇说明">其他词汇说明</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!-- /TOC -->
+
+<h3 id="ELF文件类型和描述"><a href="#ELF文件类型和描述" class="headerlink" title="ELF文件类型和描述"></a>ELF文件类型和描述</h3><hr>
+<p>(Executable and Linking Format) (可执行可链接格式) 文件    </p>
+<h4 id="文件类型"><a href="#文件类型" class="headerlink" title="文件类型"></a>文件类型</h4><ul>
+<li><p>可重定位文件  (relocatable file)  </p>
+<ul>
+<li>由源文件编译而成但是还没有链接成可执行文件, 扩展名通常为.o  通常’目标文件(object file)’  用于与其他目标文件进行链接成可执行文件或者动态链接库.  </li>
+<li>可重定位是指 对外部符号的访问会进行标记, 在链接时候会重写这部分访问(操作数)重定位到真正的位置上.  </li>
+<li>重定位因为存在该修补 则有以下作用:  <ul>
+<li>重定位在执行时是直接使用真实位置 没有其他过程 性能非常好   </li>
+<li>链接共享库的时候如果需要确定地址和修补, 则还需要保证多个共享库的地址不可以重叠, 在32位下这种保证会很容易用尽虚拟(地址)空间  </li>
+<li>重定位需要修改代码段, 从而破坏’代码段’只读属性, 如果在链接阶段无法完成重定位, 则只能放在加载过程完成, 这样会导致’无法实现真正的代码共享’ .  比如所有进程使用的相同so文件在内存中实际上只有一份就是依赖于so的代码段只读且一致这个原则上的.  </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>共享目标文件(shared object file)，即动态连接库文件 它在以下两种情况下被使用</p>
+<ul>
+<li>在链接过程中与其它动态链接库或可重定位文件一起构建新的目标文件</li>
+<li>在可执行文件被加载的过程中 被动态链接到新的进程中 成为运行代码的一部分  </li>
+</ul>
+</li>
+<li><p>可执行文件(executable file)，经过连接的，可以执行的程序文件。  </p>
+</li>
+<li><p>coredump文件 核心转储  </p>
+</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/11/09/2019-11-12-elf-section-symbol/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/05/2019-11-05-fast-check-linux/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1827,166 +2018,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/01/11/2019-01-11-AT&T-INTEL-ASM/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/11/2019-01-11-AT&T-INTEL-ASM/" itemprop="url">AT&T 和 INTEL 汇编格式区别</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-11T17:21:00+08:00">
-                2019-01-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="一、AT-amp-T-格式Linux-汇编语法格式"><a href="#一、AT-amp-T-格式Linux-汇编语法格式" class="headerlink" title="一、AT&amp;T 格式Linux 汇编语法格式"></a>一、AT&amp;T 格式Linux 汇编语法格式</h3><ul>
-<li>在 AT&amp;T 汇编格式中，寄存器名要加上 ‘%’ 作为前缀；而在 Intel 汇编格式中，寄存器名不需要加前缀。例如：  </li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>AT&amp;T格式</th>
-<th>Intel格式</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>pushl %eax</td>
-<td>push eax</td>
-</tr>
-</tbody></table>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/11/2019-01-11-AT&T-INTEL-ASM/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2037,7 +2068,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">42</span>
+                <span class="site-state-item-count">43</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
