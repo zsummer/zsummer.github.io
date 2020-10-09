@@ -15,6 +15,8 @@ mathjax: false
 
 这里有几个关键字 factory指的的是安装固件  sysupgrade是指的更新专用镜像文件   snapshots是快照镜像文件   
 
+<!--more-->
+
 例如树莓派3B对应的最新版本[view data](https://openwrt.org/toh/hwdata/raspberry_pi_foundation/raspberry_pi_3_b)如下:  
 
 ```
@@ -312,4 +314,14 @@ config	wifi-device		'radio0'
 	option	hwmode		'11na'
 	option	htmode		'HT40+'
 ```
+
+
+
+### 快照版本问题  
+如果安装的是快照版本 会有以下几个问题:  
+1. 没有luci   需要手动安装   
+2. 快照版本为自动构建且软件源对应自动构建的构建版号  导致一旦下个快照产生(通常几个小时?)就会导致软件源无法正常使用    
+
+快照版本的好处是可以刷完TF卡后直接启动而不需要任何引导步骤(通常至少需要一个USB键盘和HDMI+显示器)   
+
 
