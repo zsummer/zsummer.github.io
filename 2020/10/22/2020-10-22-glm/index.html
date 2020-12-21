@@ -94,15 +94,15 @@
 
 
 
-<meta name="description" content="树莓派官方地址和镜像下载官方地址https:&#x2F;&#x2F;openwrt.org&#x2F;根据硬件下载例如树莓派的分支可以再Brand分支中查找关键字Raspberry Pi    快速上手推荐直接安装镜像 即跳过系统安装部分直接启动就可以使用, 带来的问题是 一般我们使用的tf卡可能至少32G 但是烧录的镜像只能用到其中的几百M 需要利用工具进行额外的mount挂载.     这里有几个关键字 factory指的">
+<meta name="description" content="GLM常用函数解释说明GLM默认使用右手坐标系，如果要改成默认左手坐标系，使用： 1GLM_FORCE_LEFT_HANDED    &lt;glm&#x2F;trigonometric.hpp&gt;GLM_FUNC_DECL GLM_CONSTEXPR vec&lt; L, T, Q &gt; radians (vec&lt; L, T, Q &gt; const &amp;degrees)将角度转化为">
 <meta property="og:type" content="article">
-<meta property="og:title" content="树莓派使用">
-<meta property="og:url" content="https://zsummer.github.io/2020/10/03/2020-10-03-raspberrypi/index.html">
+<meta property="og:title" content="GLM常见使用接口">
+<meta property="og:url" content="https://zsummer.github.io/2020/10/22/2020-10-22-glm/index.html">
 <meta property="og:site_name" content="关于夏天的一切">
-<meta property="og:description" content="树莓派官方地址和镜像下载官方地址https:&#x2F;&#x2F;openwrt.org&#x2F;根据硬件下载例如树莓派的分支可以再Brand分支中查找关键字Raspberry Pi    快速上手推荐直接安装镜像 即跳过系统安装部分直接启动就可以使用, 带来的问题是 一般我们使用的tf卡可能至少32G 但是烧录的镜像只能用到其中的几百M 需要利用工具进行额外的mount挂载.     这里有几个关键字 factory指的">
+<meta property="og:description" content="GLM常用函数解释说明GLM默认使用右手坐标系，如果要改成默认左手坐标系，使用： 1GLM_FORCE_LEFT_HANDED    &lt;glm&#x2F;trigonometric.hpp&gt;GLM_FUNC_DECL GLM_CONSTEXPR vec&lt; L, T, Q &gt; radians (vec&lt; L, T, Q &gt; const &amp;degrees)将角度转化为">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2020-10-02T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-10-09T13:55:24.295Z">
+<meta property="article:published_time" content="2020-10-21T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-10-23T02:31:45.576Z">
 <meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
 
@@ -133,13 +133,13 @@
 
 
 
-  <link rel="canonical" href="https://zsummer.github.io/2020/10/03/2020-10-03-raspberrypi/"/>
+  <link rel="canonical" href="https://zsummer.github.io/2020/10/22/2020-10-22-glm/"/>
 
 
 
 
 
-  <title>树莓派使用 | 关于夏天的一切</title>
+  <title>GLM常见使用接口 | 关于夏天的一切</title>
   
 
 
@@ -252,7 +252,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/10/03/2020-10-03-raspberrypi/">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/10/22/2020-10-22-glm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="夏天">
@@ -269,7 +269,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">树莓派使用</h1>
+          <h1 class="post-title" itemprop="name headline">GLM常见使用接口</h1>
         
 
         <div class="post-meta">
@@ -281,8 +281,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-10-03T00:00:00+08:00">
-                2020-10-03
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-10-22T00:00:00+08:00">
+                2020-10-22
               </time>
             
 
@@ -341,17 +341,18 @@
       
 
       
-        <h2><span id="树莓派官方地址和镜像下载">树莓派官方地址和镜像下载</span></h2><p><a href="https://openwrt.org/zh/" target="_blank" rel="noopener">官方地址https://openwrt.org/</a><br><a href="https://openwrt.org/toh/views/toh_fwdownload?dataflt%5B0%5D=supported%20current%20rel_%3D19.07.4" target="_blank" rel="noopener">根据硬件下载</a><br>例如树莓派的分支可以再Brand分支中查找关键字<strong>Raspberry Pi</strong>   </p>
-<p>快速上手推荐直接安装镜像 即跳过系统安装部分直接启动就可以使用, 带来的问题是 一般我们使用的tf卡可能至少32G 但是烧录的镜像只能用到其中的几百M 需要利用工具进行额外的mount挂载.    </p>
-<p>这里有几个关键字 factory指的的是安装固件  sysupgrade是指的更新专用镜像文件   snapshots是快照镜像文件   </p>
-<a id="more"></a>
-
-<p>例如树莓派3B对应的最新版本<a href="https://openwrt.org/toh/hwdata/raspberry_pi_foundation/raspberry_pi_3_b" target="_blank" rel="noopener">view data</a>如下:  </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Device Type:Single Board ComputerBrand:Raspberry Pi FoundationModel:Raspberry Pi 3Version:B</span><br><span class="line">Supported Current Rel:19.07.4Unsupported Functions:Country Code settingGluon support:unknownTarget:bcm27xxSubtarget:bcm2710Package architecture:aarch64_cortex-a53</span><br><span class="line">Device Page:raspberry_piForum search:Raspberry Pi 3Git search:Raspberry Pi 3WikiDevi URL:https:&#x2F;&#x2F;wikidevi.wi-cat.ru&#x2F;RPF_Raspberry_Pi_3_Model_BWikiDevi ID:RPF_Raspberry_Pi_3_Model_BOEM Device Homepage URL:https:&#x2F;&#x2F;www.raspberrypi.org&#x2F;products&#x2F;raspberry-pi-3-model-b&#x2F;Firmware OEM Stock URL:https:&#x2F;&#x2F;www.raspberrypi.org&#x2F;downloads&#x2F;Firmware OpenWrt Install URL:http:&#x2F;&#x2F;downloads.openwrt.org&#x2F;releases&#x2F;19.07.4&#x2F;targets&#x2F;brcm2708&#x2F;bcm2710&#x2F;openwrt-19.07.4-brcm2708-bcm2710-rpi-3-ext4-factory.img.gzFirmware OpenWrt Upgrade URL:http:&#x2F;&#x2F;downloads.openwrt.org&#x2F;releases&#x2F;19.07.4&#x2F;targets&#x2F;brcm2708&#x2F;bcm2710&#x2F;openwrt-19.07.4-brcm2708-bcm2710-rpi-3-ext4-sysupgrade.img.gzFirmware OpenWrt snapshot Install URL:http:&#x2F;&#x2F;downloads.openwrt.org&#x2F;snapshots&#x2F;targets&#x2F;bcm27xx&#x2F;bcm2710&#x2F;openwrt-bcm27xx-bcm2710-rpi-3-ext4-factory.img.gzFirmware OpenWrt snapshot Upgrade URL:http:&#x2F;&#x2F;downloads.openwrt.org&#x2F;snapshots&#x2F;targets&#x2F;bcm27xx&#x2F;bcm2710&#x2F;openwrt-bcm27xx-bcm2710-rpi-3-ext4-sysupgrade.img.gzInstallation method(s):SD card, see devicepage</span><br></pre></td></tr></table></figure>
+        <h2><span id="glm常用函数解释说明">GLM常用函数解释说明</span></h2><p>GLM默认使用右手坐标系，如果要改成默认左手坐标系，使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GLM_FORCE_LEFT_HANDED</span><br></pre></td></tr></table></figure>
 
 
 
-
+<p>&lt;glm/trigonometric.hpp&gt;<br>GLM_FUNC_DECL GLM_CONSTEXPR vec&lt; L, T, Q &gt; radians (vec&lt; L, T, Q &gt; const &amp;degrees)<br>将角度转化为弧度。</p>
+<p>&lt;glm/gtx/transform.hpp&gt;<br>GLM_FUNC_DECL mat&lt; 4, 4, T, Q &gt; rotate (T angle, vec&lt; 3, T, Q &gt; const &amp;v)<br>使用一个用弧度(radians)表示的角度(degrees)，以及一个用3个标量(scalar)表示的坐标(axis)，来构建一个4X4的旋转矩阵(rotate matrix)。</p>
+<p>&lt;glm/gtc/matrix_transform.hpp&gt;<br>GLM_FUNC_DECL mat&lt;4, 4, T, Q&gt; lookAt (vec&lt;3, T, Q&gt; const &amp;eye, vec&lt;3, T, Q&gt; const &amp;center, vec&lt;3, T, Q&gt; const &amp;up)<br>基于默认的偏手坐标系来构建一个给定视图矩阵(view matrix)的视角(look)</p>
+<p>GLM_FUNC_DECL mat&lt;4, 4, T, defaultp&gt; perspective (T fovy, T aspect, T near, T far)<br>为一个对称透视图截锥(symmetric perspective-view frustum)创建矩阵，基于默认的偏手坐标系和默认的近剪裁面距离、远剪裁面距离</p>
+<p>参数说明：</p>
+<p>fovy 相机视角宽度<br>aspect 长宽比率<br>near 近面裁剪距离<br>far 远面裁剪距离<br>如果要修改默认的近/远剪裁面，使用：</p>
+<p> GLM_FORCE_DEPTH_ZERO_TO_ONE</p>
 <h2><span id="下载镜像文件并烧录到tf卡">下载镜像文件并烧录到tf卡</span></h2><p><a href="https://win32diskimager.download/" target="_blank" rel="noopener">win32diskimager</a><br>把下载的镜像通过这个工具烧录到tf卡中<br>这里唯一要注意的是如果有多个U盘设备 要正确选择好  </p>
 <h2><span id="启动树莓派">启动树莓派</span></h2><ol>
 <li>插入tf卡  把电脑的网线插入树莓派的网线口(装好openwrt的树莓派相当于一个路由器)   </li>
@@ -460,8 +461,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/09/30/2020-09-30-git-lfs/" rel="next" title="git和git-lfs编译与使用">
-                <i class="fa fa-chevron-left"></i> git和git-lfs编译与使用
+              <a href="/2020/10/03/2020-10-03-raspberrypi/" rel="next" title="树莓派使用">
+                <i class="fa fa-chevron-left"></i> 树莓派使用
               </a>
             
           </div>
@@ -470,8 +471,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/10/22/2020-10-22-glm/" rel="prev" title="GLM常见使用接口">
-                GLM常见使用接口 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/12/17/2020-12-17-twice-as-bright-half-as-long/" rel="prev" title="两倍明亮的光芒只能燃烧一半的生命长度">
+                两倍明亮的光芒只能燃烧一半的生命长度 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -597,7 +598,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">树莓派官方地址和镜像下载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">下载镜像文件并烧录到tf卡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">3.</span> <span class="nav-text">启动树莓派</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">4.</span> <span class="nav-text">让树莓派连接外网</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">5.</span> <span class="nav-text">让树莓派作为软路由</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">6.</span> <span class="nav-text">更新opkg</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">7.</span> <span class="nav-text">安装luci包和fdisk包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">8.</span> <span class="nav-text">挂载剩余tf卡空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">9.</span> <span class="nav-text">安装kcp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">10.</span> <span class="nav-text">安装ss</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">11.</span> <span class="nav-text">透明代理转发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">12.</span> <span class="nav-text">wifi 5G时区问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">12.1.</span> <span class="nav-text">补充信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">12.2.</span> <span class="nav-text">快照版本问题</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">GLM常用函数解释说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">下载镜像文件并烧录到tf卡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">3.</span> <span class="nav-text">启动树莓派</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">4.</span> <span class="nav-text">让树莓派连接外网</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">5.</span> <span class="nav-text">让树莓派作为软路由</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">6.</span> <span class="nav-text">更新opkg</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">7.</span> <span class="nav-text">安装luci包和fdisk包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">8.</span> <span class="nav-text">挂载剩余tf卡空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">9.</span> <span class="nav-text">安装kcp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">10.</span> <span class="nav-text">安装ss</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">11.</span> <span class="nav-text">透明代理转发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">12.</span> <span class="nav-text">wifi 5G时区问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">12.1.</span> <span class="nav-text">补充信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">12.2.</span> <span class="nav-text">快照版本问题</span></a></li></ol></li></ol></div>
             
 
           </div>

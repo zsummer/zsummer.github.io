@@ -250,6 +250,391 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/06/16/2020-06-16-lua-oop/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/16/2020-06-16-lua-oop/" itemprop="url">游戏(技能)中的脚本设计</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-06-16T00:00:00+08:00">
+                2020-06-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="脚本设计"><a href="#脚本设计" class="headerlink" title="脚本设计"></a>脚本设计</h1><h2 id="前言和需求情景"><a href="#前言和需求情景" class="headerlink" title="前言和需求情景"></a>前言和需求情景</h2><p>每种语言都有自己的惯用思维, 面对领域需求时, 也应该在不同的语言思维环境下寻找解决方案, 而不是生搬硬套另外一种语言的特性, 但是从可计算性的角度上来看, 相同需求的良好解决方案往往具备很强的相似性.  </p>
+<p>那么更具体的领域中, 我们说说技能系统的场景:  </p>
+<p>技能系统的复杂度偏向问题域, 如果不去约束问题域的规模, 最好的解决方案一定是通过脚本化方式让技能的设计者直接去写设计者期望的战斗逻辑. 但是作为一门通用的语言, 是需要转化为一个简洁的, 低门槛的领域语言.  </p>
+<p>这里不讨论如何拆解该系统所面对的问题域, 如何抽象出解决域的模型等, 这部分在之前的技能系统相关的PPT中已经描述过,  这里主要关注的是, 在使用脚本的情况下, 我们如何对脚本这部分进行更具体的设计.   </p>
+<ul>
+<li>作为开发者, 更关注的是开发测试成本, 即用最简洁的代码, 一劳永逸的提供最丰富的上层接口.   </li>
+<li>作为设计者, 更关注的是是否提供了足够的封装, 隐藏掉不需要关心的功能实现细节以及流程细节, 并且能够总是通过简单的if else call来完成所有决策, 或者用简单的枚举或者画图 打钩完成所有决策而不需要操刀脚本编写.  </li>
+</ul>
+<ul>
+<li>更进一步的, 从设计者角度, 按照配置的出场频度和复杂度应该有如下的方案选型排序:<font color=#f33 size=3>   <ul>
+<li>几乎总是需要配置的:  默认配置方案,  什么都不需要做就是应该有的功能或者流程   </li>
+<li>次高频:  通过开关来切换功能或者流程   </li>
+<li>高频: 通过枚举来完成多功能或者多流程case   </li>
+<li>高频低中度复杂: 通过枚举+固定的跟随参数来完成   </li>
+<li>高频低中度复杂: 开发人员编写特定的功能模块, 条件模块, 并提炼出参数以特定枚举方式提供   </li>
+<li></li>
+<li>中低频复杂条件: 嵌入简短的脚本, 通过数据接口+脚本提供的布尔表达式来完成   </li>
+<li>中低频复杂逻辑: 开发人员协助设计者编写脚本      </li>
+<li>中低频中低复杂: 策划自行写脚本 自行验证  </li>
+<li>低频其他: 脚本兜底实现  </font>    </li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>对于中小型硬核技能玩法项目  或者设计者本身有一定的编程功底, 那么我们可以实现一个简洁的脚本驱动的内核, 然后任由设计者天马行空的设计和铺展战斗系统.   </p>
+</li>
+<li></li>
+<li><p>但对于另外一些情况, 比如存在大规模的低复杂度技能设计, 或者策划人员对脚本的接受能力参差不齐, 我们需要对脚本的适用范围进行收敛, 但是仍然想要灵活的机制来实现丰富的技能体系.  这就需要对涉及到脚本编写部分的更具体的优化设计.     </p>
+<ul>
+<li><p><font color=#f33 size=3>直接提高数据驱动部分的配置在整个技能系统下所包含的范围</font>   </p>
+<blockquote>
+<p>通过堆开发人力来提高.  但是这部分会随着需求的细化和新需求的提出导致不断的重构, 开发人员需要持续跟进<br>持续变更的核心代码会降低整个系统的稳定性, 因此这部分的工作需要克制,谨慎的拆解,分析,以及交付测试.   </p>
+</blockquote>
+</li>
+<li><p><font color=#f33 size=3>把可以简单替换成脚本的逻辑, 给设计者提供数据驱动的配置接口, 在配表完成阶段或者读取配置阶段翻译成脚本</font>   </p>
+<blockquote>
+<p>相比上面的方案, 该方案不需要修改核心逻辑, 性能略有下降.   </p>
+</blockquote>
+</li>
+<li><p><font color=#f33 size=3>提供脚本片段/脚本模版, 配置时候快速复用已有脚本逻辑</font>   </p>
+<blockquote>
+<p>相比上面一条, 该方案设计者可见脚本代码, 但是不需要手写.<br>不容易出错, 可以用来熏陶设计者对脚本的接受能力, 降低脚本门槛.   </p>
+</blockquote>
+</li>
+<li><p><font color=#f33 size=3>提供脚本级别的封装机制, 对脚本复杂度进行降级</font>   </p>
+<blockquote>
+<p>把复杂的脚本实现拆解成独立的多段脚本函数, 一次测试多次复用<br>把多行脚本能完成事情 封装成一行脚本 或者一个函数+参数的形式<br>把简单的脚本映射成数据驱动的枚举+参数形式  (直接映射为封装好的函数+参数)<br>封装的位置单独存放在脚本文件中, 并且支持热更新方便快速试错和验证  </p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/06/16/2020-06-16-lua-oop/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/05/09/2020-05-09-memory_alloctor/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/05/09/2020-05-09-memory_alloctor/" itemprop="url">内存分配器</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-09T00:00:00+08:00">
+                2020-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2><span id="内存分配器核心思想和算法">内存分配器核心思想和算法</span></h2><h3><span id="内存管理策略">内存管理策略</span></h3><h4><span id="sequential-fit-连续适配">Sequential Fit  (连续适配)</span></h4><p> 是基于一个单向或双向链表管理各个blocks的基础算法，因为和blocks的个数有关，性能比较差。这一类算法包括Fast-Fit, First-Fit, Next-Fit, and Worst-Fit。  </p>
+<h4><span id="segregated-list-分离列表">Segregated List (分离列表)</span></h4><p> 将所有的空闲块，放入到一组链表中，每一个链表中只包含某一个大小范围的空闲块  </p>
+<ul>
+<li>Buddy System (Sequential Fit变种)  <ul>
+<li>内部碎片化问题比较严重   </li>
+<li>Binary Buddies  </li>
+<li>Fibonacci Buddies  </li>
+<li>Weighted Buddies   </li>
+</ul>
+</li>
+</ul>
+<h4><span id="indexed-fit">Indexed  Fit</span></h4><p> 通过一些高阶的数据结构来索引（Index）空闲的内存块。例如基于平衡树的“Best Fit”算法。</p>
+<ul>
+<li>使用Balanced Tree的Best Fit allocator</li>
+<li>使用Cartesian tree 的Stephenson Fast-Fit allocator</li>
+<li>Bitmap Fit (Indexed Fit 变种)<br>Indexed Fit算法的变种，通过一小段内存的位图来标记对应的内存是空闲的还是使用中。  </li>
+</ul>
+<h3><span id="路径匹配策略">路径匹配策略</span></h3><p>对于操作系统而言, 除了管理进程之外, 还需要有效的管理计算机的主内存, 管理主内存的共享使用和最小化内存访问时间是内存管理器的基本目标. 虽然使用了各种不同的策略来为争夺内存的进程分配空间，但最流行的三种策略是最佳匹配、最不适合匹配和首次匹配.    </p>
+<ul>
+<li>Best fit:<br>The allocator places a process in the smallest block of unallocated memory in which it will fit. For example, suppose a process requests 12KB of memory and the memory manager currently has a list of unallocated blocks of 6KB, 14KB, 19KB, 11KB, and 13KB blocks. The best-fit strategy will allocate 12KB of the 13KB block to the process.<br>最佳匹配:<br>这种匹配策略中, 分配器会从满足匹配要求的未分配内存中选择最小的块.<br>例如程序请求一个12kb的内存, 而当前的内存管理器有一个未分配的内存块列表, 分别为14k, 19k, 11k, 13k, 那么best-fit讲从13k的内存块中分配内存给程序.  </li>
+</ul>
+<ul>
+<li><p>Worst fit:<br>The memory manager places a process in the largest block of unallocated memory available. The idea is that this placement will create the largest hold after the allocations, thus increasing the possibility that, compared to best fit, another process can use the remaining space. Using the same example as above, worst fit will allocate 12KB of the 19KB block to the process, leaving a 7KB block for future use.<br>最不适合匹配<br>内存管理器总是选择获得的最大的那个未分配内存块.<br>这种策略在每次分配后总是持有最大的内存块, 从而增加匹配的可能性. 与最佳匹配相比, 其他的请求可以使用剩余的空间.(最佳匹配的剩余内存往往无法利用)<br>同上例, 最坏匹配会从19k的那个内存块中分配, 并留下7k的内存留给将来使用.  </p>
+</li>
+<li><p>First fit:<br>There may be many holes in the memory, so the operating system, to reduce the amount of time it spends analyzing the available spaces, begins at the start of primary memory and allocates memory from the first hole it encounters large enough to satisfy the request. Using the same example as above, first fit will allocate 12KB of the 14KB block to the process.<br>通常内存中会存在很多空洞, 所以操作系统为了减少分析可用空间的性能(时间)消耗, 会从主要内存或者 第一个足够大并且满足求要的可分配内存的起始位置相应请求.<br>同上例中, 首先匹配会从14k的block中分配12k的请求.<br>First Fit的一个改良版本叫做Next Fit, 即在下次请求时会从上次中断的地方的开始搜索, 从而避免总是从起始的空闲内存开始查找. (Designated victim), First Fit的策略会倾向于总是把大块切的更零碎也因此带来更多的外部碎片问题, 也因为总是从空闲内存的头部开始切造成更多的内部碎片,  而Next Fit的做法会避免(改良)这些问题, 并且速度比Firt 以及 Best更快.  </p>
+</li>
+</ul>
+<h4><span id="tlsf-a-new-dynamic-memory-allocator-for-real-time-systems">TLSF: a New Dynamic Memory Allocator for Real-Time Systems</span></h4><p>通过一组链表来管理不同大小内存块的内存分配算法。<br>适用环境和要求:<br>内存分配/释放的执行时间可预期，可接受的。由于RTOS对指令的执行时间有严格要求，所以常常采用静态内存分配的方法，以获得一个可以预期的执行时间。<br>内存分配算法的碎片化程度要低，这是由于RTOS往往长时间执行，碎片化程度高会导致内存分配失败。<br>实时系统动态内存算法<br>可信的执行环境，Trusted Environment，应用不会故意破坏数据或者窃取数据。<br>有限的物理内存。<br>没有物理MMU来支持虚拟内存。</p>
+<p>核心概念: Two Level<br>基本的Segregated Fit算法是使用一组链表，每个链表只包含特定长度范围来的空闲块的方式来管理空闲块的，这样链表数组的长度可能会很大。如下图，TLSF为了简化查找定位过程，使用了两层链表。第一层，将空闲内存块的大小根据2的幂进行分类，如（16、32、64…）。第二层链表在第一层的基础上，按照一定的间隔，线性分段。比如2的6次方这一段，分为4个小区间【64,80），【80,96），【96,112），【112，128）.每一级的链表都有一个bitmap用于标记对应的链表中是否有内存块。比如第一级别bitmap的后4bit位0100，即2的6次方这个区间有空闲块。对应的第二级链表的bitmap位0010及【80,96）这个区间有空闲块，即下面的89 Byte。</p>
+<p>策略:<br>Immediate coalescing，立即合并，当内存块被释放后，立即与相邻的空闲内存块合并，以获得一个更大的空闲块，插入到链表的相应位置。这样可以减少碎片化。<br>Splitting threshold，分割阈值，最小可分配的内存块大小为16字节，应用一般不会分配一些基本的数据结构，如int、char等。限定最小可分配大小为16字节，这样可以在空闲的内存块中存储一些管理信息。<br>Good-fit strategy，TLSF会尽可能的返回一个最小的、能够满足需求的内存块。<br>Same strategy for all block sizes，对于不同大小的内存请求，TLSF只有一个分配策略，实现相对简单，执行时间可以预期。相应的dlmalloc根据所请求的内存大小不同，有多达4种内存分配策略。<br>Memory is not cleaned-up，分配个应用的内存没有被请0.</p>
+<p>特点:<br>可以预期的分配执行时间，无论对于多达的内存分配请求，TLSF可以在限定的时间内完成分配。<br>碎片化程度低。</p>
+<h4><span id="mimalloc">mimalloc:</span></h4><h4><span id="多线程">多线程</span></h4><ul>
+<li>局部化, 本地缓存/链表  </li>
+<li>注意false shared  </li>
+<li>跨线程队列 最大本地缓存 </li>
+</ul>
+<h4><span id="内存安全">内存安全</span></h4><p>管理数据和被管理内存分离<br>buddy system<br>pages 管理  </p>
+<p>可信的执行环境Trusted Environment，应用不会故意破坏数据或者窃取数据<br>有限的物理内存<br>有限的物理地址<br>没有物理MMU来支持虚拟内存</p>
+<h4><span id="开源内存分配器">开源内存分配器</span></h4><ul>
+<li>dlmalloc </li>
+<li>tcmalloc  </li>
+<li>jemalloc  </li>
+<li>Hoard</li>
+<li>minimalloc</li>
+<li>TLSF: <a href="https://github.com/OlegHahm/tlsf" target="_blank" rel="noopener">https://github.com/OlegHahm/tlsf</a>    </li>
+</ul>
+<h4><span id="援引">援引</span></h4><p><a href="https://github.com/everschen/tools/blob/master/DOC/Jemalloc.pdf" target="_blank" rel="noopener">jemalloc深入分析 PDF</a><br><a href="http://applicative.acm.org/2015/applicative.acm.org/speaker-JasonEvans.html" target="_blank" rel="noopener">jemalloc 2015演讲视频 tick tock, malloc needs a clock 背景和初始设计思想介绍</a><br><a href="https://www.facebook.com/notes/facebook-engineering/scalable-memory-allocation-using-jemalloc/480222803919" target="_blank" rel="noopener">jemalloc facebook工程贴</a><br><a href="http://people.freebsd.org/~jasone/jemalloc/bsdcan2006/jemalloc.pdf" target="_blank" rel="noopener">BSDcan paper 2006</a><br><a href="https://dl.acm.org/doi/abs/10.1145/3329785.3329918" target="_blank" rel="noopener">On the Impact of Memory Allocationon High-Performance Query Processing</a><br><a href="https://www.jamesgolick.com/2013/5/19/how-tcmalloc-works.html" target="_blank" rel="noopener">How tcmalloc Works</a><br><a href="https://www.chromium.org/chromium-os/chromiumos-design-docs/out-of-memory-handling" target="_blank" rel="noopener">Chromimum Project: Out of memory handling</a><br><a href="https://rd.springer.com/content/pdf/10.1007%2F978-1-4842-4398-5_7.pdf" target="_blank" rel="noopener">Scalable Memory Allocation TBB</a><br><a href="https://cloud.tencent.com/developer/article/1173720" target="_blank" rel="noopener">ptmalloc,tcmalloc和jemalloc内存分配策略研究</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/05/09/2020-06-15-shadowsock-proxy/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1799,456 +2184,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/28/2019-11-28-pie-pic-linker-option/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/11/28/2019-11-28-pie-pic-linker-option/" itemprop="url">位置无关代码生成(重定位)选项和说明 GCC</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-28T00:00:00+08:00">
-                2019-11-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3><span id="目录">目录</span></h3><ul>
-<li><a href="#目录">目录</a></li>
-<li><a href="#选项说明">选项说明</a></li>
-</ul>
-<h3><span id="选项说明">选项说明</span></h3><ul>
-<li><p>-rdynamic  </p>
-<ul>
-<li>该选项指示链接器添加所有的符号到动态符号表, 不仅仅是用到的部分  </li>
-<li>在INTEL X64 linux gcc-6 未测试出该选项有否的异同 (也可认为是默认存在)   <ul>
-<li>无论是否用过都会添加  </li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>-fpic    (position-independent code)  编译选项和链接选项  </p>
-<ul>
-<li>用于生成PIC 位置无关代码 的共享库, 在链接到EXE时如果GOT表超过某些特定机器指定的最大值时会返回错误, 这时需要使用-fPIC进行重新编译和链接   </li>
-</ul>
-</li>
-<li><p>-fPIC 编译选项和链接选项  </p>
-<ul>
-<li>和-fpic一样, 但是回避掉了GOT大小的限制问题  </li>
-<li>在编译和链接时都需要指定    </li>
-</ul>
-</li>
-</ul>
-<blockquote>
-<p>-fpic与-fpie的差别很细微,当使用-fpie时编译器知道当前的编译会生成一个PIC模式的 main executable(也就是有main入口的可执行文件),这样对于内部定义的global符号,就不 要考虑全局符号介入(global symbol interpose)的问题,对于这样的globals直接产生 PC-relative方式的代码而不需要通过GOT/PLT. –Ian Lance Taylor  </p>
-</blockquote>
-<ul>
-<li><p>-fPIE  编译选项 </p>
-<ul>
-<li>编译位置无关代码, 和PIC相同, 但是PIE假定了编译出的目标文件用于链接成可执行文件  </li>
-<li>主要是访问外部符号时是否使用PLT/GOT  </li>
-<li>实际可用-fPIC代替(不假定目标文件的最终链接目的)   </li>
-<li>-fpie 和-fpic一样  </li>
-</ul>
-</li>
-<li><p>-pie  链接器选项</p>
-<ul>
-<li>用于生成 位置无关可执行文件 的可执行文件  </li>
-<li>生成的可执行文件的ELF类型不是EXEC而是和共享库一样DYN</li>
-<li>需要-fPIE配合使用 否则会出现访问外部符号时候无法正确找到的错误  <ul>
-<li>这个问题等同用PIC链接非PIC编译的库</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>其他备注  </p>
-<ul>
-<li><p>-no-pie  新版本g++比如6版本 默认启用pie 如不需要则要显式去除  </p>
-<ul>
-<li>部分编译器支持  </li>
-</ul>
-</li>
-<li><p>-fno-plt  </p>
-<ul>
-<li>部分编译器支持  </li>
-</ul>
-</li>
-<li><p>-fno-jump-tables</p>
-<ul>
-<li>部分编译器支持  </li>
-</ul>
-</li>
-<li><p>动态库查找路径</p>
-<ul>
-<li>链接时如果要使用-l 则需要先-L指定目录  </li>
-<li>运行时如果不在系统指定目录的库需要设置LD_LIBRARY_PATH或者配置文件<ul>
-<li>例如 简单设置export LD_LIBRARY_PATH=”./“ 路径    </li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>–static 组织在链接时使用动态库</p>
-</li>
-<li><p>–shared 生成动态库</p>
-</li>
-<li><p>–static-libgcc 链接静态libgcc库</p>
-</li>
-<li><p>–shared-libgcc 链接动态libgcc库</p>
-</li>
-<li><p>-static和-shared可以同时存在 这样会创建共享库 但该共享库引用的其他库会静态地链接到该共享库中  </p>
-<ul>
-<li>-Wl,–whole-archive 告诉链接器对其后面出现的静态库包含的函数和变量打包到动态库  </li>
-<li>-Wl,–no-whole-archive 关掉特性  <ul>
-<li>举例  -Wl,–whole-archive -la -lb -lc -Wl,–no-whole-archive</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>dlopen动态load共享库</p>
-</li>
-</ul>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/23/2019-11-23-elf-hash/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/11/23/2019-11-23-elf-hash/" itemprop="url">ELF的hash算法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-23T00:00:00+08:00">
-                2019-11-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="1-目录"><a href="#1-目录" class="headerlink" title="..1. 目录"></a>..1. 目录</h3><hr>
-<!-- TOC -->
-
-<ul>
-<li><a href="#1-目录">..1. 目录</a></li>
-<li><a href="#elf-hash">ELF HASH</a><pre><code>- [使用elf hash获取符号所在的偏移地址](#使用elf-hash获取符号所在的偏移地址)
-- [结论](#结论)</code></pre></li>
-<li><a href="#elf-hash源码">ELF HASH源码</a></li>
-</ul>
-<!-- /TOC -->
-
-<h3 id="ELF-HASH"><a href="#ELF-HASH" class="headerlink" title="ELF HASH"></a>ELF HASH</h3><p>ELF的哈希表提供了对符号表的访问<br>组织结构如下:     </p>
-<table>
-<thead>
-<tr>
-<th>labels</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>nbucket</td>
-</tr>
-<tr>
-<td>nchain</td>
-</tr>
-<tr>
-<td>bucket[0]</td>
-</tr>
-<tr>
-<td>…</td>
-</tr>
-<tr>
-<td>bucket[nbucket-1]</td>
-</tr>
-<tr>
-<td>chain[0]</td>
-</tr>
-<tr>
-<td>…</td>
-</tr>
-<tr>
-<td>chain[nchain-1]</td>
-</tr>
-</tbody></table>
-<h6 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h6><ul>
-<li>bucket和chain的数量是相等的  </li>
-<li>每个符号值对应一个字符串  </li>
-<li>基本查找流程 <ul>
-<li>使用elf_hash得到hash值   </li>
-<li>对hash值取模计算存放的符号值的桶  </li>
-<li>如果该桶内没有数据则结束</li>
-<li>如果桶内内有数据不匹配   <ul>
-<li>以该符号值为下标的 chain 中存在下一个符号值 </li>
-<li>重复该步骤直到找到和目标字符串匹配   </li>
-</ul>
-</li>
-<li>找到符号值对应的字符串以及符号加载时的偏移信息和符号地址信息   </li>
-</ul>
-</li>
-</ul>
-<h6 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h6><ul>
-<li>chain 的数量必然大于符号的数量  </li>
-<li>不考虑性能, 桶的数量可以小于符号的数量 也可以同时小于chain的数量   </li>
-<li>遇到冲突后从 chain 表中查找以出现冲突的符号值为下标位置的chain, 如果该chain无内容则从符号表中查找匹配的符号的值填充该chain  <ul>
-<li>如果有内容并且符号值依然冲突, 则用该冲突的符号值为索引继续查找下一个 </li>
-<li>最差情况则相当于直接遍历符号表   </li>
-</ul>
-</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/11/23/2019-11-23-elf-hash/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2299,7 +2234,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-count">45</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
