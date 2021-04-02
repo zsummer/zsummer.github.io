@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="本文阐述了GCC提供的内联汇编功能的使用和用法本文主要为了阐述zperf性能分析器的核心编写逻辑.    概述 内联(inline): 内联汇编   GCC汇编基本语法 基本内联语法 扩展汇编: assembler template 汇编模板 operands 操作数 clobber-list 破坏清单 volatile   constraints 约束 常用约束 Constraint Modif">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GCC 内联汇编编写">
+<meta property="og:url" content="https://zsummer.github.io/2021/04/02/2021-04-02-gcc-inline-assembly/index.html">
+<meta property="og:site_name" content="关于夏天的一切">
+<meta property="og:description" content="本文阐述了GCC提供的内联汇编功能的使用和用法本文主要为了阐述zperf性能分析器的核心编写逻辑.    概述 内联(inline): 内联汇编   GCC汇编基本语法 基本内联语法 扩展汇编: assembler template 汇编模板 operands 操作数 clobber-list 破坏清单 volatile   constraints 约束 常用约束 Constraint Modif">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-04-01T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-04-02T14:57:41.781Z">
+<meta property="article:author" content="夏天">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zsummer.github.io/2021/04/02/2021-04-02-gcc-inline-assembly/"/>
+
+
+
+
+
+  <title>GCC 内联汇编编写 | 关于夏天的一切</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">关于夏天的一切</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我总觉得对你的爱很美</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2021/04/02/2021-04-02-gcc-inline-assembly/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">GCC 内联汇编编写</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-04-02T00:00:00+08:00">
+                2021-04-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文阐述了GCC提供的内联汇编功能的使用和用法<br>本文主要为了阐述zperf性能分析器的核心编写逻辑.</p>
+<!-- toc -->
+
+<ul>
+<li><a href="#概述">概述</a><ul>
+<li><a href="#内联inline">内联(inline):</a></li>
+<li><a href="#内联汇编">内联汇编</a></li>
+</ul>
+</li>
+<li><a href="#gcc汇编基本语法">GCC汇编基本语法</a></li>
+<li><a href="#基本内联语法">基本内联语法</a></li>
+<li><a href="#扩展汇编">扩展汇编:</a><ul>
+<li><a href="#assembler-template-汇编模板">assembler template 汇编模板</a></li>
+<li><a href="#operands-操作数">operands 操作数</a></li>
+<li><a href="#clobber-list-破坏清单">clobber-list 破坏清单</a></li>
+<li><a href="#__volatile__"><strong>volatile</strong></a></li>
+</ul>
+</li>
+<li><a href="#constraints-约束">constraints 约束</a><ul>
+<li><a href="#常用约束">常用约束</a></li>
+<li><a href="#constraint-modifiers-约束修饰符">Constraint Modifiers  约束修饰符</a></li>
+</ul>
+</li>
+<li><a href="#一些有用的案例">一些有用的案例</a></li>
+</ul>
+<!-- tocstop -->
+
+<h2><span id="概述">概述</span></h2><p>在这篇文章中, 主要介绍的是(GCC)内联汇编函数的基本格式和用法, 这里先介绍两个基本概念.    </p>
+<h3><span id="内联inline">内联(inline):</span></h3><p>在C++中, inline关键字首先是<strong>C++语言层面的修饰符</strong>,  如同static/ const等.<br>该关键字的作用是将函数声明为一个内联(inline)函数: inline关键字作为指示器传递给优化器”<strong>优先采用函数的内联替换而非进行函数调用</strong>“.    </p>
+<blockquote>
+<p>即内联函数原本的优化目的 不使用控制转移指令跳转到函数体, 而是直接拷贝函数体到发生调用的位置, 从而达到避免函数调用的开销以及传参和返回等开销.    </p>
+</blockquote>
+<p>这里容易产生混淆的地方在于, 该修饰符对于上述优化的指示并非强制,  并且编译器拥有对任何未标注inline的函数的使用内联替换的自由(在编译的优化原则内);<br>也因此在实际的实践中,  <strong>inline关键字对于函数的含义也从’优先内联’实际变成了’容许多次定义’</strong>,  并且该inline关键字在语义上的实际变化也<strong>在C++17得到的标准化的定义和进一步的扩展</strong>,  并进一步扫清了”header only”支持的剩余障碍.     </p>
+<h3><span id="内联汇编">内联汇编</span></h3><p>内联汇编提供了在C/C++代码中直接嵌入汇编代码的能力, 其中, ‘asm’关键字充当了汇编指令和’C/C++’代码之间的接口.   </p>
+<a id="more"></a> 
+
+<h2><span id="gcc汇编基本语法">GCC汇编基本语法</span></h2><p>GCC 使用AT&amp;T/UNIX汇编语法, 这里主要给出和INTEL的基础差别, 更多详细内容查看对应的汇编手册, 或者<a href="https://zsummer.github.io/2019/12/11/2019-12-11-asm-syntax/">汇编语法和惯例</a>   </p>
+<ul>
+<li>Source-Destination Ordering 操作数顺序<br>  AT&amp;T语法中操作数的方向与Intel汇编相反;<br>  在Intel语法中, 第一个操作数是目标, 第二个操作数是源; 而在AT&amp;T语法中是反过来的.<br>  AT&amp;T 语法: <code>Op-code src dst</code><br>  Intel语法: <code>Op-code dst src</code>   </li>
+</ul>
+<ul>
+<li><p>寄存器命名: </p>
+<ul>
+<li>寄存器名称以%为前缀, Intel无前缀.  例如如果使用寄存器<code>eax</code>,  AT&amp;T汇编需要写成<code>%eax</code>   </li>
+</ul>
+</li>
+<li><p>立即操作数  </p>
+<ul>
+<li>AT&amp;T立即数以$为前缀, Intel无前缀   例如 立即数1987 AT&amp;T汇编要写成<code>$1987</code>  </li>
+<li>十六进制立即数 AT&amp;T以0x为次前缀,  Intel以h为后缀进行修饰.  例如16进制 0x1987 <ul>
+<li>AT&amp;T汇编: <code>$0x1987</code></li>
+<li>Intel汇编: <code>1987h</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>操作数大小  </p>
+<ul>
+<li>AT&amp;T语法: 存储操作数的大小由操作码名称的最后一个字符确定, ‘b’, ‘w’, ‘l’ 对应字节码对应8位, 16位,32位.  <ul>
+<li>例如: <code>movl    %eax, %ebx</code>  </li>
+</ul>
+</li>
+<li>Intel语法: 添加前置修饰符 例如’byte ptr’ ‘word ptr’ ‘dword ptr’来实现   <ul>
+<li>例如: <code>mov         qword ptr [rax+8],0</code>  </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>内存操作数  </p>
+<ul>
+<li>AT&amp;T汇编中的语法<code>segment:displacement(base register, index register, scale factor)</code></li>
+<li>Intel等效语法  <code>segment:[base register + displacement + index register * scale factor]</code>   </li>
+</ul>
+</li>
+<li><p>简单对比示例如下:  </p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>AT&amp;T Code</th>
+<th>Intel Code</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>movl    $1,%eax</td>
+<td>mov     eax,1</td>
+</tr>
+<tr>
+<td>movl    $0xff,%ebx</td>
+<td>mov     ebx,0ffh</td>
+</tr>
+<tr>
+<td>int     $0x80</td>
+<td>int     80h</td>
+</tr>
+<tr>
+<td>movl    %eax, %ebx</td>
+<td>mov     ebx, eax</td>
+</tr>
+<tr>
+<td>movl    (%ecx),%eax</td>
+<td>mov     eax,[ecx]</td>
+</tr>
+<tr>
+<td>movl    3(%ebx),%eax</td>
+<td>mov     eax,[ebx+3]</td>
+</tr>
+<tr>
+<td>movl    0x20(%ebx),%eax</td>
+<td>mov     eax,[ebx+20h]</td>
+</tr>
+<tr>
+<td>addl    (%ebx,%ecx,0x2),%eax</td>
+<td>add     eax,[ebx+ecx*2h]</td>
+</tr>
+<tr>
+<td>leal    (%ebx,%ecx),%eax</td>
+<td>lea     eax,[ebx+ecx]</td>
+</tr>
+<tr>
+<td>subl    -0x20(%ebx,%ecx,0x4),%eax</td>
+<td>sub     eax,[ebx+ecx*4h-20h]</td>
+</tr>
+</tbody></table>
+<h2><span id="基本内联语法">基本内联语法</span></h2><p>基本内联汇编的格式非常简单, 基本形式是   </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">asm</span>(<span class="string">"assembly code"</span>);</span><br></pre></td></tr></table></figure>
+<p>举个例子:  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">asm</span>(<span class="string">"movl %ecx %eax"</span>); <span class="comment">/* moves the contents of ecx to eax */</span></span><br><span class="line">__asm__(<span class="string">"movb %bh (%eax)"</span>); <span class="comment">/*moves the byte from bh to the memory pointed by eax */</span></span><br></pre></td></tr></table></figure>
+<p>关键字<code>__asm__</code> 和<code>asm</code>等价, 前者从代码规范上来说一般不容易和逻辑代码冲突(C++03标准开始明确规定__前缀为编译器保留关键字).   </p>
+<p>如果我们有多行指令, 则每行用双引号引起来, 并添加指令后缀<code>\n\t</code>  例如:  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">__asm__ (<span class="string">"movl %eax, %ebx\n\t"</span></span><br><span class="line">         <span class="string">"movl $56, %esi\n\t"</span></span><br><span class="line">         <span class="string">"movl %ecx, $label(%edx,%ebx,$4)\n\t"</span></span><br><span class="line">         <span class="string">"movb %ah, (%ebx)"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>以上的汇编编写还存在一个问题, 即编译器对对我们嵌入的汇编代码带来的寄存器修改一无所知,  要么我们避免修改编译器用到的寄存器, 要么在修改前后做好恢复,  因此, 我们通常使用extended asm, 通过指定的规范, 编译器会正确的帮我们处理好这个问题.    </p>
+<h2><span id="扩展汇编">扩展汇编:</span></h2><p>在扩展汇编中, 我们可以指定操作数, 包括指定输入寄存器, 指定输出寄存器, 指定会被破坏的寄存器列表;  通过这些指定和规则约束, 编译器则会在汇编生成过程中避免使用到该类寄存器(最坏情况下编译器生成对应的压栈和恢复等操作), 以及对内联汇编选择合适的优化等, 我们则可以把精力放在我们需要关心的逻辑本身上.<br>其基本格式为:   </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">asm</span> ( assembler <span class="keyword">template</span> </span><br><span class="line">    : output operands                  <span class="comment">/* optional */</span></span><br><span class="line">    : input operands                   <span class="comment">/* optional */</span></span><br><span class="line">    : <span class="built_in">list</span> of clobbered registers      <span class="comment">/* optional */</span></span><br><span class="line">    );</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li>assembler template 汇编模版由汇编指令组成; </li>
+<li>operands 每个操作数由一个 操作数约束 字符串来描述, 后面跟括号中的C表达式.   </li>
+<li>使用冒号将汇编程序模版和后面的输出操作数分开, 后面可选operands相同, 如果没有更多内容则可以简略(中间不可省略)   </li>
+<li>操作数的总数有限制 (约为10个或者为设备描述的最大个数决定)   </li>
+</ul>
+<p>举例如下:  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">asm</span> (<span class="string">"cld\n\t"</span></span><br><span class="line">    <span class="string">"rep\n\t"</span></span><br><span class="line">    <span class="string">"stosl"</span></span><br><span class="line">    : <span class="comment">/* no output registers */</span></span><br><span class="line">    : <span class="string">"c"</span> (count), <span class="string">"a"</span> (fill_value), <span class="string">"D"</span> (dest)</span><br><span class="line">    : <span class="string">"%ecx"</span>, <span class="string">"%edi"</span> </span><br><span class="line">    );</span><br></pre></td></tr></table></figure>
+
+
+<p>完整的描述为</p>
+<blockquote>
+<p> 输入:  从C/C++的4字节变量fill_value中读取数据存入寄存器%eax, count存入%ecx, dest存储%edi  </p>
+</blockquote>
+<blockquote>
+<p> 执行:<br>cld使DF复位为0: 设置stosl保存eax值后的偏移方向为自增<br>rep指令则重复后续单个指令<code>(%ecx)</code>次<br>stosl 将eax中的值保存到ES:EDI指向的地址中, 如果DF=0则自增4字节, 如果DF=1(std)则自减4字节. (l后缀为4字节 q为8字节)    </p>
+</blockquote>
+<blockquote>
+<p>输出: 没有输出   </p>
+</blockquote>
+<blockquote>
+<p>破坏清单: 显式声明%ecx和%edi是被修改使用的寄存器    </p>
+</blockquote>
+<p>再举个例子: 可变寄存器使用  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a=<span class="number">10</span>, b;</span><br><span class="line"><span class="keyword">asm</span> (<span class="string">"movl %1, %%eax; </span></span><br><span class="line"><span class="string">        movl %%eax, %0;"</span></span><br><span class="line">        :<span class="string">"=r"</span>(b)        <span class="comment">/* output */</span></span><br><span class="line">        :<span class="string">"r"</span>(a)         <span class="comment">/* input */</span></span><br><span class="line">        :<span class="string">"%eax"</span>         <span class="comment">/* clobbered register */</span></span><br><span class="line">        );</span><br></pre></td></tr></table></figure>
+<p>赋值a给b;<br>r 是操作数的约束, 即告诉GCC可以使用任何寄存器.<br>eax 需要在这里显式声明   </p>
+<h3><span id="assembler-template-汇编模板">assembler template 汇编模板</span></h3><p>汇编器模板包含插入到C程序内部的汇编指令集<br>格式如下:  </p>
+<ul>
+<li>每条汇编指令都应该用双引号引起来 或者整个指令组都应该用双引号引起来  </li>
+<li>每条汇编指令还应以定界符结尾: <ul>
+<li>有效的定界符是换行符(\n)和分号(;);  </li>
+<li>‘\n’后可以跟一个制表符’\t’ </li>
+<li><strong>与C/C++表达式相对应的操作数</strong>由%0, %1 …等表示   </li>
+</ul>
+</li>
+</ul>
+<h3><span id="operands-操作数">operands 操作数</span></h3><p>C/C++表达式用作’asm’中汇编指令的操作数  </p>
+<ul>
+<li>每个操作数首先被写成双引号中的操作数约束(operand constraint), 对于输出操作数还有一个约束修饰符’=’  </li>
+<li>然后后面跟随代表操作数的C/C++表达式  </li>
+<li>“约束 constraint” 主要用于确定操作数的寻址模式, 还用于指定要使用的寄存器.  (文后有对应常用constraint的表格)   </li>
+<li>如果使用多个操作数, 以逗号’,’分隔   </li>
+<li>在汇编模版中, 每个操作数均由数字引用. 编号方法如下: 如果一共有N个操作数, 包括输入和输出, 也包括指定寄存器, 第一个为0, 按书写顺序递增;   </li>
+<li>输出操作数表达式必须为左值  输入操作数不受此限制  </li>
+<li>在输入输出中出现的寄存器属于隐式破坏声明, 不比添加到破坏清单内.  </li>
+</ul>
+<p>举几个例子:<br>将数字乘以5  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">asm</span> (<span class="string">"leal (%1,%1,4), %0"</span></span><br><span class="line">        : <span class="string">"=r"</span> (five_times_x)</span><br><span class="line">        : <span class="string">"r"</span> (x) </span><br><span class="line">        );</span><br></pre></td></tr></table></figure>
+
+<p>输入和输出使用同一个寄存器(数字约束)</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">asm</span> (<span class="string">"leal (%0,%0,4), %0"</span></span><br><span class="line">        : <span class="string">"=r"</span> (five_times_x)</span><br><span class="line">        : <span class="string">"0"</span> (x) </span><br><span class="line">        );</span><br></pre></td></tr></table></figure>
+
+<p>输入输出使用同一寄存器并指定  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">asm</span> (<span class="string">"leal (%%ecx,%%ecx,4), %%ecx"</span></span><br><span class="line">     : <span class="string">"=c"</span> (x)</span><br><span class="line">     : <span class="string">"c"</span> (x) </span><br><span class="line">     );</span><br></pre></td></tr></table></figure>
+
+
+<h3><span id="clobber-list-破坏清单">clobber-list 破坏清单</span></h3><p>我们必须在clobber-list中列出那些可能被指令破坏的寄存器   即asm函数中第三个’:’之后的字段<br>其目的是为了通知gcc我们将自己使用和修改它们 因此gcc不会假定它加载到这些寄存器中的值将是有效的.<br>在这里不需要也不应该列出输入和输出寄存器, 因为gcc’知道’. 而在汇编模版中的汇编指令隐式或者显式使用了其他寄存器 则必须在此列出.<br>如果我们的指令不可预测的方式修改了内存, 那么需要在clobber-list中添加’memory’.  gcc将不能在整个汇编程序中将内存缓存到寄存器中;<br>如果受影响的内存未在输入和输出中列出, 那么我们还必须添加volatile关键字.<br>如果指令可能更改了条件代码寄存器CCR 那么需要添加’cc’  </p>
+<h3><span id="volatile"><strong>volatile</strong></span></h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">__asm__ __volatile__ ( ... : ... : ... : ...);</span><br><span class="line">__asm__ __volatile__ ( ... : ... : ... : ...);</span><br></pre></td></tr></table></figure>
+
+<p>如果汇编语句必须在放置它的位置执行 (即 为了优化而不能从循环中移出), 则将关键字volatile放在asm之后和()之前<br>如果不是确定需要volatile则不要添加, 因为会损失一些可能的性能上的优化   </p>
+<h2><span id="constraints-约束">constraints  约束</span></h2><p>约束可以说明操作数是否可以在寄存器中, 以及哪种寄存器;<br>该操作数是否可以是一个内存引用, 以及哪种地址;<br>操作数是否可以是立即数常量, 以及它可能具有哪些可能的值(即值的范围)等等   </p>
+<h3><span id="常用约束">常用约束</span></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">asm (&quot;movl %%eax, %0\n&quot; :&quot;&#x3D;r&quot;(myval));</span><br></pre></td></tr></table></figure>
+<p><strong>当指定”r”约束时, gcc可以将变量保留在任何可用的GPR中. 要指定寄存器, 必须使用特定的寄存器约束直接指定寄存器名称 如下表:</strong>   </p>
+<table>
+<thead>
+<tr>
+<th>r</th>
+<th>Register(s)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>a</td>
+<td>%eax, %ax, %al</td>
+</tr>
+<tr>
+<td>b</td>
+<td>%ebx, %bx, %bl</td>
+</tr>
+<tr>
+<td>c</td>
+<td>%ecx, %cx, %cl</td>
+</tr>
+<tr>
+<td>d</td>
+<td>%edx, %dx, %dl</td>
+</tr>
+<tr>
+<td>S</td>
+<td>%esi, %si</td>
+</tr>
+<tr>
+<td>D</td>
+<td>%edi, %di</td>
+</tr>
+</tbody></table>
+<p><strong>内存操作数约束(m)</strong><br>当操作数在内存中时, 对它们执行的任何操作都将直接在内存位置发生, 这与寄存器约束相反;<br>后者首先将值存储在要修改的寄存器中, 然后将其写回到内存位置<br>通常仅在绝对必要的指令约束条件下使用该寄存器约束条件,  因为寄存器约束会加快处理速度<br>如果需要在asm内部更新C变量, 并且确实不想使用寄存器来保存其值, 则可以最有效地使用内存约束.<br>例如 值存储在内存位置loc中:  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">asm(&quot;sidt %0\n&quot; : :&quot;m&quot;(loc));</span><br></pre></td></tr></table></figure>
+
+<p><strong>Matching(Digit) constraints 数字约束</strong>  </p>
+<p>在某些情况下, 单个变量既可以用作输入操作数, 也可以用作输出操作数<br>可以通过使用匹配约束在asm中指定此类情况  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">asm (&quot;incl %0&quot; :&quot;&#x3D;a&quot;(var):&quot;0&quot;(var));</span><br></pre></td></tr></table></figure>
+
+<p>为了匹配约束, 将寄存器%eax用作输入和输出变量<br>将var输入读取到%eax, 并在递增后将更新的%eax再次存储在var中<br>这里的0指定与第0个输出变量相同的约束<br>也就是说 它指定var的输出实例应仅存储在%eax中  </p>
+<ul>
+<li>从变量读取输入或修改变量并将修改写回到同一变量的情况  </li>
+<li>在不需要输入和输出操作数的单独实例的情况下   </li>
+<li>使用匹配约束的最重要作用是它们导致有效使用可用寄存器   </li>
+</ul>
+<p><strong>其他约束</strong>   </p>
+<ul>
+<li>“m”: 允许使用内存操作数,该内存操作数通常具有机器支持的任何类型的地址.  </li>
+<li>“o”: 允许使用内存操作数,但前提是该地址是可偏移的.也就是说,在地址上加上一个小的偏移量就可以得到一个有效的地址.   </li>
+<li>“V”: 不可偏移的内存操作数.换句话说,任何符合”m”约束但不符合”o”约束的事物.   </li>
+<li>“i”: 允许使用立即数整数（具有恒定值的一个）.这包括符号常量,其值仅在组装时才知道.   </li>
+<li>“n”: 允许使用具有已知数值的立即整数操作数.许多系统不能支持小于一字宽的操作数的汇编时常数.这些操作数的约束应使用”n”而不是”i”.  </li>
+<li>“g”: 允许使用任何寄存器,内存或立即数整数,但不是通用寄存器的寄存器除外.   </li>
+</ul>
+<p><strong>其他约束(X86)</strong>   </p>
+<ul>
+<li>“r”: 寄存器操作数约束,请参见上面给出的表.  </li>
+<li>“q”: 注册a,b,c或d.  </li>
+<li>“I”: 在0到31范围内的常数（用于32位移位）.  </li>
+<li>“J”: 范围0到63中的常数（用于64位移位）.  </li>
+<li>“K”: 0xff.  </li>
+<li>“L”: 0xffff.  </li>
+<li>“M”: 0、1、2或3（用于lea指令的移位）.  </li>
+<li>“N”: 在0到255之间的常数（用于out指令）.  </li>
+<li>“f”: 浮点寄存器  </li>
+<li>“t”: 第一个（栈顶）浮点寄存器  </li>
+<li>“u”: 第二个浮点寄存器   </li>
+<li>“A”: 指定”a”或”d”寄存器.这主要用于要返回的64位整数值,其中”d”寄存器保存最高有效位,而”a”寄存器保存最低有效位.   </li>
+</ul>
+<h3><span id="constraint-modifiers-约束修饰符">Constraint Modifiers  约束修饰符</span></h3><ul>
+<li><code>=</code>: 表示该操作数对于该指令是只写的 先前的值将被丢弃 并由输出数据替换   </li>
+<li><code>&amp;</code>: 表示此操作数是早期指令操作数 在使用输入操作数完成指令之前对其进行了修改  因此此操作数不能位于用作输入操作数或任何存储器地址一部分的寄存器中 如果将输入操作数仅用作输入 则在写入早期结果之前 将输入操作数绑定到早期生成器操作数   </li>
+</ul>
+<h2><span id="一些有用的案例">一些有用的案例</span></h2><p>更多可查看linux源码  </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/src/linux/include/<span class="keyword">asm</span><span class="comment">/*.h</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>两个数相加</strong>  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> foo = <span class="number">10</span>, bar = <span class="number">15</span>;</span><br><span class="line">        __asm__ __volatile__(<span class="string">"addl  %%ebx,%%eax"</span></span><br><span class="line">                             :<span class="string">"=a"</span>(foo)</span><br><span class="line">                             :<span class="string">"a"</span>(foo), <span class="string">"b"</span>(bar)</span><br><span class="line">                             );</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"foo+bar=%d\n"</span>, foo);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>原子加法: 要求GCC将foo存储在%eax中, 将bar存储在%ebx中，将结果存储在%eax中</strong>   </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">__asm__ __volatile__(</span><br><span class="line">                     <span class="string">"   lock       ;\n"</span></span><br><span class="line">                     <span class="string">"   addl %1,%0 ;\n"</span></span><br><span class="line">                     : <span class="string">"=m"</span>  (my_var)</span><br><span class="line">                     : <span class="string">"ir"</span>  (my_int), <span class="string">"m"</span> (my_var)</span><br><span class="line">                     :                                 <span class="comment">/* no clobber-list */</span></span><br><span class="line">                     );</span><br></pre></td></tr></table></figure>
+
+
+
+
+<p><strong>rawcmpxchg</strong>  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">__typeof__(*(ptr)) __ret;	</span><br><span class="line">__typeof__(*(ptr)) __old = (old);</span><br><span class="line">__typeof__(*(ptr)) __new = (<span class="keyword">new</span>);</span><br><span class="line">	<span class="keyword">volatile</span> u8 *__ptr = (<span class="keyword">volatile</span> u8 *)(ptr); </span><br><span class="line">	<span class="function"><span class="keyword">asm</span> <span class="title">volatile</span><span class="params">(lock <span class="string">"cmpxchgb %2,%1"</span> </span></span></span><br><span class="line"><span class="function"><span class="params">		     : <span class="string">"=a"</span> (__ret), <span class="string">"+m"</span> (*__ptr) </span></span></span><br><span class="line"><span class="function"><span class="params">		     : <span class="string">"q"</span> (__new), <span class="string">"0"</span> (__old) </span></span></span><br><span class="line"><span class="function"><span class="params">		     : <span class="string">"memory"</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/12/17/2020-12-17-twice-as-bright-half-as-long/" rel="next" title="两倍明亮的光芒只能燃烧一半的生命长度">
+                <i class="fa fa-chevron-left"></i> 两倍明亮的光芒只能燃烧一半的生命长度
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="夏天" />
+          <p class="site-author-name" itemprop="name">夏天</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">categories</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">1.1.</span> <span class="nav-text">内联(inline):</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">1.2.</span> <span class="nav-text">内联汇编</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">GCC汇编基本语法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">3.</span> <span class="nav-text">基本内联语法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">4.</span> <span class="nav-text">扩展汇编:</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">4.1.</span> <span class="nav-text">assembler template 汇编模板</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">4.2.</span> <span class="nav-text">operands 操作数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">4.3.</span> <span class="nav-text">clobber-list 破坏清单</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">4.4.</span> <span class="nav-text">volatile</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">5.</span> <span class="nav-text">constraints  约束</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">5.1.</span> <span class="nav-text">常用约束</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">5.2.</span> <span class="nav-text">Constraint Modifiers  约束修饰符</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">6.</span> <span class="nav-text">一些有用的案例</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">夏天</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+    NexT.Gemini
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

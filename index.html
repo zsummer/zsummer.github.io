@@ -250,6 +250,185 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2021/04/02/2021-04-02-gcc-inline-assembly/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/02/2021-04-02-gcc-inline-assembly/" itemprop="url">GCC 内联汇编编写</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-04-02T00:00:00+08:00">
+                2021-04-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>本文阐述了GCC提供的内联汇编功能的使用和用法<br>本文主要为了阐述zperf性能分析器的核心编写逻辑.</p>
+<!-- toc -->
+
+<ul>
+<li><a href="#概述">概述</a><ul>
+<li><a href="#内联inline">内联(inline):</a></li>
+<li><a href="#内联汇编">内联汇编</a></li>
+</ul>
+</li>
+<li><a href="#gcc汇编基本语法">GCC汇编基本语法</a></li>
+<li><a href="#基本内联语法">基本内联语法</a></li>
+<li><a href="#扩展汇编">扩展汇编:</a><ul>
+<li><a href="#assembler-template-汇编模板">assembler template 汇编模板</a></li>
+<li><a href="#operands-操作数">operands 操作数</a></li>
+<li><a href="#clobber-list-破坏清单">clobber-list 破坏清单</a></li>
+<li><a href="#__volatile__"><strong>volatile</strong></a></li>
+</ul>
+</li>
+<li><a href="#constraints-约束">constraints 约束</a><ul>
+<li><a href="#常用约束">常用约束</a></li>
+<li><a href="#constraint-modifiers-约束修饰符">Constraint Modifiers  约束修饰符</a></li>
+</ul>
+</li>
+<li><a href="#一些有用的案例">一些有用的案例</a></li>
+</ul>
+<!-- tocstop -->
+
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>在这篇文章中, 主要介绍的是(GCC)内联汇编函数的基本格式和用法, 这里先介绍两个基本概念.    </p>
+<h3 id="内联-inline"><a href="#内联-inline" class="headerlink" title="内联(inline):"></a>内联(inline):</h3><p>在C++中, inline关键字首先是<strong>C++语言层面的修饰符</strong>,  如同static/ const等.<br>该关键字的作用是将函数声明为一个内联(inline)函数: inline关键字作为指示器传递给优化器”<strong>优先采用函数的内联替换而非进行函数调用</strong>“.    </p>
+<blockquote>
+<p>即内联函数原本的优化目的 不使用控制转移指令跳转到函数体, 而是直接拷贝函数体到发生调用的位置, 从而达到避免函数调用的开销以及传参和返回等开销.    </p>
+</blockquote>
+<p>这里容易产生混淆的地方在于, 该修饰符对于上述优化的指示并非强制,  并且编译器拥有对任何未标注inline的函数的使用内联替换的自由(在编译的优化原则内);<br>也因此在实际的实践中,  <strong>inline关键字对于函数的含义也从’优先内联’实际变成了’容许多次定义’</strong>,  并且该inline关键字在语义上的实际变化也<strong>在C++17得到的标准化的定义和进一步的扩展</strong>,  并进一步扫清了”header only”支持的剩余障碍.     </p>
+<h3 id="内联汇编"><a href="#内联汇编" class="headerlink" title="内联汇编"></a>内联汇编</h3><p>内联汇编提供了在C/C++代码中直接嵌入汇编代码的能力, 其中, ‘asm’关键字充当了汇编指令和’C/C++’代码之间的接口.   </p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/04/02/2021-04-02-gcc-inline-assembly/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/12/17/2020-12-17-twice-as-bright-half-as-long/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1917,186 +2096,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/06/18/2020-07-15-gcd/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/18/2020-07-15-gcd/" itemprop="url">技能系统中的输出循环和节奏控制</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-06-18T00:00:00+08:00">
-                2020-06-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="技能系统中的循环控制"><a href="#技能系统中的循环控制" class="headerlink" title="技能系统中的循环控制"></a>技能系统中的循环控制</h1><h2 id="动作循环控制"><a href="#动作循环控制" class="headerlink" title="动作循环控制"></a>动作循环控制</h2><hr>
-<ul>
-<li>动作类技能, 普攻等依赖战斗单位身体动作的技能, 其受影响的身体部位不能同时做出两个动作   </li>
-<li>根据技能的价值级别以及特色设计, 在可能导致冲突的两个动作之间需要明确打断关系    </li>
-</ul>
-<h3 id="设计策略"><a href="#设计策略" class="headerlink" title="设计策略"></a>设计策略</h3><p>无论是时间线的设计还是多段设计亦或是朴素的单段多子技能设计,  我们需要标记出每段动作的影响部位, 其意义是在于我们对所有技能通过打标记的形式来获得’技能与技能之间是否存在动作冲突’的信息.     </p>
-<p>其次, 我们需要对冲突的技能之间的 重叠释放问题,  这里本质上是一个压制规则问题.   </p>
-<ol>
-<li>冲突的动作类技能一旦释放成功,  一定打断掉所有相关旧的技能</li>
-<li>如果不做上下半身分离, 普通移动视为动作, 否则为下半身动作  </li>
-<li>不希望被某些类型打断的时候  要禁止这些类型的技能释放 即压制类标签     </li>
-</ol>
-<p>举例来说   </p>
-<ul>
-<li><p>跳击技能:  </p>
-<ul>
-<li>技能类型:      上半身动作, 下半身动作  </li>
-<li>前摇时间压制:  禁止普通移动 禁止下半身动作 禁止上半身动作   </li>
-</ul>
-</li>
-<li><p>出拳技能   </p>
-<ul>
-<li>技能类型: 上半身动作   </li>
-<li>前摇时间压制: 禁止上半身动作  </li>
-</ul>
-</li>
-<li><p>闪避技能   </p>
-<ul>
-<li>技能类型: 上半身动作 下半身动作   </li>
-<li>前摇时间压制: 禁止普通移动 禁止上半身移动 禁止下半身移动    </li>
-</ul>
-</li>
-</ul>
-<p>注意:  有些闪避是特色玩法  则需要额外的标签和流程来完成<br>闪避技能进行条件判定时先使用脚本进行预判, 如果当前存在会因动作压制闪避的技能 则先进行打断, 防止被压制<br>所有动作类技能额外添加是否可被闪避技能打断的标签,  单独完成闪避相关的压制处理.   </p>
-<p>设计小结:   本质上动作类循环的控制, 在流程上首先是模拟动作状态机,  其次通过压制策略对状态机的切换策略进行控制    </p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/06/18/2020-07-15-gcd/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2147,7 +2146,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">45</span>
+                <span class="site-state-item-count">46</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -2202,7 +2201,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
