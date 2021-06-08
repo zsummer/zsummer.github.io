@@ -24,7 +24,7 @@ yum --disablerepo="*" --enablerepo="scl" install ****
 yum --disablerepo="*" --enablerepo="scl" update ****
 ```
 
-
+<!-- more --> 
 ## 安装devtoolset  
 ```
 yum --disablerepo="*" --enablerepo="*scl*" install devtoolset-10

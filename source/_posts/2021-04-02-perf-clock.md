@@ -16,7 +16,7 @@ mathjax: false
 * C库函数 clock  
   * WIN32 计数精度为1ms  获取消耗38ns  
   * linux 下计数精度为1us 获取消耗122ns(Intel X5650 下766ns, mac:476)  实际测试精度准确度在100ms级别(误差有几十ms 唯一一个有误差)    
-
+<!--more-->
 * C++ chrono : high_resolution_clock是通常为steady clock(实现定义 最好指定为steady)  
   * WIN32 system_clock 计数精度为100ns    获取消耗25ns DEBUG 39ns
   * WIN32 steady_clock 计数精度为100ns    获取消耗18ns DEBUG 65ns
