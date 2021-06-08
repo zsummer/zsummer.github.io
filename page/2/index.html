@@ -250,6 +250,779 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/08/03/2020-08-03-shm-resume/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/08/03/2020-08-03-shm-resume/" itemprop="url">共享内存RESUME机制综述</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-08-03T00:00:00+08:00">
+                2020-08-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <!-- TOC -->
+
+<ul>
+<li><a href="#%E5%89%8D%E8%A8%80">前言</a></li>
+<li><a href="#%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98resume%E5%87%BA%E7%8E%B0%E7%9A%84%E8%83%8C%E6%99%AF-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%89%E6%8B%A9%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98resume%E8%80%8C%E4%B8%8D%E6%98%AF%E9%9B%86%E7%BE%A4%E5%86%97%E4%BD%99%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB">共享内存RESUME出现的背景: 为什么选择共享内存RESUME而不是集群冗余+故障转移</a><ul>
+<li><a href="#mmoact%E7%9B%B8%E6%AF%94%E4%BC%A0%E7%BB%9F%E4%BA%92%E8%81%94%E7%BD%91%E7%9A%84%E5%BC%82%E5%90%8C">MMOACT相比传统互联网的异同</a></li>
+<li><a href="#%E6%96%B9%E6%A1%88%E5%AF%B9%E6%AF%94%E5%92%8C%E5%86%B3%E7%AD%96">方案对比和决策</a></li>
+</ul>
+</li>
+<li><a href="#%E5%8F%AF%E8%A1%8C%E6%80%A7%E5%88%86%E6%9E%90%E5%92%8C%E9%AA%8C%E8%AF%81">可行性分析和验证</a><ul>
+<li><a href="#%E9%9A%94%E7%A6%BB%E4%B8%9A%E5%8A%A1%E7%8A%B6%E6%80%81%E6%95%B0%E6%8D%AE%E4%B8%8E%E9%9D%9E%E4%B8%9A%E5%8A%A1%E7%8E%AF%E5%A2%83%E6%95%B0%E6%8D%AE">隔离业务状态数据与非业务环境数据</a></li>
+<li><a href="#%E9%9A%94%E7%A6%BB%E4%B8%9A%E5%8A%A1%E7%8A%B6%E6%80%81%E5%92%8C%E4%B8%9A%E5%8A%A1%E9%80%BB%E8%BE%91%E6%95%B0%E6%8D%AE%E5%92%8C%E9%80%BB%E8%BE%91%E5%88%86%E7%A6%BB">隔离业务状态和业务逻辑数据和逻辑分离</a></li>
+<li><a href="#%E6%9C%80%E5%B0%8F%E5%8C%96%E9%AA%8C%E8%AF%81-first-global-state">最小化验证, FIRST GLOBAL STATE</a></li>
+</ul>
+</li>
+<li><a href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%92%8C%E5%AE%9E%E8%B7%B5">解决方案和实践</a><ul>
+<li><a href="#resume%E7%8A%B6%E6%80%81%E9%87%8D%E5%BB%BA%E6%81%A2%E5%A4%8D%E7%9A%84%E5%9F%BA%E7%A1%80%E9%97%AE%E9%A2%98">RESUME状态重建/恢复的基础问题</a></li>
+<li><a href="#%E5%9F%BA%E7%A1%80%E9%97%AE%E9%A2%98%E4%BB%A5%E5%8F%8A%E8%A7%A3%E5%86%B3%E7%AD%96%E7%95%A5">基础问题以及解决策略</a><ul>
+<li><a href="#%E9%99%84-%E5%9C%A8%E9%9A%8F%E6%9C%BA%E5%8C%96%E7%9A%84aslr%E4%B8%AD%E7%A1%AE%E7%AB%8B%E7%A1%AE%E5%AE%9A%E6%80%A7%E7%9A%84%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4">附: 在随机化的ASLR中确立确定性的地址空间</a></li>
+</ul>
+</li>
+<li><a href="#%E5%AF%B9%E8%B1%A1%E6%B1%A0%E5%92%8C%E5%9F%BA%E7%A1%80%E5%AE%B9%E5%99%A8%E7%AD%89%E9%80%9A%E7%94%A8%E6%80%A7%E8%AE%BE%E8%AE%A1">对象池和基础容器等通用性设计</a><ul>
+<li><a href="#%E5%AF%B9%E8%B1%A1%E6%B1%A0%E5%AE%9A%E9%95%BF%E5%86%85%E5%AD%98%E6%B1%A0%E5%AF%B9%E8%B1%A1%E5%88%86%E9%85%8D%E5%9B%9E%E6%94%B6%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%9F%BA%E7%A1%80%E8%AE%BE%E8%AE%A1">对象池定长内存池+对象分配回收接口的基础设计</a></li>
+<li><a href="#%E5%9C%B0%E5%9D%80%E6%97%A0%E5%85%B3%E7%9A%84%E5%AE%B9%E5%99%A8%E5%AE%9E%E7%8E%B0">地址无关的容器实现</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E5%B0%8F%E7%BB%93">小结</a><ul>
+<li><a href="#%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E5%85%B6%E4%BB%96%E9%97%AE%E9%A2%98">需要注意的其他问题</a></li>
+<li><a href="#%E9%80%9A%E7%94%A8%E6%80%A7%E4%B8%8A%E7%9A%84%E6%8C%91%E6%88%98-%E5%9C%A8%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98%E4%B8%8A%E6%9E%84%E5%BB%BA%E9%80%9A%E7%94%A8%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E5%99%A8">通用性上的挑战: 在共享内存上构建通用内存管理器</a></li>
+</ul>
+</li>
+</ul>
+<!-- /TOC -->
+
+
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><strong>共享内存RESUME机制是指的: 通过将游戏状态数据保存在共享内存中, 当游戏进程crash后通过重启游戏服务器并attach已有的共享内存来恢复游戏状态, 以此达到玩家游戏体验在出现宕机时的连贯性, 提升游戏的容灾能力.</strong>       </p>
+<h2 id="共享内存RESUME出现的背景-为什么选择共享内存RESUME而不是集群冗余-故障转移"><a href="#共享内存RESUME出现的背景-为什么选择共享内存RESUME而不是集群冗余-故障转移" class="headerlink" title="共享内存RESUME出现的背景: 为什么选择共享内存RESUME而不是集群冗余+故障转移"></a>共享内存RESUME出现的背景: 为什么选择共享内存RESUME而不是集群冗余+故障转移</h2><h3 id="MMOACT相比传统互联网的异同"><a href="#MMOACT相比传统互联网的异同" class="headerlink" title="MMOACT相比传统互联网的异同"></a>MMOACT相比传统互联网的异同</h3><p>在web领域中,  业务和数据分离, 从而达成’业务无状态化’, 开发人员专注于业务本身, 状态数据的一致性问题和容灾问题转移到可以较为独立解决的数据存储领域, 这个领域有非常多的论文和解决方案, 以及成熟的服务等.     </p>
+<p>而对于游戏领域来说, 互联网成熟的解决的方案很难在这个地方应用,  当然 对于外围系统来说, 我们仍然可以按照互联网成熟的解决方案进行布局, 例如聊天系统, 好友系统,  邮件系统, 日志系统,  或者一些游戏中的公会系统等.     </p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/08/03/2020-08-03-shm-resume/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/07/24/2020-07-24-state_sync/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/07/24/2020-07-24-state_sync/" itemprop="url">多人游戏中的同步机制综述</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-07-24T00:00:00+08:00">
+                2020-07-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <!-- toc -->
+
+<ul>
+<li><a href="#前言">前言</a></li>
+<li><a href="#同步问题的产生和基本策略机制">同步问题的产生和基本策略机制</a></li>
+<li><a href="#同步模型的一般性描述">同步模型的一般性描述</a></li>
+<li><a href="#游戏中的状态一致性问题">游戏中的状态一致性问题</a></li>
+<li><a href="#同步过程中的抖动和延迟问题">同步过程中的抖动和延迟问题</a></li>
+<li><a href="#优化网络延迟和抖动">优化网络延迟和抖动</a><ul>
+<li><a href="#当前的网络环境">当前的网络环境</a></li>
+<li><a href="#工具">工具</a></li>
+<li><a href="#链路层延迟的优化">链路层延迟的优化</a></li>
+<li><a href="#tcp还是udp">TCP还是UDP</a></li>
+<li><a href="#tcp下的延迟和抖动优化">TCP下的延迟和抖动优化</a></li>
+<li><a href="#udp的优化">UDP的优化</a></li>
+</ul>
+</li>
+<li><a href="#时钟选择和时钟同步">时钟选择和时钟同步</a><ul>
+<li><a href="#实现">实现</a></li>
+</ul>
+</li>
+<li><a href="#移动-影子跟随算法和优化内插">移动: 影子跟随算法和优化(内插)</a></li>
+<li><a href="#常见的延迟隐藏手段">常见的延迟隐藏手段</a></li>
+<li><a href="#移动-航位推测法外推">移动: 航位推测法(外推)</a></li>
+<li><a href="#插值和外推-以及常用算法">插值和外推, 以及常用算法</a><ul>
+<li><a href="#内插值常用算法">内插值常用算法</a></li>
+<li><a href="#外插值常用算法">外插值常用算法</a></li>
+</ul>
+</li>
+<li><a href="#命中-延迟补偿">命中: 延迟补偿</a><ul>
+<li><a href="#延迟补偿的局限">延迟补偿的局限</a></li>
+</ul>
+</li>
+<li><a href="#逻辑预演和客户端提交命中">逻辑预演和客户端提交命中</a><ul>
+<li><a href="#满足进攻者的精彩时刻">满足进攻者的精彩时刻</a></li>
+</ul>
+</li>
+<li><a href="#提高tickrate">提高TickRate</a></li>
+<li><a href="#回退-快播-和解">回退 快播 和解</a></li>
+<li><a href="#案例分析部分">案例分析部分</a></li>
+<li><a href="#引用文献">引用文献</a></li>
+</ul>
+<!-- tocstop -->
+
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文中所有内容默认都基于逻辑描述, 逻辑状态,逻辑处理的逻辑游戏世界,  纯本地表现类, 总是通过逻辑世界单向导出的渲染计算等, 均不在本篇文章讨论范畴.  </p>
+<h2 id="同步问题的产生和基本策略机制"><a href="#同步问题的产生和基本策略机制" class="headerlink" title="同步问题的产生和基本策略机制"></a>同步问题的产生和基本策略机制</h2><p><strong>在多人游戏或者基于CS网络模型的游戏中, 玩家所在的游戏世界并非全由本地生成和修改, 必须不断从服务器或者其他玩家获得最新的信息来完成游戏世界的共享体验, 在多人实时交互的游戏中,  相当于每个人都维护一个’完整世界’的副本, 并保证每个人维护的副本之间一致性和实时性, 不同游戏对副本的规模复杂度以及对一致性和实时性的要求不同, 并随着网络环境的变化在不同的历史时期下演化出了多种同步方案.</strong>   </p>
+<p>在所有的同步方案中, 有两种最基础也最常见的同步机制, 即状态同步和帧同步, 其基本机制和区别为:  </p>
+<ul>
+<li><strong>状态同步: 通过同步游戏中的各种状态来保证游戏世界副本的一致性, 基本流程如下:</strong>   <ul>
+<li>服务器维护权威完整副本  客户端维护本地副本 <font color=#ccc> (可以只维护部分副本) </font>   </li>
+<li>客户端上行请求到服务器 服务器进行完整的逻辑演算 并将发生改变的状态下行给客户端   </li>
+<li><font color=#ccc>客户端基于本地副本进行预演和状态预刷新 </font>  </li>
+<li>客户端用来自服务器的状态数据刷新本地副本, 对齐服务器副本   <ul>
+<li><font color=#ccc>客户端如果有因预演导致的数据不对齐需要通过强同步/回滚/和解等机制达成最终对齐</font>   <ul>
+<li><font color=#ccc>快照类同步方式总是全量对齐</font>   </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>帧同步: 泛指通过一致的初始状态, 一致的输入事件和一致的逻辑处理, 从而得到相同的计算结果来保证游戏世界副本的一致性的同步方案</strong>    </p>
+<ul>
+<li><p>该术语为泛指, 所有通过确定性算法,以保证输入一致来得出相同游戏流程结果的同步均可泛称为帧同步.   </p>
+</li>
+<li><p>最早有对等网络的锁步同步, 发展为非对等网络的主机锁步同步, 再到后来的bucket同步以及现在比较流行的定时不等待乐观帧同步  </p>
+</li>
+<li><p>锁步同步:  </p>
+<ul>
+<li>客户端定时(比如每五帧为一个关键帧)上传一轮输入信息   </li>
+<li>服务器收到所有输入信息后广播给其他所有客户端  </li>
+<li>客户端用服务器发来的更新消息中的输入信息进行游戏(如果是对称网络, 这个过程则是广播自己输入信息和搜集所有其他客户端的输入信息)     </li>
+<li>如果客户端进行到下一个关键帧(5帧后)时没有收到服务器的更新消息则等待   </li>
+<li>如果客户端进行到下一个关键帧时已经接收到了服务器的更新消息, 则将上面的数据用于游戏, 并采集当前鼠标键盘输入发送给服务器, 同时继续进行下去   </li>
+<li>服务端采集到所有数据后再次发送下一个关键帧更新消息   </li>
+</ul>
+</li>
+<li><p>定时不等待:     </p>
+<ul>
+<li>相对于锁步同步来说, 服务器会定时下发收集到的信息,  并根据收集到的信息调整关键帧的间隔,  没有在指定间隔内收到的消息会排在下一次关键帧或者丢弃   </li>
+<li>相对于锁步同步来说, 任何客户端的卡顿不会阻塞其他玩家   </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>这两种同步模型本质上并不冲突, 并且在细节上会相互补充优化,  常见的为在状态同步这种弱一致性框架下添加确定性演算来增加同步的准确性, 在确定性的帧同步下隔离出来部分状态进行优化增加流畅性,  从模型角度来说, 在复杂的同步需求中, 状态同步总是比帧同步有更多的扩展和调优空间, 典型的案例如UE4和UNITY中的DS服务器.</strong>   </p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/07/24/2020-07-24-state_sync/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/07/21/2020-07-21-math_of_combat/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/07/21/2020-07-21-math_of_combat/" itemprop="url">数值模型 战斗属性和判定公式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-07-21T00:00:00+08:00">
+                2020-07-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="战斗属性"><a href="#战斗属性" class="headerlink" title="战斗属性"></a>战斗属性</h2><p><strong>战斗属性属于战斗单位的简单数据字段,  提供基础的数据读写操作(相对于magic state而言).</strong><br>在实践中 一般战斗属性还包含从配置文件中load数据, 一级战斗属性到二级战斗属性的封装, 以及按照功能,战斗单位层级的划分等.    </p>
+<h2 id="战斗属性的设计和实现"><a href="#战斗属性的设计和实现" class="headerlink" title="战斗属性的设计和实现"></a>战斗属性的设计和实现</h2><h3 id="字段表设计"><a href="#字段表设计" class="headerlink" title="字段表设计"></a>字段表设计</h3><p>字段表在设计上隶属于’接口层’这个概念, 简单直接, 易于访问和同步处理时目的.    </p>
+<p>在C++中 通常考虑用一块静态数组的内存来表示   </p>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+<th>A</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字段名</td>
+<td>HP</td>
+<td>MP</td>
+<td>ATK</td>
+<td>CRIT</td>
+<td>RESIST CRIT</td>
+<td>HIT RATE</td>
+<td>MISS RATE</td>
+<td>…</td>
+</tr>
+<tr>
+<td>转换类型</td>
+<td>INT</td>
+<td>INT</td>
+<td>INT</td>
+<td>INT</td>
+<td>INT</td>
+<td>FLOAT</td>
+<td>FLOAT</td>
+<td>…</td>
+</tr>
+</tbody></table>
+<p>这种字段表的设计有以下优点和特性:</p>
+<ul>
+<li>性能非常高   </li>
+<li>可以直接操作,遍历内存 方便统一管理  </li>
+<li>以数组下标完成ID的设计, 并使用BIT位进行脏数据标记辅助进行增量同步  </li>
+<li>初始化约定为0,  进行初始同步时只同步非0数据即可,  后续采用增量同步, 减少同步量   </li>
+<li>字段表中的数据修改可以由属性表进行托管结算 也可以直接set   <ul>
+<li>通常战斗属性均为属性表托管结算和刷新 不能直接set   </li>
+<li>通常能量条类属性直接进行set </li>
+<li>复杂的属性一般由多个属性功能完成 例如<ul>
+<li>血量上限 (战斗属性)   </li>
+<li>当前血量 (属于能量条类, 则特殊条件下以’血量上限属性’为依据进行set  例如出生满血)   </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/07/21/2020-07-21-math_of_combat/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/06/18/2020-06-18-skill-tag/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/18/2020-06-18-skill-tag/" itemprop="url">技能系统中的标签机制</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-06-18T00:00:00+08:00">
+                2020-06-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="技能系统中的标签机制"><a href="#技能系统中的标签机制" class="headerlink" title="技能系统中的标签机制"></a>技能系统中的标签机制</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><hr>
+<p>对于一个大规模系统的建模 一定离不开常见的分类手段, 而分类要根据系统中的元素以及元素之间的关系来作为划分依据, 从而采用不同策略<br>技能系统中的配置以’技能’和’效果’作为完整的配置单位, 所有的技能和效果之间的关系则是多维的图的拓扑关系的, 例如:</p>
+<blockquote>
+<p>眩晕BUFF: 禁止普通移动, 禁止常规技能释放,<br>定身BUFF: 禁止普通移动<br>金身BUFF: 禁止普通移动, 禁止所有技能释放,  不可被眩晕/禁止所有效果(受击, 伤害, debuff/buff等)<br>冰冻BUFF: 禁止普通移动, 禁止所有技能释放除了解控技能,  可能禁止受击<br>沉默BUFF:              禁止所有(部分)技能释放<br>无敌BUFF: 不接受任何伤害<br>霸体BUFF: 打断受击状态并免控<br>灯笼BUFF: 可困住霸体BUFF单位<br>解控技能: 接触被控状态但无法接触部分例如灯笼BUFF<br>净化技能: 移除DEBUFF<br>破盾技能: 移除带有指定盾效果的BUFF<br>致命一击: 突破所有防御包括部分无敌BUFF .<br>引导技能A: 可被强控技能打断<br>引导技能B: 可被移动取消<br>连招技能: 需要前置技能成功释放完成<br>千斤坠技能: 需要飞行状态可释放     </p>
+</blockquote>
+<p>几乎所有的技能和buff之间都需要定义好他们的交互关系, 包括依赖条件, 禁止状态,  打断逻辑,  替换规则, 触发节奏, 否则在不断的引入新的技能时, 很容易导致已有的系统出现局部甚至整体的错误流程和功能表现.   </p>
+<p>而作为一个灵动丰富的多样性的技能系统, 在具体的状态关系上往往不会是简单的禁止打断逻辑, 而是分梯度, 计数, 浮动值的不同而有不同的分支策略, 需要对这样的一个规模和结构复杂的系统进行井井有条的管理和维护, 则需要一套完善灵活的拆分理念和管理机制.   </p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/06/18/2020-06-18-skill-tag/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/06/18/2020-07-15-gcd/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1319,860 +2092,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/12/17/2019-12-17-elf-load/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/12/17/2019-12-17-elf-load/" itemprop="url">ELF装载和动态链接过程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-12-17T00:00:00+08:00">
-                2019-12-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="1-目录"><a href="#1-目录" class="headerlink" title="..1. 目录"></a>..1. 目录</h3><!-- TOC -->
-
-<ul>
-<li><a href="#目录">目录</a><ul>
-<li><a href="#动态链接过程">动态链接过程</a><ul>
-<li><a href="#基础宏定义">基础宏定义</a></li>
-<li><a href="#重定位定义">重定位定义</a></li>
-<li><a href="#符号表定义">符号表定义</a></li>
-<li><a href="#动态段定义">动态段定义</a></li>
-<li><a href="#rscopeelem-定义">rscopeelem 定义</a></li>
-<li><a href="#linkmap">linkmap</a></li>
-<li><a href="#dlfixup-函数定义和分析">dlfixup 函数定义和分析</a></li>
-<li><a href="#符号版本">符号版本</a></li>
-<li><a href="#强弱符号">强弱符号</a></li>
-<li><a href="#强弱引用">强弱引用</a></li>
-<li><a href="#符号的作用域">符号的作用域</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#动态库装载过程">动态库装载过程</a><ul>
-<li><a href="#elf的辅助向量-auxv">ELF的辅助向量 AUXV</a></li>
-<li><a href="#elf的装载有三种方法">ELF的装载有三种方法</a></li>
-</ul>
-</li>
-</ul>
-<!-- /TOC -->
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/12/17/2019-12-17-elf-load/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/12/16/2019-12-16-elf-link/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/12/16/2019-12-16-elf-link/" itemprop="url">ELF静态链接过程和动态链接过程中的GOT表的作用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-12-16T00:00:00+08:00">
-                2019-12-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <font color=#ff6688>  
-
-<h3 id="1-目录"><a href="#1-目录" class="headerlink" title="..1. 目录"></a>..1. 目录</h3><!-- TOC -->
-
-<ul>
-<li><a href="#1-目录">..1. 目录</a></li>
-<li><a href="#2-准备工具和基础汇编知识">..2. 准备工具和基础汇编知识</a></li>
-<li><a href="#3-编译链接过程的基本原理和流程">..3. 编译链接过程的基本原理和流程</a><ul>
-<li><a href="#31-gcc中编译一个源文件可以拆分为4个部分">..3.1. gcc中编译一个源文件可以拆分为4个部分</a></li>
-<li><a href="#32-编译单元translation-environment-编译的转换阶段-">..3.2. 编译单元(Translation environment), 编译的转换阶段 :</a></li>
-<li><a href="#33-pic-pie-位置无关代码">..3.3. PIC PIE 位置无关代码</a></li>
-<li><a href="#34-got-plt-全局偏移表-链接过程表">..3.4. GOT PLT 全局偏移表 链接过程表</a></li>
-<li><a href="#35-符号表和符号">..3.5. 符号表和符号</a><ul>
-<li><a href="#351-全局符号和局部符号">..3.5.1. 全局符号和局部符号</a></li>
-<li><a href="#352-外部符号和内部符号">..3.5.2. 外部符号和内部符号</a></li>
-<li><a href="#353-和字符串表的关系">..3.5.3. 和字符串表的关系</a></li>
-</ul>
-</li>
-<li><a href="#36-静态链接过程">..3.6. 静态链接过程</a></li>
-<li><a href="#37-动态链接过程">..3.7. 动态链接过程</a></li>
-</ul>
-</li>
-<li><a href="#4-跟踪调测">..4. 跟踪调测</a><ul>
-<li><a href="#41-测试源码">..4.1. 测试源码</a></li>
-<li><a href="#42-位置有关的重定位分析">..4.2. 位置有关的重定位分析</a><ul>
-<li><a href="#421-分析结论如下">..4.2.1. 分析结论如下:</a></li>
-<li><a href="#422-系统源码参考">..4.2.2. 系统源码参考:</a></li>
-<li><a href="#423-字符串数据">..4.2.3. 字符串数据</a></li>
-<li><a href="#424-节信息">..4.2.4. 节信息</a></li>
-<li><a href="#425-text数据">..4.2.5. text数据</a></li>
-</ul>
-</li>
-<li><a href="#43-位置无关的重定位分析">..4.3. 位置无关的重定位分析</a><ul>
-<li><a href="#431-分析说明">..4.3.1. 分析说明</a></li>
-<li><a href="#432-全局数据访问代码分析">..4.3.2. 全局数据访问代码分析</a></li>
-<li><a href="#433-全局函数访问代码分析">..4.3.3. 全局函数访问代码分析</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#动态库装载过程">动态库装载过程</a><ul>
-<li><a href="#elf的辅助向量-auxv">ELF的辅助向量 AUXV</a></li>
-<li><a href="#load_elf_binary函数">load_elf_binary函数</a></li>
-</ul>
-</li>
-</ul>
-<!-- /TOC -->
-
-<h3 id="2-准备工具和基础汇编知识"><a href="#2-准备工具和基础汇编知识" class="headerlink" title="..2. 准备工具和基础汇编知识"></a>..2. 准备工具和基础汇编知识</h3><ul>
-<li>readelf -a  查看elf信息  </li>
-<li>objdump -S 查看汇编指令  </li>
-<li>ldd 查看动态加载   </li>
-<li>xxd - make a hexdump or do the reverse.</li>
-<li>gdb  <ul>
-<li>gdb 通过<code>layout regs</code>打开寄存器显示, 通过<code>set disassemble-next-line on</code>打开汇编  </li>
-<li>gdb 通过peda插件字节显示汇编和寄存器  和上面的原生方式选择一个即可    </li>
-<li>gdb关闭ASLR：<ul>
-<li>set disable-randomization on</li>
-</ul>
-</li>
-<li>开启ASLR：<ul>
-<li>set disable-randomization off</li>
-</ul>
-</li>
-<li>查看ASLR状态：<ul>
-<li>show disable-randomization</li>
-</ul>
-</li>
-<li>disas反汇编命令，直接disas是反汇编当前函数<ul>
-<li>disas /r (显示汇编指令对应十六进制值)   </li>
-<li>disas /m (如果有源码，显示对应行源码)   </li>
-</ul>
-</li>
-<li>intel语法<ul>
-<li>set disassembly-flavor intel</li>
-<li>set disassembly-flavor att  </li>
-</ul>
-</li>
-</ul>
-</li>
-<li>详细工具和汇编的基础知识见上一篇文章: <a href="https://zsummer.github.io/2019/12/11/2019-12-11-asm-syntax/">汇编语法/寻址/寄存器/代码模型(GNU assembler) </a>  </li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/12/16/2019-12-16-elf-link/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/12/11/2019-12-11-asm-syntax/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/12/11/2019-12-11-asm-syntax/" itemprop="url">汇编语法/寻址/寄存器/代码模型(GNU assembler)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-12-11T00:00:00+08:00">
-                2019-12-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="0-0-1-目录"><a href="#0-0-1-目录" class="headerlink" title="0.0.1. 目录"></a>0.0.1. 目录</h3><!-- TOC -->
-
-<ul>
-<li><a href="#目录">目录</a></li>
-<li><a href="#基础语法格式">基础语法格式</a></li>
-<li><a href="#常见寄存器以及作用">常见寄存器以及作用</a><ul>
-<li><a href="#通用寄存器">通用寄存器</a><ul>
-<li><a href="#寄存器使用惯例-原文">寄存器使用惯例 原文</a></li>
-<li><a href="#中文对照">中文对照</a></li>
-</ul>
-</li>
-<li><a href="#专用寄存器">专用寄存器</a><ul>
-<li><a href="#标志寄存器-rflags">标志寄存器 RFLAGS</a></li>
-<li><a href="#程序计数器pcrelative-instruction-pointerip">程序计数器(PC)(Relative Instruction-Pointer)(IP)</a></li>
-<li><a href="#指令寄存器">指令寄存器</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#汇编语法">汇编语法</a><ul>
-<li><a href="#汇编指令">汇编指令</a></li>
-<li><a href="#操作数格式与寻址">操作数格式与寻址</a><ul>
-<li><a href="#内存操作数">内存操作数</a></li>
-<li><a href="#寻址模式">寻址模式</a></li>
-<li><a href="#large-code-mode">large code mode:</a></li>
-<li><a href="#共享库中对g_static_so_data的访问">共享库中对g_static_so_data的访问</a></li>
-<li><a href="#small-code-mode">small code mode:</a></li>
-<li><a href="#备注说明">备注说明</a></li>
-<li><a href="#relro--relocation-read-only">RELRO  Relocation Read Only</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#调用惯例calling-conventions">调用惯例Calling Conventions</a><pre><code>- [参数压栈顺序](#参数压栈顺序)
-    - [Caller Save和Callee Save](#caller-save和callee-save)</code></pre></li>
-<li><a href="#工具">工具</a><ul>
-<li><a href="#peda插件">PEDA插件</a></li>
-</ul>
-</li>
-</ul>
-<!-- /TOC -->
-
-
-
-
-<h3 id="0-0-2-基础语法格式"><a href="#0-0-2-基础语法格式" class="headerlink" title="0.0.2. 基础语法格式"></a>0.0.2. 基础语法格式</h3><p>GAS汇编的格式阅读起来很自然 如下   </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[操作符]    [源]      [目标]   </span><br><span class="line">movl        $0,      -4(%rbp)</span><br></pre></td></tr></table></figure>
-
-
-<p>但是INTEL格式更贴近C语言的书写风格   </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[操作符]   [目标]    [源]  </span><br><span class="line">mov        esi,     DWORD PTR [rbp-0x4]</span><br></pre></td></tr></table></figure>
-
-<p>很像C语言的代码   </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int esi &#x3D; *(rbp-0x4);</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>本文基于X86-64架构体系整理了GAS风格的汇编语法, 如无特殊说明后续内容皆以环境为准.    </p>
-</blockquote>
-<p>“@”符号表示“将符号左边的变量钳制在符号右边的地址   </p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/12/11/2019-12-11-asm-syntax/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/29/2019-12-06-is-a-and-has-a/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/11/29/2019-12-06-is-a-and-has-a/" itemprop="url">AS-A 和 HAS-A 概念</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-29T00:00:00+08:00">
-                2019-11-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3><span id="目录">目录</span></h3><hr>
-<!-- TOC -->
-
-<ul>
-<li><a href="#目录">目录</a></li>
-<li><a href="#词的关系概括">词的关系概括</a><ul>
-<li><a href="#polysemy-词汇蕴含规则">polysemy 词汇蕴含规则</a><ul>
-<li><a href="#linear-polysemy-线性多义">linear polysemy 线性多义</a></li>
-<li><a href="#non-linear-polysemy-非线性多义">non-linear polysemy 非线性多义</a></li>
-<li><a href="#一词多义">一词多义</a></li>
-</ul>
-</li>
-<li><a href="#hyperonymhyponym-上下义关系">hyperonym–hyponym 上下义关系</a></li>
-<li><a href="#autonymy-反义关系">autonymy 反义关系</a></li>
-<li><a href="#synonymy-同义关系">synonymy 同义关系</a></li>
-</ul>
-</li>
-<li><a href="#语义聚合关系">语义聚合关系</a><ul>
-<li><a href="#上下义词">上下义词</a></li>
-<li><a href="#总分词">总分词</a></li>
-<li><a href="#类义词狭义">类义词(狭义)</a></li>
-</ul>
-</li>
-<li><a href="#面向对象中的关系">面向对象中的关系</a><ul>
-<li><a href="#类型和实例关系">类型和实例关系</a></li>
-<li><a href="#hyperonymhyponym-supertypesubtype-上下义关系-超类子类关系--is-a-关系-继承泛化关系">hyperonym–hyponym (supertype–subtype) 上下义关系, 超类子类关系  IS-A 关系 继承/泛化关系</a></li>
-<li><a href="#holonymmeronym--整体部分关系-has-a-关系">holonym–meronym  整体部分关系 HAS-A 关系</a></li>
-</ul>
-</li>
-<li><a href="#集合关系">集合关系</a></li>
-</ul>
-<!-- /TOC -->
-<h3><span id="词的关系概括">词的关系概括</span></h3><h4><span id="polysemy-词汇蕴含规则">polysemy 词汇蕴含规则</span></h4><h5><span id="linear-polysemy-线性多义">linear polysemy 线性多义</span></h5><ul>
-<li>autohyponymy, where the basic sense leads to a specialised sense  基本意义-&gt;特殊意义  </li>
-<li>automeronymy, where the basic sense leads to a subpart sense 基本意义-&gt;部分意义  整体-&gt;局部  </li>
-<li>autohyperonymy or autosuperordination, where the basic sense leads to a wider sense   基本意义-&gt;宽泛意义  下位-&gt;上位意义  </li>
-<li>autoholonymy, where the basic sense leads to a larger sense  基本意义-&gt;更多意义 <h5><span id="non-linear-polysemy-非线性多义">non-linear polysemy 非线性多义</span></h5></li>
-<li>metonymy  转喻 借喻    </li>
-<li>metaphor 隐喻  <h5><span id="一词多义">一词多义</span></h5></li>
-<li>原始意义与衍生意义(派生)   </li>
-<li>普通意义与特殊意义  </li>
-<li>抽象意义与具体意义  </li>
-<li>字面意义与比喻意义  <h4><span id="hyperonymhyponym-上下义关系">hyperonym–hyponym 上下义关系</span></h4><h4><span id="autonymy-反义关系">autonymy 反义关系</span></h4><h4><span id="synonymy-同义关系">synonymy 同义关系</span></h4></li>
-</ul>
-<h3><span id="语义聚合关系">语义聚合关系</span></h3><h4><span id="上下义词">上下义词</span></h4><p>上下义关系代表了概念上的蕴含关系, 或者说在类型层级上, 下位类一定带有上位类的所有属性.  可以用 IS A 来表达.  </p>
-<p>例如 上义词 水果  下义词 香蕉.  香蕉 IS A 水果  但是不能反过来说 水果 IS A  香蕉   </p>
-<p>上下义关系也可以进入 ‘A包含B’的格式,  比如说香蕉包含水果的属性  </p>
-<h4><span id="总分词">总分词</span></h4><p>整体部分关系   用HAS A来表达  </p>
-<p>例如 门  和  门套/门板    可以进入’A包含B’的格式 但是不能用  ‘B是A’的格式   </p>
-<h4><span id="类义词狭义">类义词(狭义)</span></h4><p>多元关系中的同级词语  例如门下的 门套和门板的关系  </p>
-<h3><span id="面向对象中的关系">面向对象中的关系</span></h3><h4><span id="类型和实例关系">类型和实例关系</span></h4><ul>
-<li>Type–token distinction  例如一个语句中  rose is a rose 中有三个type 4个token   <ul>
-<li>type == classes  </li>
-<li>object == instances ==token  </li>
-</ul>
-</li>
-<li>type of    <ul>
-<li>(实例)的类型     </li>
-</ul>
-</li>
-<li>instance of   <ul>
-<li>(类型) 的实例  </li>
-</ul>
-</li>
-</ul>
-<h4><span id="hyperonymhyponym-supertypesubtype-上下义关系-超类子类关系-is-a-关系-继承泛化关系">hyperonym–hyponym (supertype–subtype) 上下义关系, 超类子类关系  IS-A 关系 继承/泛化关系</span></h4><ul>
-<li>子类包含所有超类的属性/方法 可以用 “子类 IS A 父类” 来进行判定和使用   </li>
-<li>所有可以对超类适用的规范同样也可以适用于其子类   <ul>
-<li>李氏替换原则<ul>
-<li>Functions that use pointers or references to base classes must be able to use objects of derived classes without knowing it.  </li>
-<li>使用基类对象指针或引用的函数必须能够在不了解衍生类的条件下使用衍生类的对象   </li>
-<li>李氏替换原则中 避免重写父类的非抽象方法, 而多态的实现是通过重写抽象方法实现.   </li>
-<li>面向对象中的抽象方法是定义方法的声明规范而不约束其实现因此扔可 概括为上句 “ 所有可以对超类适用的规范同样也可以适用于其子类”   </li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h4><span id="holonymmeronym-整体部分关系-has-a-关系">holonym–meronym  整体部分关系 HAS-A 关系</span></h4><ul>
-<li><p>aggregation 聚合关系  不存在所属权  HAS-A 关系  </p>
-<ul>
-<li>部分可以脱离/超出整体的生命周期独立存在 比如家庭成员和家庭  玩家和工会  </li>
-</ul>
-</li>
-<li><p>composition 组成关系  存在所属权  PART-OF| HAS-A 关系 </p>
-<ul>
-<li>部分不可以脱离整体的生命周期管理 比如四肢和人体  </li>
-<li>对于编程来讲, 我们实例化玩家对象, 实例化背包对象, 玩家下线需要连带清理背包对象.   </li>
-</ul>
-</li>
-<li><p>containment 包含关系   member-of | contains-a | part-of|HAS-A 关系  </p>
-<ul>
-<li>对成员的访问必须经过整体  成员为内涵状态  </li>
-<li>对于C++来说 privete:下的数据成员必须使用该类的接口访问  </li>
-<li>例如玩家对象和玩家的等级属性  </li>
-</ul>
-</li>
-</ul>
-<h3><span id="集合关系">集合关系</span></h3><p>从更抽象的角度来说<br>IS-A的关系判定为  A 是不是 B的特化 (specialization)<br>从集合关系来讲则为 A ⊃ B   A是不是B的真超集   </p>
-<p>HAS-A的关系判定为 B 是不是 A的组成部分<br>从集合关系来讲则为 B ⊂ A         B 是不是A的的真子集   </p>
-<p>ALIAS-A (没有这个术语) 的关系则是 A = B 即 别名.   </p>
-<p>从集合角度来讲, 如果B是A的特化, 那么A同时也是B的构成,  即:</p>
-<ul>
-<li>B ⊃ A(IS-A) 可以推导出 A ⊂ B (HAS-A)  </li>
-<li>但是IS-A限定了 A ⊂ B(HAS-A) 不可以推导出B ⊃ A (IS-A)     (IS-A限定特化后具有相同的拓扑结构)</li>
-</ul>
-<p>因此</p>
-<p>这IS-A这种关系 是 HAS-A 的特化.  即  IS-A  ⊃ HAS-A </p>
-<p>换成具体到OO语言里,  继承是一种特殊的聚合方式.<br>聚合更具有一般化的性质 更松散  </p>
-<p>因此 IS-A  is a  HAS-A  通过IS-A到HAS-A的转化可获得更好的一般性(泛化)  泛化转关联本身也是一种泛化</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2223,7 +2142,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-count">50</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>

@@ -250,6 +250,651 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/04/2019-11-04-kernel-thread/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/11/04/2019-11-04-kernel-thread/" itemprop="url">linux多线程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-04T00:00:00+08:00">
+                2019-11-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="1-多线程"><a href="#1-多线程" class="headerlink" title="..1. 多线程"></a>..1. 多线程</h3><ol>
+<li>老的LinuxThreads (管理线程机制) 设计中线程栈的位置在 HEAP之下 的高位 导致无法可信的设置heap大小  </li>
+<li>新的NPTL解决了老的线程机制中的管理单点问题 信号问题 内存布局问题等 顺便实现了PTHREAD_PROCESS_SHARED </li>
+<li>pthread_attr_setstackaddr可指定线程栈的地址(mmap)   </li>
+<li>pthread的创建和销毁 <ol>
+<li>创建   <ol>
+<li>使用用户提供的stack创建线程并加入__stack_user </li>
+<li>nptl 先尝试获取stack_cache中tid为0大小合适的空闲stack, 如果失败则从mmap分配新的stack, 然后加入stack_used  </li>
+<li>tid list等信息存储在stack内存的高地址端的头部  </li>
+</ol>
+</li>
+<li>start_thread执行完用户函数后会进行数据回收和清理(但无法销毁自身)   <ol>
+<li>如果该线程非detach 则等待join  (没有join则会一直保留)  </li>
+<li>如果该线程被detach 则执行__free_tcb   <ol>
+<li>如果是用户分配的stack 从stack_user链表中移除并清理tls 线程局部存储  </li>
+<li>如果是自动分配的stack 从stack_used链表中移除, 然后加入stack_cache中, 清理tls线程局部存储(此时tid不为0)   </li>
+<li>检查当前stack_cache的总大小, 超过阈值则遍历一次stack_cache并释放掉(tid为0)空闲的stack, 如果小于阈值则提前break该次遍历   </li>
+</ol>
+</li>
+</ol>
+</li>
+<li>内核在该线程结束后 会对该线程的tid清零(创建线程时CLONE_CHILD_CLEARTID参数会让内存清除某标记内存), 此后该资源可以安全销毁.        </li>
+</ol>
+</li>
+<li>brk和mmap的分配由glibc确定 默认规则是小于M_MMAP_THRESHOLD宏走brk  但是新系统的算法可能会让大于这个参数的临时分配也走brk
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/11/04/2019-11-04-kernel-thread/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/10/01/2019-10-01-sdm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/01/2019-10-01-sdm/" itemprop="url">SDM模型</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-01T00:00:00+08:00">
+                2019-10-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="SDM框架对系统发展生命周期的过程描述"><a href="#SDM框架对系统发展生命周期的过程描述" class="headerlink" title="SDM框架对系统发展生命周期的过程描述"></a>SDM框架对系统发展生命周期的过程描述</h3><p>SDM(软件开发方法)框架是在SDLC在软件开发早起</p>
+<ul>
+<li>(SDM框架)软件开发过程有以下基本的核心活动内容<ul>
+<li>需求分析 (Requirements analysis)  </li>
+<li>领域设计 (Software design)  </li>
+<li>系统设计 (Software engineering)  </li>
+<li>编码开发 (Software construction)  </li>
+<li>功能验证 (Software testing)  </li>
+<li>错误修正 (Debugging)    </li>
+<li>部署交付 (Software deployment)  </li>
+<li>维护 (Software maintenance)
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/01/2019-10-01-sdm/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/09/16/2019-09-16-problem-domain/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/16/2019-09-16-problem-domain/" itemprop="url">问题的解决</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-16T00:00:00+08:00">
+                2019-09-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>在认知心理学中, 问题解决的思维过程被描述为: 在问题空间下, 经过思考与推理, 达到目的的心理历程.<br>该过程分为四个阶段  </p>
+<ul>
+<li>发现问题</li>
+<li>分析（明确）问题</li>
+<li>提出假设  </li>
+<li>验证假设  </li>
+</ul>
+<p>其中问题空间(问题域)是指问题解决者对所要解决的问题的一切可能的认识状态, 包括对问题的初始状态和目标状态的认识, 以及如何从初始状态转化为目标状态的认知操作等.    </p>
+<p>问题的解决就是对问题空间进行搜索, 找到一条从问题的初始状态到达目标状态的通路.   </p>
+<h2 id="问题解决的一般性阶段及其描述"><a href="#问题解决的一般性阶段及其描述" class="headerlink" title="问题解决的一般性阶段及其描述:"></a>问题解决的一般性阶段及其描述:</h2><ul>
+<li><strong>问题的存在,发现和提出</strong>  </li>
+<li><strong>定义问题域, 即定义问题集以及问题的约束集</strong>  </li>
+<li><strong>从问题域中递归的构造可演算的计算(概念)模型</strong>  </li>
+<li><strong>制定现实可执行的解决方案</strong>  </li>
+<li><strong>实施并植入问题域所在现实环境验证</strong>   </li>
+<li><strong>问题的解决</strong>  </li>
+</ul>
+<p>在这个过程中, 每个过程的推进都可能会伴随对其前向的阶段所做的处理发起修正, 在此过程中我们会不断的逼近’真正的问题’的问题定义, 以及’真正的问题解决’的结果, 从而采用形式化的方法寻找到最优的解决路径   </p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/09/16/2019-09-16-problem-domain/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/06/08/2019-06-08-rvo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/08/2019-06-08-rvo/" itemprop="url">RVO源码阅读笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-08T18:37:00+08:00">
+                2019-06-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h5 id="KDTREE"><a href="#KDTREE" class="headerlink" title="KDTREE"></a>KDTREE</h5><p>空间K维划分, 用来快速寻找距离最近的障碍(指定数量)  优化RVO的资源消耗.  </p>
+<h3 id="路径规划"><a href="#路径规划" class="headerlink" title="路径规划"></a>路径规划</h3><h5 id="高级规划"><a href="#高级规划" class="headerlink" title="高级规划"></a>高级规划</h5><p>DIJKSTRA 最短路径  等寻路方法  </p>
+<h5 id="底层规划"><a href="#底层规划" class="headerlink" title="底层规划"></a>底层规划</h5><p>VO RVO ORCA等Obstacle Avoidance避障算法  </p>
+<h3 id="KDTREE-1"><a href="#KDTREE-1" class="headerlink" title="KDTREE"></a>KDTREE</h3><p>这个是一个简单的KDTREE实现 用来寻找距离最近的障碍(指定数量)  优化RVO的资源消耗.  </p>
+<h3 id="VO-Velocity-Obstacles-速度障碍"><a href="#VO-Velocity-Obstacles-速度障碍" class="headerlink" title="VO  Velocity Obstacles  速度障碍"></a>VO  Velocity Obstacles  速度障碍</h3><p>核心思想: 只要在未来有可能会发生碰撞的速度 都排除在外<br>抖动现象: 两个位移单位存在可能会发生路径碰撞的情况下会同时采取保守的避让速度,导致新速度偏离过大又大幅度回归,从而产生震荡.  </p>
+<h3 id="RVO-Reciprocal-Velocity-Obstacles-互惠的速度障碍"><a href="#RVO-Reciprocal-Velocity-Obstacles-互惠的速度障碍" class="headerlink" title="RVO Reciprocal Velocity Obstacles  互惠的速度障碍"></a>RVO Reciprocal Velocity Obstacles  互惠的速度障碍</h3><p>核心思想: 优化VO思想, 假定对方也会采取避障行为, 缩小(average VO)速度.   </p>
+<h3 id="ORCA-Optimal-Reciprocal-Collision-Avoidance-最优互惠碰撞避免"><a href="#ORCA-Optimal-Reciprocal-Collision-Avoidance-最优互惠碰撞避免" class="headerlink" title="ORCA  Optimal Reciprocal Collision Avoidance  最优互惠碰撞避免"></a>ORCA  Optimal Reciprocal Collision Avoidance  最优互惠碰撞避免</h3><p>核心思想: 优化RVO, 额外考虑速度大小, 求解过程使用线性规划,更高效简洁.   </p>
+<ul>
+<li><strong>对其他所有agents的ORCA求交（线性规划），再与自己可选速度求交集，得候选速度集ORCAτA</strong>  </li>
+<li><strong>在候选集中求解跟自己偏好速度最近的一个速度vnewA</strong>  </li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/06/08/2019-06-08-rvo/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/02/14/2019-02-14-vba/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1127,513 +1772,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/01/07/2019-01-07-elite/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/07/2019-01-07-elite/" itemprop="url">ELITE</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-07T03:21:00+08:00">
-                2019-01-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="对事物有极强的好奇心，并愿意与有好奇心的人惺惺相惜"><a href="#对事物有极强的好奇心，并愿意与有好奇心的人惺惺相惜" class="headerlink" title="对事物有极强的好奇心，并愿意与有好奇心的人惺惺相惜"></a>对事物有极强的好奇心，并愿意与有好奇心的人惺惺相惜</h3><hr>
-<p>在我看来，「好奇心」是辨别一个人是否聪明的「入门标准」。所谓入门标准，是指：<a href="#">有好奇心的人未必聪明，但没有好奇心的人几乎一定不聪明。</a>  </p>
-<p>这里所说的「好奇心」，不是指爱八卦或者窥探别人的隐私之类，而是指：<a href="#">在大部分人习以为常的场景下，有探究规律本质的欲望。</a>  </p>
-<blockquote>
-<p>举个例子：人类在地球上生活了那么多年，看了那么多日出日落，都没觉得有什么奇怪的地方。<br>但有一个人突然很好奇，为什么太阳从东边升起，西边落下，两次日出的时间间隔又差不多？<br>能意识到这个问题的人，就有成为聪明人的潜质。  </p>
-</blockquote>
-<p>当然，「好奇心」是可以伪造的。有些人，为了证明自己很有好奇心（继而证明自己很聪明），总是喜欢问各种各样「不明觉厉」的问题。  </p>
-<p>为此，我特意添上了后半句话：真正有好奇心的人，是愿意和另一个有好奇心的人惺惺相惜的。  </p>
-<p>如果你看到一个人，自己喜欢问很多问题，但是在别人提类似问题的时候却显得十分不耐烦，那就并不能说明他是一个有好奇心的人，只能说明他是「好表现」的人。   </p>
-<p>对于辨别一个人是否真正有好奇心，我这边有一个小 trick：   </p>
-<blockquote>
-<p>和人聊天时，有时对方会提到星座。如果他表现得对星座这个话题很感兴趣，我可能会向他抛出一个问题：<br><strong>为什么很多人会觉得 处（chǔ）女座 的人有强（qiǎng）迫症呢？</strong>   </p>
-</blockquote>
-<p>这个问题是很开放的，并没有什么标准答案。但我注意到，有相当一部分人会对这个问题表现出鄙夷和不耐烦，而他们本身却不是不相信星座的人。后来的事实证明，那些几乎都是不太聪明的人。   </p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/01/07/2019-01-07-elite/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2018/12/22/2018-12-22-attribute/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/12/22/2018-12-22-attribute/" itemprop="url">MMO属性中英文对照</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-22T17:21:00+08:00">
-                2018-12-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><a href="http://wowwiki.wikia.com/wiki/Attribute" target="_blank" rel="noopener">wwowwiki属性说明</a>  </p>
-<hr>
-<h3 id="一级属性-主要属性"><a href="#一级属性-主要属性" class="headerlink" title="一级属性 | 主要属性"></a>一级属性 | 主要属性</h3><p>Strength STR 力量 </p>
-<blockquote>
-<p> gain 1 melee attack power per point of strength .  每点力量增加1点攻击 力<br>Strength does not affect the chance to land a critical strike. Strength does not improve the chance to block.<br>力量不会影响致命一击的机会。力量不会增加阻挡的机会。  </p>
-</blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/12/22/2018-12-22-attribute/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2017/10/26/2017-10-26-romanticism/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/10/26/2017-10-26-romanticism/" itemprop="url">浪漫主义</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-10-26T03:21:00+08:00">
-                2017-10-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>人的感受是正当的  也是自然的<br>因为要完成自己的职责 完成自己的目标 完成他人的所有期望<br>做一个正义的 温暖的  无限包容的 开放的  神圣的人<br>所以去承受自己所不能承受的痛苦<br>无限的束缚和压抑自我感受<br>变成一具非人的行尸<br>这并不可能存在  也一点不浪漫   </p>
-<p>浪漫是在悲剧的环境中乐观的正视并且尊重自己的感受</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2017/10/18/2017-10-18-revolt/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/10/18/2017-10-18-revolt/" itemprop="url">Revolt</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-10-18T03:21:00+08:00">
-                2017-10-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>把自己埋在冰土里<br>跟自己说再见<br>跟这个世界说声晚安<br>听着心脏的跳动一点点消失<br>一点点的宁静<br>在我的脑海中<br>在我的坟墓边上有一朵小花<br>安静的在黑夜里摇曳<br>脉搏停止跳动的那一刻<br>躯体本能的求生欲望失去了意志上最后的束缚<br>Revolt  !<br>新的意志在死去的躯体上开始重建</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1684,7 +1822,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-count">50</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
