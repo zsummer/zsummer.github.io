@@ -8,26 +8,35 @@ mathjax: false
 ---
 
 
-* C库函数 time(NULL)
-  * WIN32 计数精度为1s  获取消耗32ns  
-  * linux 计数精度为1s  获取消耗2ns  
-  * MAC   计数精度为1s  获取消耗155ns  
 
-* C库函数 clock  
-  * WIN32 计数精度为1ms  获取消耗38ns  
-  * linux 下计数精度为1us 获取消耗122ns(Intel X5650 下766ns, mac:476)  实际测试精度准确度在100ms级别(误差有几十ms 唯一一个有误差)    
-<!--more-->
-* C++ chrono : high_resolution_clock是通常为steady clock(实现定义 最好指定为steady)  
-  * WIN32 system_clock 计数精度为100ns    获取消耗25ns DEBUG 39ns
-  * WIN32 steady_clock 计数精度为100ns    获取消耗18ns DEBUG 65ns
-  * linux system_clock 计数精度为1ns      获取消耗20ns DEBUG 25ns  
-  * linux steady_clock 计数精度为1ns      获取消耗19ns DEBUG 26ns
-  * linux system_clock 计数精度为1ns      获取消耗33ns DEBUG  
-  * linux steady_clock 计数精度为1ns      获取消耗45ns DEBUG  
-* QueryPerformanceCounter   
-  * 计数精度为1ns    获取消耗28ns 
-* GetSystemTimeAsFileTime  
-  * 计数精度为1us    获取消耗4ns/23ns 
+| 接口                             | 计时精度 | 自身消耗 | 跨平台能力 | 综合稳定性 | 备注                       |
+|----------------------------------|----------|----------|------------|------------|----------------------------|
+| C库函数 time(NULL) WIN32         | 1s       | 32ns     | 高         | 高         |                            |
+| C库函数 time(NULL) linux         | 1s       | 35ns     | 高         | 高         |                            |
+| C库函数 time(NULL) MAC           | 1s       | 155ns    | 高         | 高         |                            |
+| C库函数 clock WIN32              | 1ms      | 38ns     | 高         | 差         | 测试精度误差100ms左右      |
+| C库函数 clock linux              | 1us      | 216ns    | 高         | 差         | 测试精度误差100ms左右      |
+| C库函数 clock linux(Intel X5650) | 1us      | 766ns    | 高         | 差         | 测试精度误差100ms左右      |
+| C库函数 clock MAC                | 1us      | 476ns    | 高         | 差         | 测试精度误差100ms左右      |
+| C++ chrono system_clock WIN32    | 100ns    | 33ns     | 高         | 中         |                            |
+| C++ chrono system_clock linux    | 1ns      | 50ns     | 高         | 中         |                            |
+| C++ chrono steady_clock WIN32    | 100ns    | 44ns     | 高         | 中         |                            |
+| C++ chrono steady_clock linux    | 1ns      | 50ns     | 高         | 中         |                            |
+| QueryPerformanceCounter          | 1ns      | 28ns     | 无         | 高         |                            |
+| GetSystemTimeAsFileTime          | 1us      | 4~23ns   | 无         | 中         |                            |
+| clock_gettime                    | 1ns      | 50ns     | 无         | 差         | 优先CLOCK_REALTIME选项     |
+| lfence;rdtsc   WIN32             | 0.3ns    | 13ns     | 高         | 高         | 手写跨平台汇编             |
+| lfence;rdtsc   linux             | 0.3ns    | 13ns     | 高         | 高         | 手写跨平台汇编             |
+| mfence;rdtsc   WIN32             | 0.3ns    | 22ns     | 高         | 高         | 手写跨平台汇编             |
+| mfence;rdtsc   linux             | 0.3ns    | 22ns     | 高         | 高         | 手写跨平台汇编             |
+| lock;rdtsc     WIN32             | 0.3ns    | 15ns     | 高         | 高         | 手写跨平台汇编             |
+| lock;rdtsc     linux             | 0.3ns    | 15ns     | 高         | 高         | 手写跨平台汇编             |
+| rdtsc        WIN32               | 0.3ns    | 7ns      | 高         | 高         | 手写跨平台汇编             |
+| rdtsc        linux               | 0.3ns    | 7ns      | 高         | 高         | 手写跨平台汇编             |
+| rdtscp                           | 0.3ns    | 16ns     | 高         | 差         | 双路X5650 2.58us~2.28s抖动 |
+
+
+
 * clock_gettime
   * 相同CPU不同选项下甚至DEBUG/RELEASE下的区别差异都较大  多台不同硬件和linux发行版下相对稳定可用的为CLOCK_REALTIME  
   * 计数精度为1ns    获取消耗18ns  
