@@ -94,15 +94,15 @@
 
 
 
-<meta name="description" content="C库函数 time(NULL)  WIN32 计数精度为1s  获取消耗32ns   linux 计数精度为1s  获取消耗2ns   MAC   计数精度为1s  获取消耗155ns     C库函数 clock    WIN32 计数精度为1ms  获取消耗38ns   linux 下计数精度为1us 获取消耗122ns(Intel X5650 下766ns, mac:476)  实际测试精">
+<meta name="description" content="接口 计时精度 自身消耗 跨平台能力 综合稳定性 备注    C库函数 time(NULL) WIN32 1s 32ns 高 高    C库函数 time(NULL) linux 1s 35ns 高 高    C库函数 time(NULL) MAC 1s 155ns 高 高    C库函数 clock WIN32 1ms 38ns 高 差 测试精度误差100ms左右   C库函数 clock">
 <meta property="og:type" content="article">
 <meta property="og:title" content="常用计时工具性能对比">
 <meta property="og:url" content="https://zsummer.github.io/2021/02/19/2021-04-02-perf-clock/index.html">
 <meta property="og:site_name" content="关于夏天的一切">
-<meta property="og:description" content="C库函数 time(NULL)  WIN32 计数精度为1s  获取消耗32ns   linux 计数精度为1s  获取消耗2ns   MAC   计数精度为1s  获取消耗155ns     C库函数 clock    WIN32 计数精度为1ms  获取消耗38ns   linux 下计数精度为1us 获取消耗122ns(Intel X5650 下766ns, mac:476)  实际测试精">
+<meta property="og:description" content="接口 计时精度 自身消耗 跨平台能力 综合稳定性 备注    C库函数 time(NULL) WIN32 1s 32ns 高 高    C库函数 time(NULL) linux 1s 35ns 高 高    C库函数 time(NULL) MAC 1s 155ns 高 高    C库函数 clock WIN32 1ms 38ns 高 差 测试精度误差100ms左右   C库函数 clock">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-02-18T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-06-08T06:32:54.559Z">
+<meta property="article:modified_time" content="2021-06-10T11:37:13.626Z">
 <meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
 
@@ -341,40 +341,203 @@
       
 
       
-        <ul>
-<li><p>C库函数 time(NULL)</p>
+        <table>
+<thead>
+<tr>
+<th>接口</th>
+<th>计时精度</th>
+<th>自身消耗</th>
+<th>跨平台能力</th>
+<th>综合稳定性</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C库函数 time(NULL) WIN32</td>
+<td>1s</td>
+<td>32ns</td>
+<td>高</td>
+<td>高</td>
+<td></td>
+</tr>
+<tr>
+<td>C库函数 time(NULL) linux</td>
+<td>1s</td>
+<td>35ns</td>
+<td>高</td>
+<td>高</td>
+<td></td>
+</tr>
+<tr>
+<td>C库函数 time(NULL) MAC</td>
+<td>1s</td>
+<td>155ns</td>
+<td>高</td>
+<td>高</td>
+<td></td>
+</tr>
+<tr>
+<td>C库函数 clock WIN32</td>
+<td>1ms</td>
+<td>38ns</td>
+<td>高</td>
+<td>差</td>
+<td>测试精度误差100ms左右</td>
+</tr>
+<tr>
+<td>C库函数 clock linux</td>
+<td>1us</td>
+<td>216ns</td>
+<td>高</td>
+<td>差</td>
+<td>测试精度误差100ms左右</td>
+</tr>
+<tr>
+<td>C库函数 clock linux(Intel X5650)</td>
+<td>1us</td>
+<td>766ns</td>
+<td>高</td>
+<td>差</td>
+<td>测试精度误差100ms左右</td>
+</tr>
+<tr>
+<td>C库函数 clock MAC</td>
+<td>1us</td>
+<td>476ns</td>
+<td>高</td>
+<td>差</td>
+<td>测试精度误差100ms左右</td>
+</tr>
+<tr>
+<td>C++ chrono system_clock WIN32</td>
+<td>100ns</td>
+<td>33ns</td>
+<td>高</td>
+<td>中</td>
+<td></td>
+</tr>
+<tr>
+<td>C++ chrono system_clock linux</td>
+<td>1ns</td>
+<td>50ns</td>
+<td>高</td>
+<td>中</td>
+<td></td>
+</tr>
+<tr>
+<td>C++ chrono steady_clock WIN32</td>
+<td>100ns</td>
+<td>44ns</td>
+<td>高</td>
+<td>中</td>
+<td></td>
+</tr>
+<tr>
+<td>C++ chrono steady_clock linux</td>
+<td>1ns</td>
+<td>50ns</td>
+<td>高</td>
+<td>中</td>
+<td></td>
+</tr>
+<tr>
+<td>QueryPerformanceCounter</td>
+<td>1ns</td>
+<td>28ns</td>
+<td>无</td>
+<td>高</td>
+<td></td>
+</tr>
+<tr>
+<td>GetSystemTimeAsFileTime</td>
+<td>1us</td>
+<td>4~23ns</td>
+<td>无</td>
+<td>中</td>
+<td></td>
+</tr>
+<tr>
+<td>clock_gettime</td>
+<td>1ns</td>
+<td>50ns</td>
+<td>无</td>
+<td>差</td>
+<td>优先CLOCK_REALTIME选项</td>
+</tr>
+<tr>
+<td>lfence;rdtsc   WIN32</td>
+<td>0.3ns</td>
+<td>13ns</td>
+<td>高</td>
+<td>高</td>
+<td>手写跨平台汇编</td>
+</tr>
+<tr>
+<td>lfence;rdtsc   linux</td>
+<td>0.3ns</td>
+<td>13ns</td>
+<td>高</td>
+<td>高</td>
+<td>手写跨平台汇编</td>
+</tr>
+<tr>
+<td>mfence;rdtsc   WIN32</td>
+<td>0.3ns</td>
+<td>22ns</td>
+<td>高</td>
+<td>高</td>
+<td>手写跨平台汇编</td>
+</tr>
+<tr>
+<td>mfence;rdtsc   linux</td>
+<td>0.3ns</td>
+<td>22ns</td>
+<td>高</td>
+<td>高</td>
+<td>手写跨平台汇编</td>
+</tr>
+<tr>
+<td>lock;rdtsc     WIN32</td>
+<td>0.3ns</td>
+<td>15ns</td>
+<td>高</td>
+<td>高</td>
+<td>手写跨平台汇编</td>
+</tr>
+<tr>
+<td>lock;rdtsc     linux</td>
+<td>0.3ns</td>
+<td>15ns</td>
+<td>高</td>
+<td>高</td>
+<td>手写跨平台汇编</td>
+</tr>
+<tr>
+<td>rdtsc        WIN32</td>
+<td>0.3ns</td>
+<td>7ns</td>
+<td>高</td>
+<td>高</td>
+<td>手写跨平台汇编</td>
+</tr>
+<tr>
+<td>rdtsc        linux</td>
+<td>0.3ns</td>
+<td>7ns</td>
+<td>高</td>
+<td>高</td>
+<td>手写跨平台汇编</td>
+</tr>
+<tr>
+<td>rdtscp</td>
+<td>0.3ns</td>
+<td>16ns</td>
+<td>高</td>
+<td>差</td>
+<td>双路X5650 2.58us~2.28s抖动</td>
+</tr>
+</tbody></table>
 <ul>
-<li>WIN32 计数精度为1s  获取消耗32ns  </li>
-<li>linux 计数精度为1s  获取消耗2ns  </li>
-<li>MAC   计数精度为1s  获取消耗155ns  </li>
-</ul>
-</li>
-<li><p>C库函数 clock  </p>
-<ul>
-<li>WIN32 计数精度为1ms  获取消耗38ns  </li>
-<li>linux 下计数精度为1us 获取消耗122ns(Intel X5650 下766ns, mac:476)  实际测试精度准确度在100ms级别(误差有几十ms 唯一一个有误差)    <a id="more"></a></li>
-</ul>
-</li>
-<li><p>C++ chrono : high_resolution_clock是通常为steady clock(实现定义 最好指定为steady)  </p>
-<ul>
-<li>WIN32 system_clock 计数精度为100ns    获取消耗25ns DEBUG 39ns</li>
-<li>WIN32 steady_clock 计数精度为100ns    获取消耗18ns DEBUG 65ns</li>
-<li>linux system_clock 计数精度为1ns      获取消耗20ns DEBUG 25ns  </li>
-<li>linux steady_clock 计数精度为1ns      获取消耗19ns DEBUG 26ns</li>
-<li>linux system_clock 计数精度为1ns      获取消耗33ns DEBUG  </li>
-<li>linux steady_clock 计数精度为1ns      获取消耗45ns DEBUG  </li>
-</ul>
-</li>
-<li><p>QueryPerformanceCounter   </p>
-<ul>
-<li>计数精度为1ns    获取消耗28ns </li>
-</ul>
-</li>
-<li><p>GetSystemTimeAsFileTime  </p>
-<ul>
-<li>计数精度为1us    获取消耗4ns/23ns </li>
-</ul>
-</li>
 <li><p>clock_gettime</p>
 <ul>
 <li>相同CPU不同选项下甚至DEBUG/RELEASE下的区别差异都较大  多台不同硬件和linux发行版下相对稳定可用的为CLOCK_REALTIME  </li>
@@ -574,7 +737,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">50</span>
+                <span class="site-state-item-count">51</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
