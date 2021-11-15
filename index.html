@@ -250,6 +250,173 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2021/11/15/2021-11-15-OI-optimize/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/11/15/2021-11-15-OI-optimize/" itemprop="url">OI卡常优化</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-11-15T00:00:00+08:00">
+                2021-11-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="gcc-3-4-6为参考"><a href="#gcc-3-4-6为参考" class="headerlink" title="gcc-3.4.6为参考"></a>gcc-3.4.6为参考</h1><h2 id="O0"><a href="#O0" class="headerlink" title="O0"></a>O0</h2><p>不做任何优化, 这是默认的编译选项.  </p>
+<h2 id="O1"><a href="#O1" class="headerlink" title="O1"></a>O1</h2><p>-O和-O1:  对程序做部分编译优化, 对于大函数,优化编译占用稍微多的时间和相当大的内存. 使用本项优化, 编译器会尝试减小生成代码的尺寸, 以及缩短执行时间, 但并不执行需要占用大量编译时间的优化.  </p>
+<ul>
+<li><p>fdefer-pop: 延迟栈的弹出时间. 当完成一个函数调用, 参数并不马上从栈中弹出, 而是在多个函数被调用后, 一次性弹出.    </p>
+</li>
+<li><p>fmerge-constants: 尝试横跨编译单元合并同样的常量(string constants and floating point constants)   </p>
+</li>
+<li><p>fthread-jumps: 如果某个跳转分支的目的地存在另一个条件比较,而且该条件比较包含在前一个比较语句之内,那么执行本项优化.根据条件是true或者false,前面那条分支重定向到第二条分支的目的地或者紧跟在第二条分支后面. </p>
+</li>
+<li><p>floop-optimize: 执行循环优化,将常量表达式从循环中移除, 简化判断循环的条件, 并且optionally do strength-reduction, 或者将循环打开等. 在大型复杂的循环中, 这种优化比较显著.  </p>
+</li>
+<li><p>fif-conversion: 尝试将条件跳转转换为等价的无分支型式. 优化实现方式包括条件移动, min, max, 设置标志, 以及abs指令, 以及一些算术技巧等.   </p>
+</li>
+<li><p>fif-conversion2基本意义相同, 没有找到更多的解释.  </p>
+</li>
+<li><p>fdelayed-branch: 这种技术试图根据指令周期时间重新安排指令.  它还试图把尽可能多的指令移动到条件分支前, 以便最充分的利用处理器的治理缓存.  </p>
+</li>
+<li><p>fguess-branch-probability: 当没有可用的profiling feedback或__builtin_expect时, 编译器采用随机模式猜测分支被执行的可能性, 并移动对应汇编代码的位置, 这有可能导致不同的编译器会编译出迥然不同的目标代码.  </p>
+</li>
+<li><p>fcprop-registers: 因为在函数中把寄存器分配给变量, 所以编译器执行第二次检查以便减少调度依赖性(两个段要求使用相同的寄存器)并且删除不必要的寄存器复制操作.  </p>
+</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/11/15/2021-11-15-OI-optimize/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2021/07/02/2021-07-02-wsl/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -346,8 +513,9 @@
             <h2><span id="环境安装">环境安装</span></h2><p><a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10" target="_blank" rel="noopener">安装指导</a>  </p>
 <ul>
 <li>打开windows 功能   <ul>
-<li>适用于linux的windows子系统  </li>
-<li>虚拟机平台  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dism.exe &#x2F;online &#x2F;enable-feature &#x2F;featurename:Microsoft-Windows-Subsystem-Linux &#x2F;all &#x2F;norestart</span><br></pre></td></tr></table></figure>
+<li><strong>适用于linux的windows子系统</strong>  </li>
+<li><strong>虚拟机平台</strong>  </li>
+<li>使用管理员权限打开命令行  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dism.exe &#x2F;online &#x2F;enable-feature &#x2F;featurename:Microsoft-Windows-Subsystem-Linux &#x2F;all &#x2F;norestart</span><br></pre></td></tr></table></figure>
 
 
 </li>
@@ -373,6 +541,159 @@
 <li>更改路径cmd.exe为bash.exe  </li>
 </ul>
 <h2><span id="cmake-recent-call-错误">cmake recent call 错误</span></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1. Create file wsl.conf in &#x2F;etc&#x2F; with content: </span><br><span class="line"></span><br><span class="line"># &#x2F;etc&#x2F;wsl.conf</span><br><span class="line">[automount]</span><br><span class="line">options &#x3D; &quot;metadata&quot;</span><br><span class="line">enabled &#x3D; true</span><br><span class="line"></span><br><span class="line">2. Reboot your wsl</span><br><span class="line">wsl.exe -t Ubuntu &#x2F;&#x2F; (or other e.g. Debian)</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2021/07/02/2021-09-15-dev_env/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/07/02/2021-09-15-dev_env/" itemprop="url">开发环境配置</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-07-02T00:00:00+08:00">
+                2021-07-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2><span id="sublime">Sublime</span></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; windows下使用unix换行符  </span><br><span class="line">&quot;default_line_ending&quot;: &quot;unix&quot;,</span><br><span class="line">&#x2F;&#x2F; 制表符对应空格数量  </span><br><span class="line">&quot;tab_size&quot;: 4,</span><br><span class="line">&#x2F;&#x2F; 制表符改为空格  </span><br><span class="line">&quot;translate_tabs_to_spaces&quot;: false,</span><br></pre></td></tr></table></figure>
+
+
+<h2><span id="vs">VS</span></h2><ul>
+<li>选项-&gt;文本编辑器-&gt;C/C++-&gt;常规   自动换行  </li>
+<li>选项-&gt;文本编辑器-&gt;C/C++-&gt;制表符  插入空格  </li>
+<li>选项-&gt;文本编辑器-&gt;C/C++-&gt;代码样式-&gt;格式设置  关闭clangformat  </li>
+</ul>
+<h2><span id="vscode">VSCODE</span></h2><p>install “Remote - WSL”<br>install “Markdown All in One”<br>install “GitHub Theme”<br>设置选项搜索”eol” 设置为LF<br>设置选项搜索”font” 设置字体 Hack, Hack, Hack  </p>
+<h2><span id="备注">备注</span></h2><p>CR（Carriage Return）代表回车（转义序列\r），将光标移动到当前行的开头。<br>LF（Line Feed）代表“换行”，但你可能更熟悉术语换行符（转义序列 \n）。 (unix)<br>CRLF (windows采用)   </p>
+<h2><span id="git">git</span></h2><figure class="highlight plain"><figcaption><span>config --global core.autocrlf [true|false|input]```   </span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">* autocrlf: true  </span><br><span class="line">  * 文件检出到本地为CRLF, 提交文件时替换为LF.  </span><br><span class="line">* autocrlf: input    </span><br><span class="line">  * 文件检出到本地不转换, 提交文件时替换为LF.  </span><br><span class="line">* autocrlf: false  </span><br><span class="line">  * 不做任何处理   </span><br><span class="line"></span><br><span class="line">&#96;&#96;&#96;git config --global core.safecrlf [true|false|warn]&#96;&#96;&#96;  </span><br><span class="line">* safecrlf: true  </span><br><span class="line">  * 拒绝提交混合换行符  </span><br><span class="line">* safecrlf: false</span><br><span class="line">  * 不做检查   </span><br><span class="line">* safecrlf: warn</span><br><span class="line">  * 提交混合换行符时给出警告     </span><br><span class="line"></span><br><span class="line">## SecureCRT   </span><br><span class="line">Session Options 进行修改  保存到默认主题:   </span><br><span class="line"></span><br><span class="line">* Terminal-&gt; Send Protocol NO-OP  ervery 60 second   </span><br><span class="line">* Terminal-&gt;Appearance Font 11pt   encoding UTF-8   </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">## dos2unix  </span><br><span class="line">批量转换换行符</span><br></pre></td></tr></table></figure>
+<p>find ./ -name *.h | xargs dos2unix<br>```</p>
 
           
         
@@ -1864,301 +2185,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/10/03/2020-10-03-raspberrypi/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/10/03/2020-10-03-raspberrypi/" itemprop="url">树莓派使用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-10-03T00:00:00+08:00">
-                2020-10-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="树莓派官方地址和镜像下载"><a href="#树莓派官方地址和镜像下载" class="headerlink" title="树莓派官方地址和镜像下载"></a>树莓派官方地址和镜像下载</h2><p><a href="https://openwrt.org/zh/" target="_blank" rel="noopener">官方地址https://openwrt.org/</a><br><a href="https://openwrt.org/toh/views/toh_fwdownload?dataflt%5B0%5D=supported%20current%20rel_%3D19.07.4" target="_blank" rel="noopener">根据硬件下载</a><br>例如树莓派的分支可以再Brand分支中查找关键字<strong>Raspberry Pi</strong>   </p>
-<p>快速上手推荐直接安装镜像 即跳过系统安装部分直接启动就可以使用, 带来的问题是 一般我们使用的tf卡可能至少32G 但是烧录的镜像只能用到其中的几百M 需要利用工具进行额外的mount挂载.    </p>
-<p>这里有几个关键字 factory指的的是安装固件  sysupgrade是指的更新专用镜像文件   snapshots是快照镜像文件   </p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/10/03/2020-10-03-raspberrypi/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/09/30/2020-09-30-git-lfs/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="夏天">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关于夏天的一切">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/09/30/2020-09-30-git-lfs/" itemprop="url">git和git-lfs编译与使用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-09-30T00:00:00+08:00">
-                2020-09-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/develop/" itemprop="url" rel="index">
-                    <span itemprop="name">develop</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="git和git-lfs编译使用"><a href="#git和git-lfs编译使用" class="headerlink" title="git和git-lfs编译使用"></a>git和git-lfs编译使用</h2><h3 id="编译git"><a href="#编译git" class="headerlink" title="编译git"></a>编译git</h3><p><a href="https://mirrors.edge.kernel.org/pub/software/scm/git/" target="_blank" rel="noopener">github</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">wget https:&#x2F;&#x2F;mirrors.edge.kernel.org&#x2F;pub&#x2F;software&#x2F;scm&#x2F;git&#x2F;git-2.25.2.tar.gz</span><br><span class="line">tar -xvf git-2.25.2.tar.gz</span><br><span class="line">cd git-2.25.2</span><br><span class="line">make configure NO_OPENSSL&#x3D;1</span><br><span class="line">.&#x2F;configure --prefix&#x3D;&#x2F;usr&#x2F;local&#x2F;git  all</span><br><span class="line">make </span><br><span class="line">make install</span><br><span class="line">echo &quot;export PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;git&#x2F;bin:$PATH&quot; &gt;&gt; &#x2F;etc&#x2F;profile</span><br><span class="line">source &#x2F;etc&#x2F;profile</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/09/30/2020-09-30-git-lfs/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2209,7 +2235,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">51</span>
+                <span class="site-state-item-count">53</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
