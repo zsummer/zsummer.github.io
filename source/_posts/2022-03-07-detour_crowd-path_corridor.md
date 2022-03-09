@@ -1,6 +1,6 @@
 
 ---
-title: detour crowd实现之corridor   
+title: detour_crowd-path_corridor
 date: 2022-03-07
 categories: develop 
 author: yawei.zhang 
@@ -8,11 +8,9 @@ mathjax: false
 ---
 
 
-算法笔记
-<!--more -->
-
 ## 走廊空间: DetourPathCorridor.h :   class dtPathCorridor;          
 
+<!--more -->
 
 ### 基本术语参考   
 
@@ -330,11 +328,13 @@ int dtMergeCorridorStartMoved(dtPolyRef* path, const int npath, const int maxPat
 
 
 ## optimizePathVisibility
-该函数通过局部可视化优化agent在走廊中的移动路线, 即当可以直线可达下个路点时候 拉直路线  
-动态避让, tile边界都会导致移动路线和走廊空间非最优.   
-
-
-
+```g->params.updateFlags & DT_CROWD_OPTIMIZE_VIS```   
+该函数通过局部可视化优化agent在走廊中的移动路线  
+    其核心实现为朝目标点打一个射线, 如果可达则以可达走廊覆盖当前走廊  
+通常使用方式是, 从当前点打一个  跳过当前corner 到下一个corner的射线, 成功则拉直移动路径.  
 
 ## optimizePathTopology  
 和可视化不同, 这个是通过局部寻路进行修正和确认当前走廊是否为最优.   
+
+## moveTargetPosition
+和movePosition相似, 因目标发生变化而进行走廊调整 .   
