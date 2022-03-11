@@ -334,7 +334,12 @@ int dtMergeCorridorStartMoved(dtPolyRef* path, const int npath, const int maxPat
 通常使用方式是, 从当前点打一个  跳过当前corner 到下一个corner的射线, 成功则拉直移动路径.  
 
 ## optimizePathTopology  
+DT_CROWD_OPTIMIZE_TOPO
 和可视化不同, 这个是通过局部寻路进行修正和确认当前走廊是否为最优.   
 
 ## moveTargetPosition
 和movePosition相似, 因目标发生变化而进行走廊调整 .   
+
+## DT_CROWD_SEPARATION
+
+## DT_CROWD_ANTICIPATE_TURNS
