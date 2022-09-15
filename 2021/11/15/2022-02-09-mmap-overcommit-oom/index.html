@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Memory Overcommit的意思是操作系统承诺给进程的内存大小超过了实际可用的内存.一个保守的操作系统不会允许memory overcommit, 有多少就分配多少, 再申请就没有了, 这其实有些浪费内存, 因为进程实际使用到的内存往往比申请的内存要少比如某个进程malloc()了200MB内存, 但实际上只用到了100MB, 按照UNIX&#x2F;Linux的算法, 物理内存页的分配发生在使用的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MEMORY OVERCOMMIT">
+<meta property="og:url" content="https://zsummer.github.io/2021/11/15/2022-02-09-mmap-overcommit-oom/index.html">
+<meta property="og:site_name" content="关于夏天的一切">
+<meta property="og:description" content="Memory Overcommit的意思是操作系统承诺给进程的内存大小超过了实际可用的内存.一个保守的操作系统不会允许memory overcommit, 有多少就分配多少, 再申请就没有了, 这其实有些浪费内存, 因为进程实际使用到的内存往往比申请的内存要少比如某个进程malloc()了200MB内存, 但实际上只用到了100MB, 按照UNIX&#x2F;Linux的算法, 物理内存页的分配发生在使用的">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-11-14T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-09-15T18:35:07.188Z">
+<meta property="article:author" content="夏天">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zsummer.github.io/2021/11/15/2022-02-09-mmap-overcommit-oom/"/>
+
+
+
+
+
+  <title>MEMORY OVERCOMMIT | 关于夏天的一切</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">关于夏天的一切</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我总觉得对你的爱很美</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2021/11/15/2022-02-09-mmap-overcommit-oom/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MEMORY OVERCOMMIT</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-11-15T00:00:00+08:00">
+                2021-11-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Memory Overcommit的意思是操作系统承诺给进程的内存大小超过了实际可用的内存.<br>一个保守的操作系统不会允许memory overcommit, 有多少就分配多少, 再申请就没有了, 这其实有些浪费内存, 因为进程实际使用到的内存往往比申请的内存要少<br>比如某个进程malloc()了200MB内存, 但实际上只用到了100MB, 按照UNIX/Linux的算法, 物理内存页的分配发生在使用的瞬间, 而不是在申请的瞬间, 也就是说未用到的100MB内存根本就没有分配, 这100MB内存就闲置了<br>下面这个概念很重要, 是理解memory overcommit的关键:  *<em>commit(或overcommit)针对的是内存申请, 内存申请不等于内存分配, 内存只在实际用到的时候才分配.  *</em>      </p>
+<a id="more"></a>
+
+<p>Linux是允许memory overcommit的, 只要你来申请内存我就给你, 寄希望于进程实际上用不到那么多内存, 但万一用到那么多了呢？那就会发生类似“银行挤兑”的危机, 现金(内存)不足了.<br>Linux设计了一个OOM killer机制(OOM = out-of-memory)来处理这种危机:  挑选一个进程出来杀死, 以腾出部分内存, 如果还不够就继续杀…也可通过设置内核参数 vm.panic_on_oom 使得发生OOM时自动重启系统.<br>这都是有风险的机制, 重启有可能造成业务中断, 杀死进程也有可能导致业务中断, Linux 2.6之后允许通过内核参数 vm.overcommit_memory 禁止memory overcommit.  </p>
+<p>内核参数 vm.overcommit_memory 接受三种取值:     </p>
+<ul>
+<li>0 – Heuristic overcommit handling. 这是缺省值, 它允许overcommit, 但过于明目张胆的overcommit会被拒绝, 比如malloc一次性申请的内存大小就超过了系统总内存.  Heuristic的意思是“试探式的”, 内核利用某种算法（对该算法的详细解释请看文末）猜测你的内存申请是否合理, 它认为不合理就会拒绝overcommit.     </li>
+<li>1 – Always overcommit. 允许overcommit, 对内存申请来者不拒.     </li>
+<li>2 – Don’t overcommit. 禁止overcommit.     </li>
+</ul>
+<p>关于禁止overcommit (vm.overcommit_memory=2) , 需要知道的是, 怎样才算是overcommit呢？kernel设有一个阈值, 申请的内存总数超过这个阈值就算overcommit, 在/proc/meminfo中可以看到这个阈值的大小:    </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># grep -i commit &#x2F;proc&#x2F;meminfo</span><br><span class="line">CommitLimit:     5967744 kB</span><br><span class="line">Committed_AS:    5363236 kB</span><br></pre></td></tr></table></figure>
+
+<p>CommitLimit 就是overcommit的阈值, 申请的内存总数超过CommitLimit的话就算是overcommit.<br>这个阈值是如何计算出来的呢？它既不是物理内存的大小, 也不是free memory的大小, 它是通过内核参数vm.overcommit_ratio或vm.overcommit_kbytes间接设置的, 公式如下:  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">注:  </span><br><span class="line">vm.overcommit_ratio 是内核参数, 缺省值是50, 表示物理内存的50%.  如果你不想使用比率, 也可以直接指定内存的字节数大小, 通过另一个内核参数 vm.overcommit_kbytes 即可; </span><br><span class="line">如果使用了huge pages, 那么需要从物理内存中减去, 公式变成:  </span><br><span class="line">CommitLimit &#x3D; ([total RAM] – [total huge TLB RAM]) * vm.overcommit_ratio &#x2F; 100 + swap</span><br><span class="line">参见https:&#x2F;&#x2F;access.redhat.com&#x2F;solutions&#x2F;665023</span><br><span class="line"></span><br><span class="line">&#x2F;proc&#x2F;meminfo中的 Committed_AS 表示所有进程已经申请的内存总大小, （注意是已经申请的, 不是已经分配的）, 如果 Committed_AS 超过 CommitLimit 就表示发生了 overcommit, 超出越多表示 overcommit 越严重.  Committed_AS 的含义换一种说法就是, 如果要绝对保证不发生OOM (out of memory) 需要多少物理内存.  </span><br><span class="line"></span><br><span class="line">“sar -r”是查看内存使用状况的常用工具, 它的输出结果中有两个与overcommit有关, kbcommit 和 %commit:  </span><br><span class="line">kbcommit对应&#x2F;proc&#x2F;meminfo中的 Committed_AS; </span><br><span class="line">%commit的计算公式并没有采用 CommitLimit作分母, 而是Committed_AS&#x2F;(MemTotal+SwapTotal), 意思是_内存申请_占_物理内存与交换区之和_的百分比.</span><br></pre></td></tr></table></figure>
+<p>$ sar -r </p>
+<p>05:00:01 PM kbmemfree kbmemused  %memused kbbuffers  kbcached  kbcommit   %commit  kbactive   kbinact   kbdirty<br>05:10:01 PM    160576   3648460     95.78         0   1846212   4939368     62.74   1390292   1854880         4</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">## 附:  对Heuristic overcommit算法的解释  </span><br><span class="line">内核参数 vm.overcommit_memory 的值0, 1, 2对应的源代码如下, 其中heuristic overcommit对应的是OVERCOMMIT_GUESS:  </span><br><span class="line">&#96;&#96;&#96;C++</span><br><span class="line">源文件:  source&#x2F;include&#x2F;linux&#x2F;mman.h</span><br><span class="line">#define OVERCOMMIT_GUESS                0</span><br><span class="line">#define OVERCOMMIT_ALWAYS               1</span><br><span class="line">#define OVERCOMMIT_NEVER                2</span><br></pre></td></tr></table></figure>
+
+<p>Heuristic overcommit算法在以下函数中实现, 基本上可以这么理解:<br>单次申请的内存大小不能超过 【free memory + free swap + pagecache的大小 + SLAB中可回收的部分】, 否则本次申请就会失败.  </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line">源文件:  source/mm/mmap.c 以RHEL内核<span class="number">2.6</span><span class="number">.32</span><span class="number">-642</span>为例</span><br><span class="line"> </span><br><span class="line"><span class="number">0120</span> <span class="comment">/*</span></span><br><span class="line"><span class="comment">0121  * Check that a process has enough memory to allocate a new virtual</span></span><br><span class="line"><span class="comment">0122  * mapping. 0 means there is enough memory for the allocation to</span></span><br><span class="line"><span class="comment">0123  * succeed and -ENOMEM implies there is not.</span></span><br><span class="line"><span class="comment">0124  *</span></span><br><span class="line"><span class="comment">0125  * We currently support three overcommit policies, which are set via the</span></span><br><span class="line"><span class="comment">0126  * vm.overcommit_memory sysctl.  See Documentation/vm/overcommit-accounting</span></span><br><span class="line"><span class="comment">0127  *</span></span><br><span class="line"><span class="comment">0128  * Strict overcommit modes added 2002 Feb 26 by Alan Cox.</span></span><br><span class="line"><span class="comment">0129  * Additional code 2002 Jul 20 by Robert Love.</span></span><br><span class="line"><span class="comment">0130  *</span></span><br><span class="line"><span class="comment">0131  * cap_sys_admin is 1 if the process has admin privileges, 0 otherwise.</span></span><br><span class="line"><span class="comment">0132  *</span></span><br><span class="line"><span class="comment">0133  * Note this is a helper function intended to be used by LSMs which</span></span><br><span class="line"><span class="comment">0134  * wish to use this logic.</span></span><br><span class="line"><span class="comment">0135  */</span></span><br><span class="line"><span class="number">0136</span> <span class="keyword">int</span> __vm_enough_memory(struct mm_struct *mm, <span class="keyword">long</span> pages, <span class="keyword">int</span> cap_sys_admin)</span><br><span class="line"><span class="number">0137</span> &#123;</span><br><span class="line"><span class="number">0138</span>         <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="built_in">free</span>, allowed;</span><br><span class="line"><span class="number">0139</span> </span><br><span class="line"><span class="number">0140</span>         vm_acct_memory(pages);</span><br><span class="line"><span class="number">0141</span> </span><br><span class="line"><span class="number">0142</span>         <span class="comment">/*</span></span><br><span class="line"><span class="comment">0143          * Sometimes we want to use more memory than we have</span></span><br><span class="line"><span class="comment">0144          */</span></span><br><span class="line"><span class="number">0145</span>         <span class="keyword">if</span> (sysctl_overcommit_memory == OVERCOMMIT_ALWAYS)</span><br><span class="line"><span class="number">0146</span>                 <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"><span class="number">0147</span> </span><br><span class="line"><span class="number">0148</span>         <span class="keyword">if</span> (sysctl_overcommit_memory == OVERCOMMIT_GUESS) &#123; <span class="comment">//Heuristic overcommit算法开始</span></span><br><span class="line"><span class="number">0149</span>                 <span class="keyword">unsigned</span> <span class="keyword">long</span> n;</span><br><span class="line"><span class="number">0150</span> </span><br><span class="line"><span class="number">0151</span>                 <span class="built_in">free</span> = global_page_state(NR_FILE_PAGES); <span class="comment">//pagecache汇总的页面数量</span></span><br><span class="line"><span class="number">0152</span>                 <span class="built_in">free</span> += get_nr_swap_pages(); <span class="comment">//free swap的页面数</span></span><br><span class="line"><span class="number">0153</span> </span><br><span class="line"><span class="number">0154</span>                 <span class="comment">/*</span></span><br><span class="line"><span class="comment">0155                  * Any slabs which are created with the</span></span><br><span class="line"><span class="comment">0156                  * SLAB_RECLAIM_ACCOUNT flag claim to have contents</span></span><br><span class="line"><span class="comment">0157                  * which are reclaimable, under pressure.  The dentry</span></span><br><span class="line"><span class="comment">0158                  * cache and most inode caches should fall into this</span></span><br><span class="line"><span class="comment">0159                  */</span></span><br><span class="line"><span class="number">0160</span>                 <span class="built_in">free</span> += global_page_state(NR_SLAB_RECLAIMABLE); <span class="comment">//SLAB可回收的页面数</span></span><br><span class="line"><span class="number">0161</span> </span><br><span class="line"><span class="number">0162</span>                 <span class="comment">/*</span></span><br><span class="line"><span class="comment">0163                  * Reserve some for root</span></span><br><span class="line"><span class="comment">0164                  */</span></span><br><span class="line"><span class="number">0165</span>                 <span class="keyword">if</span> (!cap_sys_admin)</span><br><span class="line"><span class="number">0166</span>                         <span class="built_in">free</span> -= sysctl_admin_reserve_kbytes &gt;&gt; (PAGE_SHIFT - <span class="number">10</span>); <span class="comment">//给root用户保留的页面数</span></span><br><span class="line"><span class="number">0167</span> </span><br><span class="line"><span class="number">0168</span>                 <span class="keyword">if</span> (<span class="built_in">free</span> &gt; pages)</span><br><span class="line"><span class="number">0169</span>                         <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"><span class="number">0170</span> </span><br><span class="line"><span class="number">0171</span>                 <span class="comment">/*</span></span><br><span class="line"><span class="comment">0172                  * nr_free_pages() is very expensive on large systems,</span></span><br><span class="line"><span class="comment">0173                  * only call if we're about to fail.</span></span><br><span class="line"><span class="comment">0174                  */</span></span><br><span class="line"><span class="number">0175</span>                 n = nr_free_pages(); <span class="comment">//当前free memory页面数</span></span><br><span class="line"><span class="number">0176</span> </span><br><span class="line"><span class="number">0177</span>                 <span class="comment">/*</span></span><br><span class="line"><span class="comment">0178                  * Leave reserved pages. The pages are not for anonymous pages.</span></span><br><span class="line"><span class="comment">0179                  */</span></span><br><span class="line"><span class="number">0180</span>                 <span class="keyword">if</span> (n &lt;= totalreserve_pages)</span><br><span class="line"><span class="number">0181</span>                         <span class="keyword">goto</span> error;</span><br><span class="line"><span class="number">0182</span>                 <span class="keyword">else</span></span><br><span class="line"><span class="number">0183</span>                         n -= totalreserve_pages;</span><br><span class="line"><span class="number">0184</span> </span><br><span class="line"><span class="number">0185</span>                 <span class="comment">/*</span></span><br><span class="line"><span class="comment">0186                  * Leave the last 3% for root</span></span><br><span class="line"><span class="comment">0187                  */</span></span><br><span class="line"><span class="number">0188</span>                 <span class="keyword">if</span> (!cap_sys_admin)</span><br><span class="line"><span class="number">0189</span>                         n -= n / <span class="number">32</span>;</span><br><span class="line"><span class="number">0190</span>                 <span class="built_in">free</span> += n;</span><br><span class="line"><span class="number">0191</span> </span><br><span class="line"><span class="number">0192</span>                 <span class="keyword">if</span> (<span class="built_in">free</span> &gt; pages)</span><br><span class="line"><span class="number">0193</span>                         <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"><span class="number">0194</span> </span><br><span class="line"><span class="number">0195</span>                 <span class="keyword">goto</span> error;</span><br><span class="line"><span class="number">0196</span>         &#125;</span><br><span class="line"><span class="number">0197</span> </span><br><span class="line"><span class="number">0198</span>         allowed = vm_commit_limit();</span><br><span class="line"><span class="number">0199</span>         <span class="comment">/*</span></span><br><span class="line"><span class="comment">0200          * Reserve some for root</span></span><br><span class="line"><span class="comment">0201          */</span></span><br><span class="line"><span class="number">0202</span>         <span class="keyword">if</span> (!cap_sys_admin)</span><br><span class="line"><span class="number">0203</span>                 allowed -= sysctl_admin_reserve_kbytes &gt;&gt; (PAGE_SHIFT - <span class="number">10</span>);</span><br><span class="line"><span class="number">0204</span> </span><br><span class="line"><span class="number">0205</span>         <span class="comment">/* Don't let a single process grow too big:</span></span><br><span class="line"><span class="comment">0206            leave 3% of the size of this process for other processes */</span></span><br><span class="line"><span class="number">0207</span>         <span class="keyword">if</span> (mm)</span><br><span class="line"><span class="number">0208</span>                 allowed -= mm-&gt;total_vm / <span class="number">32</span>;</span><br><span class="line"><span class="number">0209</span> </span><br><span class="line"><span class="number">0210</span>         <span class="keyword">if</span> (percpu_counter_read_positive(&amp;vm_committed_as) &lt; allowed)</span><br><span class="line"><span class="number">0211</span>                 <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"><span class="number">0212</span> error:</span><br><span class="line"><span class="number">0213</span>         vm_unacct_memory(pages);</span><br><span class="line"><span class="number">0214</span> </span><br><span class="line"><span class="number">0215</span>         <span class="keyword">return</span> -ENOMEM;</span><br><span class="line"><span class="number">0216</span> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>oom_badness v2.6.39版本<br>缺页中断<br>do_page_fault -&gt; out_of_memory -&gt; select_bad_process -&gt; oom_badness。<br>在oom_badness即会对进程计算分数，分数越高被kill可能性越高。<br>该版本考虑维度如下：<br>rss、pagetable、swap使用量、是否root进程   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * oom_badness - heuristic function to determine which candidate task to kill</span><br><span class="line"> * @p: task struct of which task we should calculate</span><br><span class="line"> * @totalpages: total present RAM allowed for page allocation</span><br><span class="line"> *</span><br><span class="line"> * The heuristic for determining which task to kill is made to be as simple and</span><br><span class="line"> * predictable as possible.  The goal is to return the highest value for the</span><br><span class="line"> * task consuming the most memory to avoid subsequent oom failures.</span><br><span class="line"> *&#x2F;</span><br><span class="line">unsigned int oom_badness(struct task_struct *p, struct mem_cgroup *mem,</span><br><span class="line">              const nodemask_t *nodemask, unsigned long totalpages)</span><br><span class="line">&#123;</span><br><span class="line">    int points;</span><br><span class="line"></span><br><span class="line">    if (oom_unkillable_task(p, mem, nodemask))</span><br><span class="line">        return 0;</span><br><span class="line"></span><br><span class="line">    p &#x3D; find_lock_task_mm(p);</span><br><span class="line">    if (!p)</span><br><span class="line">        return 0;</span><br><span class="line"></span><br><span class="line">    &#x2F;*</span><br><span class="line">     * Shortcut check for a thread sharing p-&gt;mm that is OOM_SCORE_ADJ_MIN</span><br><span class="line">     * so the entire heuristic doesn&#39;t need to be executed for something</span><br><span class="line">     * that cannot be killed.</span><br><span class="line">     *&#x2F;</span><br><span class="line">    if (atomic_read(&amp;p-&gt;mm-&gt;oom_disable_count)) &#123;</span><br><span class="line">        task_unlock(p);</span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;*</span><br><span class="line">     * When the PF_OOM_ORIGIN bit is set, it indicates the task should have</span><br><span class="line">     * priority for oom killing.</span><br><span class="line">     *&#x2F;</span><br><span class="line">    if (p-&gt;flags &amp; PF_OOM_ORIGIN) &#123;</span><br><span class="line">        task_unlock(p);</span><br><span class="line">        return 1000;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;*</span><br><span class="line">     * The memory controller may have a limit of 0 bytes, so avoid a divide</span><br><span class="line">     * by zero, if necessary.</span><br><span class="line">     *&#x2F;</span><br><span class="line">    if (!totalpages)</span><br><span class="line">        totalpages &#x3D; 1;</span><br><span class="line"></span><br><span class="line">    &#x2F;*</span><br><span class="line">     * The baseline for the badness score is the proportion of RAM that each</span><br><span class="line">     * task&#39;s rss, pagetable and swap space use.</span><br><span class="line">     *&#x2F;</span><br><span class="line">    points &#x3D; get_mm_rss(p-&gt;mm) + p-&gt;mm-&gt;nr_ptes;</span><br><span class="line">    points +&#x3D; get_mm_counter(p-&gt;mm, MM_SWAPENTS);</span><br><span class="line"></span><br><span class="line">    points *&#x3D; 1000;</span><br><span class="line">    points &#x2F;&#x3D; totalpages;</span><br><span class="line">    task_unlock(p);</span><br><span class="line"></span><br><span class="line">    &#x2F;*</span><br><span class="line">     * Root processes get 3% bonus, just like the __vm_enough_memory()</span><br><span class="line">     * implementation used by LSMs.</span><br><span class="line">     *&#x2F;</span><br><span class="line">    if (has_capability_noaudit(p, CAP_SYS_ADMIN))</span><br><span class="line">        points -&#x3D; 30;</span><br><span class="line"></span><br><span class="line">    &#x2F;*</span><br><span class="line">     * &#x2F;proc&#x2F;pid&#x2F;oom_score_adj ranges from -1000 to +1000 such that it may</span><br><span class="line">     * either completely disable oom killing or always prefer a certain</span><br><span class="line">     * task.</span><br><span class="line">     *&#x2F;</span><br><span class="line">    points +&#x3D; p-&gt;signal-&gt;oom_score_adj;</span><br><span class="line"></span><br><span class="line">    &#x2F;*</span><br><span class="line">     * Never return 0 for an eligible task that may be killed since it&#39;s</span><br><span class="line">     * possible that no single user task uses more than 0.1% of memory and</span><br><span class="line">     * no single admin tasks uses more than 3.0%.</span><br><span class="line">     *&#x2F;</span><br><span class="line">    if (points &lt;&#x3D; 0)</span><br><span class="line">        return 1;</span><br><span class="line">    return (points &lt; 1000) ? points : 1000;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2><span id="关于mmap只读共享的测试">关于mmap只读共享的测试</span></h2><p>测试代码在github.com/zsummer/zbase/tests/mapping_test 中  </p>
+<ul>
+<li>文件系统的内存映射分page cache 和buffer cache;    </li>
+<li>只读共享就是单纯的page cache;    </li>
+<li>page cache 也会用到内存产生实际的内存使用(本来就是这样).   </li>
+<li>文件系统的page cache带来的实际内存使用也会计算进该进程的’commit’中 如果有多个进程  每个进程都会计算到commit中.   用于oom打分    <ul>
+<li>操作系统中的commit则只有一个  </li>
+</ul>
+</li>
+</ul>
+<p>从OOM角度来讲不区分共享内存 只考虑RSS(一直有有小的迭代 比如加入swap量, root进程判定等);<br>page cache的回收由kswapd周期检查 通过内存水位判定, 基础参数是min_free_kbytes<br>当前水线位置和详细信息在cat /proc/zoneinfo , 内存不够用时也会直接触发 .<br>因此 mmap文件的virt 地址空间和OOM没关系,   mmap带来的rss会在被OOM killer之前回收掉不会被kill.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/11/15/2021-11-15-OI-optimize/" rel="next" title="OI卡常优化">
+                <i class="fa fa-chevron-left"></i> OI卡常优化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/03/07/2022-03-07-detour_crowd-path_corridor/" rel="prev" title="detour_crowd-path_corridor">
+                detour_crowd-path_corridor <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="夏天" />
+          <p class="site-author-name" itemprop="name">夏天</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">categories</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">关于mmap只读共享的测试</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">夏天</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+    NexT.Gemini
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

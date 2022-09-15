@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="..1. 目录   目录 动态链接过程 基础宏定义 重定位定义 符号表定义 动态段定义 rscopeelem 定义 linkmap dlfixup 函数定义和分析 符号版本 强弱符号 强弱引用 符号的作用域     动态库装载过程 ELF的辅助向量 AUXV ELF的装载有三种方法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ELF装载和动态链接过程">
+<meta property="og:url" content="https://zsummer.github.io/2019/12/17/2019-12-17-elf-load/index.html">
+<meta property="og:site_name" content="关于夏天的一切">
+<meta property="og:description" content="..1. 目录   目录 动态链接过程 基础宏定义 重定位定义 符号表定义 动态段定义 rscopeelem 定义 linkmap dlfixup 函数定义和分析 符号版本 强弱符号 强弱引用 符号的作用域     动态库装载过程 ELF的辅助向量 AUXV ELF的装载有三种方法">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-12-16T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-03-09T03:25:56.829Z">
+<meta property="article:author" content="夏天">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zsummer.github.io/2019/12/17/2019-12-17-elf-load/"/>
+
+
+
+
+
+  <title>ELF装载和动态链接过程 | 关于夏天的一切</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">关于夏天的一切</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我总觉得对你的爱很美</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/12/17/2019-12-17-elf-load/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ELF装载和动态链接过程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-12-17T00:00:00+08:00">
+                2019-12-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3><span id="1-目录">..1. 目录</span></h3><!-- TOC -->
+
+<ul>
+<li><a href="#目录">目录</a><ul>
+<li><a href="#动态链接过程">动态链接过程</a><ul>
+<li><a href="#基础宏定义">基础宏定义</a></li>
+<li><a href="#重定位定义">重定位定义</a></li>
+<li><a href="#符号表定义">符号表定义</a></li>
+<li><a href="#动态段定义">动态段定义</a></li>
+<li><a href="#rscopeelem-定义">rscopeelem 定义</a></li>
+<li><a href="#linkmap">linkmap</a></li>
+<li><a href="#dlfixup-函数定义和分析">dlfixup 函数定义和分析</a></li>
+<li><a href="#符号版本">符号版本</a></li>
+<li><a href="#强弱符号">强弱符号</a></li>
+<li><a href="#强弱引用">强弱引用</a></li>
+<li><a href="#符号的作用域">符号的作用域</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#动态库装载过程">动态库装载过程</a><ul>
+<li><a href="#elf的辅助向量-auxv">ELF的辅助向量 AUXV</a></li>
+<li><a href="#elf的装载有三种方法">ELF的装载有三种方法</a></li>
+</ul>
+</li>
+</ul>
+<!-- /TOC -->
+
+<a id="more"></a>
+
+<h4><span id="11-动态链接过程">..1.1. 动态链接过程</span></h4><h5><span id="111-基础宏定义">..1.1.1. 基础宏定义</span></h5><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//宏访问link_map成员并计算地址   </span></span><br><span class="line"><span class="meta"># <span class="meta-keyword">define</span> D_PTR(map, i) ((map)-&gt;i-&gt;d_un.d_ptr + (map)-&gt;l_addr)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line"><span class="meta"># <span class="meta-keyword">define</span> D_PTR(map, i) (map)-&gt;i-&gt;d_un.d_ptr</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Result of the lookup functions and how to retrieve the base address.  */</span></span><br><span class="line"><span class="comment">//lookup系列函数的返回值</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">link_map</span> *<span class="title">lookup_t</span>;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LOOKUP_VALUE(map) map</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LOOKUP_VALUE_ADDRESS(map) ((map) ? (map)-&gt;l_addr : 0)</span></span><br></pre></td></tr></table></figure>
+
+
+<h5><span id="112-重定位定义">..1.1.2. 重定位定义</span></h5><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Elf64_Rela</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">uint64_t</span> Elf64_Addr;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">uint64_t</span> Elf64_Xword;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">int64_t</span>  Elf64_Sxword;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  Elf64_Addr        r_offset;                <span class="comment">/* Address */</span></span><br><span class="line">  Elf64_Xword        r_info;                 <span class="comment">/* Relocation type and symbol index */</span></span><br><span class="line">  Elf64_Sxword        r_addend;              <span class="comment">/* Addend */</span></span><br><span class="line">&#125; Elf64_Rela;</span><br></pre></td></tr></table></figure>
+
+<h5><span id="113-符号表定义">..1.1.3. 符号表定义</span></h5><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">/Elf64_Sym</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">uint32_t</span> Elf64_Word;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">uint16_t</span> Elf64_Section;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">uint64_t</span> Elf64_Addr;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">uint64_t</span> Elf64_Xword;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  Elf64_Word        st_name;                <span class="comment">/* Symbol name (string tbl index), 4 bytes */</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">char</span>        st_info;             <span class="comment">/* Symbol type and binding, 1 byte */</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">char</span> st_other;                   <span class="comment">/* Symbol visibility, 1 byte */</span></span><br><span class="line">  Elf64_Section        st_shndx;            <span class="comment">/* Section index, 2 bytes */</span></span><br><span class="line">  Elf64_Addr        st_value;               <span class="comment">/* Symbol value, 8 bytes */</span></span><br><span class="line">  Elf64_Xword        st_size;               <span class="comment">/* Symbol size, 8 bytes */</span></span><br><span class="line">&#125; Elf64_Sym;</span><br></pre></td></tr></table></figure>
+
+<h5><span id="114-动态段定义">..1.1.4. 动态段定义</span></h5><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">  elf32_sword  d_tag</span><br><span class="line">  <span class="keyword">union</span>&#123;</span><br><span class="line">  elf32_word  d_val</span><br><span class="line">  elf32_addr  d_ptr</span><br><span class="line">  &#125;d_un;</span><br><span class="line">  &#125;elf32_dyn;  </span><br><span class="line">  </span><br><span class="line">d_tag控制d_un的含义</span><br><span class="line">DT_HASH符号散列表地址</span><br><span class="line">DT_STRTAB字符串表的地址</span><br><span class="line">DT_SYMTAB符号表地址</span><br><span class="line">DT_RELA相对地址重定位表的地址</span><br><span class="line">DT_STRSZ字符串表的字节大小</span><br><span class="line">DT_INIT初始化函数的地址</span><br><span class="line">DT_FINI终止函数的地址</span><br><span class="line">DT_SONAME共享目标文件名的字符串表</span><br><span class="line">接近量DT_JMPREL仅用于plt的重定位定位地址</span><br></pre></td></tr></table></figure>
+
+<h5><span id="115-r_scope_elem-定义">..1.1.5. r_scope_elem 定义</span></h5><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Structure to describe a single list of scope elements.  The lookup</span></span><br><span class="line"><span class="comment">   functions get passed an array of pointers to such structures.  */</span></span><br><span class="line">   <span class="comment">//描述一个特定范围的单链表结构 lookup函数往往需要传递一个保存这种结构的数组作为参数  </span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">r_scope_elem</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  <span class="comment">/* Array of maps for the scope.  */</span></span><br><span class="line">  <span class="comment">//用于描述范围的maps数组</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">link_map</span> **<span class="title">r_list</span>;</span></span><br><span class="line">  <span class="comment">/* 这个范围的入口点个数  */</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> r_nlist;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+<h5><span id="116-link_map">..1.1.6. link_map</span></h5><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//link_map用于描述可加载共享目标文件的结构 l_next,l_prev是一个链接了已加载的所有共享目标文件的单链表结构   </span></span><br><span class="line"><span class="comment">//这个单链表结构一般被用于动态链接器   </span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">link_map</span></span></span><br><span class="line"><span class="class">  &#123;</span></span><br><span class="line">    <span class="comment">/* These first few members are part of the protocol with the debugger.</span></span><br><span class="line"><span class="comment">       This is the same format used in SVR4.  */</span></span><br><span class="line">      <span class="comment">//共享文件加载基地址</span></span><br><span class="line">    ElfW(Addr) l_addr;		<span class="comment">/* Base address shared object is loaded at.  */</span></span><br><span class="line">      <span class="comment">//绝对文件名</span></span><br><span class="line">    <span class="keyword">char</span> *l_name;		<span class="comment">/* Absolute file name object was found in.  */</span></span><br><span class="line">      <span class="comment">//动态段加载地址</span></span><br><span class="line">    ElfW(Dyn) *l_ld;		<span class="comment">/* Dynamic section of the shared object.  */</span></span><br><span class="line">      <span class="comment">//加载项鍊表</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">link_map</span> *<span class="title">l_next</span>, *<span class="title">l_prev</span>;</span> <span class="comment">/* Chain of loaded objects.  */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* All following members are internal to the dynamic linker.</span></span><br><span class="line"><span class="comment">       They may change without notice.  */</span></span><br><span class="line">      <span class="comment">//其他成员是对于动态链接器内部的 可能随时改变不受提醒</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* This is an element which is only ever different from a pointer to</span></span><br><span class="line"><span class="comment">       the very same copy of this type for ld.so when it is used in more</span></span><br><span class="line"><span class="comment">       than one namespace.  */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">link_map</span> *<span class="title">l_real</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Number of the namespace this link map belongs to.  */</span></span><br><span class="line">      <span class="comment">//这link map属于的命名空间个数</span></span><br><span class="line">     </span><br><span class="line">    ElfW(Dyn) *l_info[DT_NUM + DT_THISPROCNUM + DT_VERSIONTAGNUM</span><br><span class="line">		      + DT_EXTRANUM + DT_VALNUM + DT_ADDRNUM];</span><br><span class="line">     <span class="comment">//这个数组用于快速访问动态段的信息 在lookup系列函数中会频繁使用</span></span><br><span class="line">     <span class="comment">//它的有关定义还包含了一系列用于访问信息的功能宏。</span></span><br><span class="line">     </span><br><span class="line">     <span class="comment">/* Array of DT_NEEDED dependencies and their dependencies, in</span></span><br><span class="line"><span class="comment">       dependency order for symbol lookup (with and without</span></span><br><span class="line"><span class="comment">       duplicates).  There is no entry before the dependencies have</span></span><br><span class="line"><span class="comment">       been loaded.  */</span></span><br><span class="line">     <span class="comment">//依赖项及其依赖项的数组 按符号查找的依赖项顺序排列(有和没有重复)。</span></span><br><span class="line">     <span class="comment">//在加载依赖项之前没有条目。</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">r_scope_elem</span> <span class="title">l_searchlist</span>;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">/* Dependent object that first caused this object to be loaded.  */</span></span><br><span class="line">    <span class="comment">//第一次唤起当前模块被加载的模块</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">link_map</span> *<span class="title">l_loader</span>;</span></span><br><span class="line">    <span class="comment">/* This is an array defining the lookup scope for this link map.</span></span><br><span class="line"><span class="comment">       There are initially at most three different scope lists.  */</span></span><br><span class="line">      <span class="comment">//这个数组定义了当前模块用于lookup函数搜索的范围 最初最多有三个不同范围的列表</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">r_scope_elem</span> **<span class="title">l_scope</span>;</span></span><br><span class="line">    </span><br><span class="line">    ......</span><br><span class="line">    </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<h5><span id="117-_dl_fixup-函数定义和分析">..1.1.7. <code>_dl_fixup</code> 函数定义和分析</span></h5><p>libc/elf/dl-runtime.c  </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">__attribute ((noinline)) ARCH_FIXUP_ATTRIBUTE _dl_fixup (</span><br><span class="line">   <span class="comment">/* GKM <span class="doctag">FIXME:</span> Fix trampoline to pass bounds so we can do</span></span><br><span class="line"><span class="comment">      without the `__unbounded' qualifier.  */</span></span><br><span class="line">     struct link_map *__unbounded l, ElfW(Word) reloc_offset)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="function"><span class="keyword">const</span> <span class="title">ElfW</span><span class="params">(Sym)</span> *<span class="keyword">const</span> symtab</span></span><br><span class="line"><span class="function">    </span>= (<span class="keyword">const</span> <span class="keyword">void</span> *) D_PTR (l, l_info[DT_SYMTAB]);</span><br><span class="line">  <span class="keyword">const</span> <span class="keyword">char</span> *strtab = (<span class="keyword">const</span> <span class="keyword">void</span> *) D_PTR (l, l_info[DT_STRTAB]);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> PLTREL *<span class="keyword">const</span> reloc</span><br><span class="line">    = (<span class="keyword">const</span> <span class="keyword">void</span> *) (D_PTR (l, l_info[DT_JMPREL]) + reloc_offset);</span><br><span class="line">  <span class="function"><span class="keyword">const</span> <span class="title">ElfW</span><span class="params">(Sym)</span> *sym </span>= &amp;symtab[ELFW(R_SYM) (reloc-&gt;r_info)];</span><br><span class="line">  <span class="keyword">void</span> *<span class="keyword">const</span> rel_addr = (<span class="keyword">void</span> *)(l-&gt;l_addr + reloc-&gt;r_offset);</span><br><span class="line">  <span class="keyword">lookup_t</span> result;</span><br><span class="line">  DL_FIXUP_VALUE_TYPE value;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Sanity check that we're really looking at a PLT relocation.  */</span></span><br><span class="line">  assert (ELFW(R_TYPE)(reloc-&gt;r_info) == ELF_MACHINE_JMP_SLOT);</span><br><span class="line"></span><br><span class="line">   <span class="comment">/* Look up the target symbol.  If the normal lookup rules are not</span></span><br><span class="line"><span class="comment">      used don't look in the global scope.  */</span></span><br><span class="line">  <span class="keyword">if</span> (__builtin_expect (ELFW(ST_VISIBILITY) (sym-&gt;st_other), <span class="number">0</span>) == <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">r_found_version</span> *<span class="title">version</span> = <span class="title">NULL</span>;</span></span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (l-&gt;l_info[VERSYMIDX (DT_VERSYM)] != <span class="literal">NULL</span>)</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="function"><span class="keyword">const</span> <span class="title">ElfW</span><span class="params">(Half)</span> *vernum </span>=</span><br><span class="line">          (<span class="keyword">const</span> <span class="keyword">void</span> *) D_PTR (l, l_info[VERSYMIDX (DT_VERSYM)]);</span><br><span class="line">        ElfW(Half) ndx = vernum[ELFW(R_SYM) (reloc-&gt;r_info)] &amp; <span class="number">0x7fff</span>;</span><br><span class="line">        version = &amp;l-&gt;l_versions[ndx];</span><br><span class="line">        <span class="keyword">if</span> (version-&gt;hash == <span class="number">0</span>)</span><br><span class="line">          version = <span class="literal">NULL</span>;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="comment">/* We need to keep the scope around so do some locking.  This is</span></span><br><span class="line"><span class="comment">       not necessary for objects which cannot be unloaded or when</span></span><br><span class="line"><span class="comment">       we are not using any threads (yet).  */</span></span><br><span class="line">      <span class="keyword">int</span> flags = DL_LOOKUP_ADD_DEPENDENCY;</span><br><span class="line">      <span class="keyword">if</span> (!RTLD_SINGLE_THREAD_P)</span><br><span class="line">      &#123;</span><br><span class="line">        THREAD_GSCOPE_SET_FLAG ();</span><br><span class="line">        flags |= DL_LOOKUP_GSCOPE_LOCK;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      result = _dl_lookup_symbol_x (strtab + sym-&gt;st_name, l, &amp;sym, l-&gt;l_scope,</span><br><span class="line">                            version, ELF_RTYPE_CLASS_PLT, flags, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">      <span class="comment">/* We are done with the global scope.  */</span></span><br><span class="line">      <span class="keyword">if</span> (!RTLD_SINGLE_THREAD_P)</span><br><span class="line">      THREAD_GSCOPE_RESET_FLAG ();</span><br><span class="line"></span><br><span class="line">      <span class="comment">/* Currently result contains the base load address (or link map)</span></span><br><span class="line"><span class="comment">       of the object that defines sym.  Now add in the symbol</span></span><br><span class="line"><span class="comment">       offset.  */</span></span><br><span class="line">      value = DL_FIXUP_MAKE_VALUE (result,</span><br><span class="line">                           sym ? (LOOKUP_VALUE_ADDRESS (result)</span><br><span class="line">                                + sym-&gt;st_value) : <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">      <span class="comment">/* We already found the symbol.  The module (and therefore its load</span></span><br><span class="line"><span class="comment">       address) is also known.  */</span></span><br><span class="line">      value = DL_FIXUP_MAKE_VALUE (l, l-&gt;l_addr + sym-&gt;st_value);</span><br><span class="line">      result = l;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* And now perhaps the relocation addend.  */</span></span><br><span class="line">  value = elf_machine_plt_value (l, reloc, value);</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Finally, fix up the plt itself.  */</span></span><br><span class="line">  <span class="keyword">if</span> (__builtin_expect (GLRO(dl_bind_not), <span class="number">0</span>))</span><br><span class="line">    <span class="keyword">return</span> value;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> elf_machine_fixup_plt (l, result, reloc, rel_addr, value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight plain"><figcaption><span>字符串表strtab   </span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">reloc_offset即是传入的参数reloc_arg 其代表在.rela.plt表中的第几项 保存在reloc中   </span><br><span class="line">reloc的r_offset表示需要修改的函数地址在GOT表中的地址 加上装载地址l_addr得到的rel_addr就是最终要修改的.got.plt保存该函数地址的项的绝对地址  </span><br><span class="line"></span><br><span class="line">st_other描述符号的可见性 如果包含STV_PROTECTED、STV_HIDDEN和STV_INTERNAL的其中任何一种 则直接将装载地址加上st_value即得到函数的最终地址value 将其写入rel_addr    (相当于作用域不超过当前符号表的范围)  </span><br><span class="line">最后调用elf_machine_fixup_plt函数进行修正    </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">fixup plt  回写.got.plt的项</span><br></pre></td></tr></table></figure>
+<p>static inline Elf64_Addr<br>elf_machine_fixup_plt (struct link_map *map, lookup_t t,<br>               const Elf64_Rela *reloc,<br>               Elf64_Addr *reloc_addr, Elf64_Addr value)<br>{<br>  return *reloc_addr = value;<br>}</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">其他情况 会进入if语句   </span><br><span class="line">首先获得符号的version信息 然后调用 &#96;&#96;&#96;_dl_lookup_symbol_x&#96;&#96;&#96; 函数从已装载的共享库中查找最终的符号地址 </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">elf&#x2F;dl-lookup.c  </span><br><span class="line">&#96;&#96;&#96;C++</span><br><span class="line">&#x2F;* Search loaded objects&#39; symbol tables for a definition of the symbol</span><br><span class="line">   UNDEF_NAME, perhaps with a requested version for the symbol.</span><br><span class="line">   We must never have calls to the audit functions inside this function</span><br><span class="line">   or in any function which gets called.  If this would happen the audit</span><br><span class="line">   code might create a thread which can throw off all the scope locking.  *&#x2F;</span><br><span class="line">lookup_t</span><br><span class="line">_dl_lookup_symbol_x (const char *undef_name, struct link_map *undef_map,</span><br><span class="line">                     const ElfW(Sym) **ref,</span><br><span class="line">                     struct r_scope_elem *symbol_scope[],</span><br><span class="line">                     const struct r_found_version *version,</span><br><span class="line">                     int type_class, int flags, struct link_map *skip_map)</span><br><span class="line">&#123;</span><br><span class="line">  size_t n &#x3D; scope-&gt;r_nlist;</span><br><span class="line">  __asm volatile (&quot;&quot; : &quot;+r&quot; (n), &quot;+m&quot; (scope-&gt;r_list));</span><br><span class="line">  struct link_map **list &#x3D; scope-&gt;r_list;</span><br><span class="line"></span><br><span class="line">  do</span><br><span class="line">    &#123;</span><br><span class="line">      Elf_Symndx symidx;</span><br><span class="line">      int num_versions &#x3D; 0;</span><br><span class="line">      const ElfW(Sym) *versioned_sym &#x3D; NULL;</span><br><span class="line">      const struct link_map *map &#x3D; list[i]-&gt;l_real;</span><br><span class="line"></span><br><span class="line">      ...</span><br><span class="line"></span><br><span class="line">      const ElfW(Sym) *symtab &#x3D; (const void *) D_PTR (map, l_info[DT_SYMTAB]);</span><br><span class="line">      const char *strtab &#x3D; (const void *) D_PTR (map, l_info[DT_STRTAB]);</span><br><span class="line"></span><br><span class="line">      const ElfW(Sym) *sym;</span><br><span class="line">      const ElfW(Addr) *bitmask &#x3D; map-&gt;l_gnu_bitmask;</span><br><span class="line">      if (__builtin_expect (bitmask !&#x3D; NULL, 1))</span><br><span class="line">    &#123;</span><br><span class="line">      ElfW(Addr) bitmask_word</span><br><span class="line">        &#x3D; bitmask[(new_hash &#x2F; __ELF_NATIVE_CLASS)</span><br><span class="line">              &amp; map-&gt;l_gnu_bitmask_idxbits];</span><br><span class="line"></span><br><span class="line">      unsigned int hashbit1 &#x3D; new_hash &amp; (__ELF_NATIVE_CLASS - 1);</span><br><span class="line">      unsigned int hashbit2 &#x3D; ((new_hash &gt;&gt; map-&gt;l_gnu_shift)</span><br><span class="line">                   &amp; (__ELF_NATIVE_CLASS - 1));</span><br><span class="line"></span><br><span class="line">      if (__builtin_expect ((bitmask_word &gt;&gt; hashbit1)</span><br><span class="line">                &amp; (bitmask_word &gt;&gt; hashbit2) &amp; 1, 0))</span><br><span class="line">        &#123;</span><br><span class="line">          Elf32_Word bucket &#x3D; map-&gt;l_gnu_buckets[new_hash</span><br><span class="line">                             % map-&gt;l_nbuckets];</span><br><span class="line">          if (bucket !&#x3D; 0)</span><br><span class="line">            &#123;</span><br><span class="line">              const Elf32_Word *hasharr &#x3D; &amp;map-&gt;l_gnu_chain_zero[bucket];</span><br><span class="line"></span><br><span class="line">              do</span><br><span class="line">                if (((*hasharr ^ new_hash) &gt;&gt; 1) &#x3D;&#x3D; 0)</span><br><span class="line">                  &#123;</span><br><span class="line">                    symidx &#x3D; hasharr - map-&gt;l_gnu_chain_zero;</span><br><span class="line">                    sym &#x3D; check_match (&amp;symtab[symidx]);</span><br><span class="line">                    if (sym !&#x3D; NULL)</span><br><span class="line">                      goto found_it;</span><br><span class="line">                  &#125;</span><br><span class="line">              while ((*hasharr++ &amp; 1u) &#x3D;&#x3D; 0);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      symidx &#x3D; SHN_UNDEF;</span><br><span class="line">    &#125;</span><br><span class="line">      else</span><br><span class="line">    &#123;</span><br><span class="line">      if (*old_hash &#x3D;&#x3D; 0xffffffff)</span><br><span class="line">        *old_hash &#x3D; _dl_elf_hash (undef_name);</span><br><span class="line">      for (symidx &#x3D; map-&gt;l_buckets[*old_hash % map-&gt;l_nbuckets];</span><br><span class="line">           symidx !&#x3D; STN_UNDEF;</span><br><span class="line">           symidx &#x3D; map-&gt;l_chain[symidx])</span><br><span class="line">        &#123;</span><br><span class="line">          sym &#x3D; check_match (&amp;symtab[symidx]);</span><br><span class="line">          if (sym !&#x3D; NULL)</span><br><span class="line">            goto found_it;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">      sym &#x3D; num_versions &#x3D;&#x3D; 1 ? versioned_sym : NULL;</span><br><span class="line">      if (sym !&#x3D; NULL)</span><br><span class="line">    &#123;</span><br><span class="line">    found_it:</span><br><span class="line">      switch (__builtin_expect (ELFW(ST_BIND) (sym-&gt;st_info), STB_GLOBAL))</span><br><span class="line">        &#123;</span><br><span class="line">        case STB_WEAK:</span><br><span class="line">          if (__builtin_expect (GLRO(dl_dynamic_weak), 0))</span><br><span class="line">        &#123;</span><br><span class="line">          if (! result-&gt;s)</span><br><span class="line">            &#123;</span><br><span class="line">              result-&gt;s &#x3D; sym;</span><br><span class="line">              result-&gt;m &#x3D; (struct link_map *) map;</span><br><span class="line">            &#125;</span><br><span class="line">          break;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        case STB_GLOBAL:</span><br><span class="line">        success:</span><br><span class="line">          result-&gt;s &#x3D; sym;</span><br><span class="line">          result-&gt;m &#x3D; (struct link_map *) map;</span><br><span class="line">          return 1;</span><br><span class="line"></span><br><span class="line">        case STB_GNU_UNIQUE:</span><br><span class="line">          ...</span><br><span class="line"></span><br><span class="line">        default:</span><br><span class="line">          break;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  while (++i &lt; n);</span><br><span class="line"></span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先获得该scope下的link_map个数r_nlist和数组r_list 然后进行遍历<br>省略的部分是检查当前link_map是否有符合查找的条件  没有就继续遍历<br>再往下取出当前link_map的符号表symtab和字符串表strtab<br>接下来的if和else条件语句部分都是通过哈希值找到符号表中对应符号列表的索引<br>   如果找到 就通过check_match函数比对符号表中的函数名symtab[symidx]和待查找的函数名undef_name是否相等 如果相等 就找到了该符号并跳转到found_it语句  否则返回null    </p>
+<p>找到了该符号后对符号类型进行判断<br>如果找到的是弱符号STB_WEAK 则保存第一次找到的结果 然后继续循环查找<br>   如果后面没有找到可以覆盖该结果的符号 则返回的就是该第一次保存的结果。<br>   如果找到的是全局符号STB_GLOBAL 则直接返回该结果。</p>
+<p>如果找到的符号是其他类型的符号 则继续循环查找<br>最后 如果什么都没找到 则返回0   </p>
+<p>/elf/dl-lookup.c::check_match</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">const</span> <span class="title">ElfW</span><span class="params">(Sym)</span> *__attribute_noinline__</span></span><br><span class="line"><span class="function"><span class="title">check_match</span> <span class="params">(<span class="keyword">const</span> ElfW(Sym) *sym)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (sym != ref &amp;&amp; <span class="built_in">strcmp</span> (strtab + sym-&gt;st_name, undef_name))</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">const</span> <span class="title">ElfW</span><span class="params">(Half)</span> *verstab </span>= <span class="built_in">map</span>-&gt;l_versyms;</span><br><span class="line">  <span class="keyword">if</span> (version != <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line"></span><br><span class="line">      ElfW(Half) ndx = verstab[symidx] &amp; <span class="number">0x7fff</span>;</span><br><span class="line">      <span class="keyword">if</span> (  (<span class="built_in">map</span>-&gt;l_versions[ndx].hash != version-&gt;hash </span><br><span class="line">                    || <span class="built_in">strcmp</span> (<span class="built_in">map</span>-&gt;l_versions[ndx].name, version-&gt;name)  ) </span><br><span class="line">           &amp;&amp; (version-&gt;hidden || <span class="built_in">map</span>-&gt;l_versions[ndx].hash || (verstab[symidx] &amp; <span class="number">0x8000</span>)))</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">      ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> sym;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里主要有一个版本检查    </p>
+<h5><span id="118-符号版本">..1.1.8. 符号版本</span></h5><p>由于符号版本不是C语言的标准用法 所以它使用了汇编器的一个特殊指示 也就是.symver 指示<br>而GCC中通过内嵌汇编完成  如下:  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">__asm__(&quot;.symver original_foo,foo@&quot;);  </span><br><span class="line">__asm__(&quot;.symver old_foo,foo@VERS_1.1&quot;);  </span><br><span class="line">__asm__(&quot;.symver old_foo1,foo@VERS_1.2&quot;);  </span><br><span class="line">__asm__(&quot;.symver new_foo,foo@@VERS_2.0&quot;);</span><br></pre></td></tr></table></figure>
+
+<p>这个例子中定义了foo的四个版本<br>其中的symver的第一个参数为源代码中真正定义的实现 而之后的foo则为对外公开的版本 也就是可以有不同版本的符号<br>其中@@则表示这个是一个默认版本(简单来说 如果一个可执行文件链接的时候foo还没有任何版本控制 但是在运行时foo已经引入了多个版本 则此时的可执行文件可以选择这个@@表示的默认版本符号<br>这里的old_foo就是foo的VERS_1.1版本 如果在so中定义了old_foo 那么这个old_foo就是这个foo的VERS_1.1版本的实现<br>  如果没有定义 可以通过old_foo来引用这个特殊版本的foo符号的定义   </p>
+<h5><span id="119-强弱符号">..1.1.9. 强弱符号</span></h5><p>针对强弱符号的概念 链接器就会按照如下规则处理与选择被多次定义的全局符号  </p>
+<ul>
+<li>规则1: 不允许强符号被多次定义（即不同的目标文件中不能有同名的强符号）  <ul>
+<li>如果有多个强符号定义 则链接器报符号重复定义错误   </li>
+</ul>
+</li>
+<li>规则2: 如果一个符号在某个目标文件中是强符号  在其他文件中都是弱符号 那么选择强符号   </li>
+<li>规则3: 如果一个符号在所有目标文件中都是弱符号 那么选择其中占用空间最大的一个 <ul>
+<li>比如目标文件A定义全局变量global为int型 占4个字节</li>
+<li>目标文件B定义global为doulbe型 占8个字节 </li>
+<li>那么目标文件A和B链接后 符号global占8个字节（尽量不要使用多个不同类型的弱符号,否则容易导致很难发现的程序错误）  </li>
+</ul>
+</li>
+</ul>
+<h5><span id="1110-强弱引用">..1.1.10. 强弱引用</span></h5><p>我们所看到的对外部目标文件的符号引用在目标文件被最终链接成可执行文件时  它们必须要被正确决议<br>如果没有找到该符号的定义 链接器就会报符号未定义错误 这种被称为强引用（Strong Reference）<br>与之相对应还有一种弱引用（Weak Reference）<br>在处理弱引用时 如果该符号有定义  则链接器将该符号的引用决议  如果该符号未被定义  则链接器对于该引用不报错<br>链接器处理强引用和弱引用的过程几乎一样  只是对于未定义的弱引用  链接器不认为它是一个错误<br>一般对于未定义的弱引用  链接器默认其为0  或者是一个特殊的值  以便于程序代码能够识别  </p>
+<h5><span id="1111-符号的作用域">..1.1.11. 符号的作用域</span></h5><p>C++中non-member function template模板的代码是具有不同于普通的函数定义的<br>C++标准里对于在global scope声明对象的链接描述:  </p>
+<blockquote>
+<p>[ISO/IEE 14882:2011]A name declared in a namespace scope without a storage-class-specifier has external linkage unless it has internal linkage because of a previous declaration and provided it is not declared const. Objects declared const and not explicitly declared extern have internal linkage.</p>
+</blockquote>
+<p>例如声明int max(int,int)是具有外部链接的符号    </p>
+<p>C++中非成员函数模板(non-member function template)的链接不同于普通的函数   </p>
+<blockquote>
+<p>[ISO/IEE 14882:2014]A template name has linkage (3.5). A non-member function template can have internal linkage; any other template name shall have external linkage. Specializations (explicit or implicit) of a template that has internal linkage are distinct from all specializations in other translation units.</p>
+</blockquote>
+<p>即通过模板实现的max(const T&amp;,const T&amp;)是具有内部链接internal linkage的符号<br>所以在链接时对于max的调用查找只能够找到自己目标文件中的符号名(内部链接外部不可见) 不会和外部链接产生重定义冲突  </p>
+<h3><span id="2-动态库装载过程">..2. 动态库装载过程</span></h3><h4><span id="21-elf的辅助向量-auxv">..2.1. ELF的辅助向量 AUXV</span></h4><p>main函数的第三个参数  char* envp[]    </p>
+<h4><span id="22-elf的装载有三种方法">..2.2. ELF的装载有三种方法</span></h4><table>
+<thead>
+<tr>
+<th>函数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>load_binary</td>
+<td>通过读存放在可执行文件中的信息为当前进程建立一个新的执行环境</td>
+</tr>
+<tr>
+<td>load_shlib</td>
+<td>用于动态的把一个共享库捆绑到一个已经在运行的进程, 这是由uselib()系统调用激活的</td>
+</tr>
+<tr>
+<td>core_dump</td>
+<td>在名为core的文件中, 存放当前进程的执行上下文. 这个文件通常是在进程接收到一个缺省操作为”dump”的信号时被创建的, 其格式取决于被执行程序的可执行类型</td>
+</tr>
+</tbody></table>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/12/16/2019-12-16-elf-link/" rel="next" title="ELF静态链接过程和动态链接过程中的GOT表的作用">
+                <i class="fa fa-chevron-left"></i> ELF静态链接过程和动态链接过程中的GOT表的作用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/02/07/2020-02-07-shared-memory-buddy_system/" rel="prev" title="基于共享内存的通用内存分配器">
+                基于共享内存的通用内存分配器 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="夏天" />
+          <p class="site-author-name" itemprop="name">夏天</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">categories</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">..1. 目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">1.1.</span> <span class="nav-text">..1.1. 动态链接过程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">1.1.1.</span> <span class="nav-text">..1.1.1. 基础宏定义</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">1.1.2.</span> <span class="nav-text">..1.1.2. 重定位定义</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">1.1.3.</span> <span class="nav-text">..1.1.3. 符号表定义</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">1.1.4.</span> <span class="nav-text">..1.1.4. 动态段定义</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">1.1.5.</span> <span class="nav-text">..1.1.5. r_scope_elem 定义</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">1.1.6.</span> <span class="nav-text">..1.1.6. link_map</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">1.1.7.</span> <span class="nav-text">..1.1.7. _dl_fixup 函数定义和分析</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">1.1.8.</span> <span class="nav-text">..1.1.8. 符号版本</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">1.1.9.</span> <span class="nav-text">..1.1.9. 强弱符号</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">1.1.10.</span> <span class="nav-text">..1.1.10. 强弱引用</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">1.1.11.</span> <span class="nav-text">..1.1.11. 符号的作用域</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">..2. 动态库装载过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">2.1.</span> <span class="nav-text">..2.1. ELF的辅助向量 AUXV</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">2.2.</span> <span class="nav-text">..2.2. ELF的装载有三种方法</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">夏天</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+    NexT.Gemini
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

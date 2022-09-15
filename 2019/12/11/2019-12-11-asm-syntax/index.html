@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="0.0.1. 目录   目录 基础语法格式 常见寄存器以及作用 通用寄存器 寄存器使用惯例 原文 中文对照   专用寄存器 标志寄存器 RFLAGS 程序计数器(PC)(Relative Instruction-Pointer)(IP) 指令寄存器     汇编语法 汇编指令 操作数格式与寻址 内存操作数 寻址模式 large code mode: 共享库中对g_static_so_data的访问">
+<meta property="og:type" content="article">
+<meta property="og:title" content="汇编语法&#x2F;寻址&#x2F;寄存器&#x2F;代码模型(GNU assembler)">
+<meta property="og:url" content="https://zsummer.github.io/2019/12/11/2019-12-11-asm-syntax/index.html">
+<meta property="og:site_name" content="关于夏天的一切">
+<meta property="og:description" content="0.0.1. 目录   目录 基础语法格式 常见寄存器以及作用 通用寄存器 寄存器使用惯例 原文 中文对照   专用寄存器 标志寄存器 RFLAGS 程序计数器(PC)(Relative Instruction-Pointer)(IP) 指令寄存器     汇编语法 汇编指令 操作数格式与寻址 内存操作数 寻址模式 large code mode: 共享库中对g_static_so_data的访问">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-12-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-03-09T03:25:56.823Z">
+<meta property="article:author" content="夏天">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zsummer.github.io/2019/12/11/2019-12-11-asm-syntax/"/>
+
+
+
+
+
+  <title>汇编语法/寻址/寄存器/代码模型(GNU assembler) | 关于夏天的一切</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">关于夏天的一切</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我总觉得对你的爱很美</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/12/11/2019-12-11-asm-syntax/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">汇编语法/寻址/寄存器/代码模型(GNU assembler)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-12-11T00:00:00+08:00">
+                2019-12-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3><span id="001-目录">0.0.1. 目录</span></h3><!-- TOC -->
+
+<ul>
+<li><a href="#目录">目录</a></li>
+<li><a href="#基础语法格式">基础语法格式</a></li>
+<li><a href="#常见寄存器以及作用">常见寄存器以及作用</a><ul>
+<li><a href="#通用寄存器">通用寄存器</a><ul>
+<li><a href="#寄存器使用惯例-原文">寄存器使用惯例 原文</a></li>
+<li><a href="#中文对照">中文对照</a></li>
+</ul>
+</li>
+<li><a href="#专用寄存器">专用寄存器</a><ul>
+<li><a href="#标志寄存器-rflags">标志寄存器 RFLAGS</a></li>
+<li><a href="#程序计数器pcrelative-instruction-pointerip">程序计数器(PC)(Relative Instruction-Pointer)(IP)</a></li>
+<li><a href="#指令寄存器">指令寄存器</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#汇编语法">汇编语法</a><ul>
+<li><a href="#汇编指令">汇编指令</a></li>
+<li><a href="#操作数格式与寻址">操作数格式与寻址</a><ul>
+<li><a href="#内存操作数">内存操作数</a></li>
+<li><a href="#寻址模式">寻址模式</a></li>
+<li><a href="#large-code-mode">large code mode:</a></li>
+<li><a href="#共享库中对g_static_so_data的访问">共享库中对g_static_so_data的访问</a></li>
+<li><a href="#small-code-mode">small code mode:</a></li>
+<li><a href="#备注说明">备注说明</a></li>
+<li><a href="#relro--relocation-read-only">RELRO  Relocation Read Only</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#调用惯例calling-conventions">调用惯例Calling Conventions</a><pre><code>- [参数压栈顺序](#参数压栈顺序)
+    - [Caller Save和Callee Save](#caller-save和callee-save)</code></pre></li>
+<li><a href="#工具">工具</a><ul>
+<li><a href="#peda插件">PEDA插件</a></li>
+</ul>
+</li>
+</ul>
+<!-- /TOC -->
+
+
+
+
+<h3><span id="002-基础语法格式">0.0.2. 基础语法格式</span></h3><p>GAS汇编的格式阅读起来很自然 如下   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[操作符]    [源]      [目标]   </span><br><span class="line">movl        $0,      -4(%rbp)</span><br></pre></td></tr></table></figure>
+
+
+<p>但是INTEL格式更贴近C语言的书写风格   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[操作符]   [目标]    [源]  </span><br><span class="line">mov        esi,     DWORD PTR [rbp-0x4]</span><br></pre></td></tr></table></figure>
+
+<p>很像C语言的代码   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int esi &#x3D; *(rbp-0x4);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>本文基于X86-64架构体系整理了GAS风格的汇编语法, 如无特殊说明后续内容皆以环境为准.    </p>
+</blockquote>
+<p>“@”符号表示“将符号左边的变量钳制在符号右边的地址   </p>
+<a id="more"></a>   
+
+<h3><span id="003-常见寄存器以及作用">0.0.3. 常见寄存器以及作用</span></h3><p>16bit寄存器一般没有前缀  例如ax   bx   ds<br>32bit寄存器前缀一般为e   例如eax  ebx  eds<br>64bit寄存器前缀一般为r   例如rax  rbx  rds</p>
+<h4><span id="0031-通用寄存器">0.0.3.1. 通用寄存器</span></h4><p>X86-64体系下有16个通用寄存器 分别为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rax    rbx    rcx    rdx    rdi    rsi    rbp    rsp    r8 – r15</span><br></pre></td></tr></table></figure>
+<p>兼容32位模式, 对应为: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">eax    ebx    ecx    edx    edi    esi    ebp    esp    e8d – e15d</span><br></pre></td></tr></table></figure>
+
+<p>在所有CPU的架构体系中, 每个寄存器通常都是有其建议的使用用途的, X86-64架构下其用途如下:  </p>
+<h5><span id="00311-寄存器使用惯例-原文">0.0.3.1.1. 寄存器使用惯例 原文</span></h5><p><a href="https://cons.mit.edu/sp17/x86-64-architecture-guide.html" target="_blank" rel="noopener">X86-64 Registers</a></p>
+<table>
+<thead>
+<tr>
+<th>Register</th>
+<th>Purpose</th>
+<th>Saved across calls</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>%rax</td>
+<td>temp register; return value</td>
+<td>No</td>
+</tr>
+<tr>
+<td>%rbx</td>
+<td>callee-saved</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>%rcx</td>
+<td>used to pass 4th argument to functions</td>
+<td>No</td>
+</tr>
+<tr>
+<td>%rdx</td>
+<td>used to pass 3rd argument to functions</td>
+<td>No</td>
+</tr>
+<tr>
+<td>%rsp</td>
+<td>stack pointer</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>%rbp</td>
+<td>callee-saved; base pointer</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>%rsi</td>
+<td>used to pass 2nd argument to functions</td>
+<td>No</td>
+</tr>
+<tr>
+<td>%rdi</td>
+<td>used to pass 1st argument to functions</td>
+<td>No</td>
+</tr>
+<tr>
+<td>%r8</td>
+<td>used to pass 5th argument to functions</td>
+<td>No</td>
+</tr>
+<tr>
+<td>%r9</td>
+<td>used to pass 6th argument to functions</td>
+<td>No</td>
+</tr>
+<tr>
+<td>%r10-r11</td>
+<td>temporary</td>
+<td>No</td>
+</tr>
+<tr>
+<td>%r12-r15</td>
+<td>callee-saved registers</td>
+<td>Yes</td>
+</tr>
+</tbody></table>
+<h5><span id="00312-中文对照">0.0.3.1.2. 中文对照</span></h5><table>
+<thead>
+<tr>
+<th>寄存器</th>
+<th>推荐用途</th>
+<th>跨调用过程保存</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>%rax</td>
+<td>保存函数/计算的返回值</td>
+<td>No</td>
+</tr>
+<tr>
+<td>%rbx</td>
+<td>callee-saved 基址 (比如找GOT表会临时用下)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>%rcx</td>
+<td>函数的第4个参数</td>
+<td>No</td>
+</tr>
+<tr>
+<td>%rdx</td>
+<td>函数的第3个参数</td>
+<td>乘法余数</td>
+</tr>
+<tr>
+<td>%rsp</td>
+<td>指向当前栈顶的指针(栈顶)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>%rbp</td>
+<td>callee-saved; 指向当前栈帧的起始位置(栈基)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>%rsi</td>
+<td>函数的第2个参数</td>
+<td>字符串源串</td>
+</tr>
+<tr>
+<td>%rdi</td>
+<td>函数的第1个参数</td>
+<td>字符串目标串</td>
+</tr>
+<tr>
+<td>%r8</td>
+<td>函数的第5个参数</td>
+<td>No</td>
+</tr>
+<tr>
+<td>%r9</td>
+<td>函数的第6个参数</td>
+<td>No</td>
+</tr>
+<tr>
+<td>%r10-r11</td>
+<td>temporary</td>
+<td>No</td>
+</tr>
+<tr>
+<td>%r12-r15</td>
+<td>callee-saved registers</td>
+<td>Yes</td>
+</tr>
+</tbody></table>
+<h4><span id="0032-专用寄存器">0.0.3.2. 专用寄存器</span></h4><p>标志寄存器和程序计数器可能为同一个寄存器实现  </p>
+<h5><span id="00321-标志寄存器-rflags">0.0.3.2.1. 标志寄存器 RFLAGS</span></h5><p>NV UP EI PL NZ NA PO NC表示标志寄存器的值  </p>
+<table>
+<thead>
+<tr>
+<th>位编号</th>
+<th>1</th>
+<th>0</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>溢出标志OF(Over flow flag)</td>
+<td>OV(1)</td>
+<td>NV(0)</td>
+</tr>
+<tr>
+<td>方向标志DF(Direction flag)</td>
+<td>DN(1)</td>
+<td>UP(0)</td>
+</tr>
+<tr>
+<td>中断标志IF(Interrupt flag)</td>
+<td>EI(1)</td>
+<td>DI(0)</td>
+</tr>
+<tr>
+<td>符号标志SF(Sign flag)</td>
+<td>NG(1)</td>
+<td>PL(0)</td>
+</tr>
+<tr>
+<td>零标志ZF(Zero flag)</td>
+<td>ZR(1)</td>
+<td>NZ(0)</td>
+</tr>
+<tr>
+<td>辅助标志AF(Auxiliary carry flag)</td>
+<td>AC(1)</td>
+<td>NA(0)</td>
+</tr>
+<tr>
+<td>奇偶标志PF(Parity flag)</td>
+<td>PE(1)</td>
+<td>PO(0)</td>
+</tr>
+<tr>
+<td>进位标志CF(Carry flag)</td>
+<td>CY(1)</td>
+<td>NC(0)</td>
+</tr>
+<tr>
+<td>TF(TrapFlag)</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h5><span id="00322-程序计数器pcrelative-instruction-pointerip">0.0.3.2.2. 程序计数器(PC)(Relative Instruction-Pointer)(IP)</span></h5><p>保存下一行要执行的指令位置<br>Intel的实现叫RIP  </p>
+<blockquote>
+<p>The 64-bit instruction pointer RIP points to the next instruction to be executed, and supports a 64-bit flat memory model.<br>64位指令指针 RIP 指向预期要执行的下一行指令(位置), 并且支持64位平坦内存模型<br>RIP-relative addressing: this is new for x64 and allows accessing data tables and such in the code relative to the current instruction pointer, making position independent code easier to implement.<br>PIC提供了相对于当前指令位置访问数据表这样新的支持, 从而让PIC更容易实现   </p>
+</blockquote>
+<p>例如PLC表在RIP下的应用  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0000000000000570 &lt;foo@plt&gt;:</span><br><span class="line"> 570:    ff 25 a2 0a 20 00        jmpq   *0x200aa2(%rip)        # 201018 &lt;_GLOBAL_OFFSET_TABLE_+0x18&gt;</span><br><span class="line"> 576:    68 00 00 00 00           pushq  $0x0</span><br><span class="line"> 57b:    e9 e0 ff ff ff           jmpq   560 &lt;_init+0x20&gt;</span><br></pre></td></tr></table></figure>
+
+<p>在没有RIP的情况下需要通过函数调用来实现PLC  会消耗较多的性能<br>windows则直接采用了’重定位基址’的方式实现非PLC的装载.  </p>
+<h5><span id="00323-指令寄存器">0.0.3.2.3. 指令寄存器</span></h5><p>当前正在执行的指令, 简单CPU会预读 但复杂的CPU有流水线/指令级并行计算等    </p>
+<h3><span id="004-汇编语法">0.0.4. 汇编语法</span></h3><h4><span id="0041-汇编指令">0.0.4.1. 汇编指令</span></h4><table>
+<thead>
+<tr>
+<th>操作码</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>复制值</td>
+<td>_</td>
+</tr>
+<tr>
+<td>mov src, dest</td>
+<td>将值从 寄存器,立即值或存储器地址 复制到 寄存器或存储器地址, 不可以同时为内存地址</td>
+</tr>
+<tr>
+<td>movabs</td>
+<td>支持8字节的操作数</td>
+</tr>
+<tr>
+<td>lea src, dest</td>
+<td>move会取值 lea只取地址    dest只能是寄存器</td>
+</tr>
+<tr>
+<td>栈操作</td>
+<td></td>
+</tr>
+<tr>
+<td>enter $x, $0</td>
+<td>设置堆栈框架 相当于 push ebp      和 mov esp, ebp 然后把当前的esp减去x字节的大小(局部变量)</td>
+</tr>
+<tr>
+<td>leave</td>
+<td>恢复堆栈框架 相当于 move ebp, esp 和 pop ebp</td>
+</tr>
+<tr>
+<td>push src</td>
+<td>将src压栈,  rsp-1并把src的内容存储到新位置. src可以是立即数 寄存器 内存地址</td>
+</tr>
+<tr>
+<td>pop dest</td>
+<td>出栈并保存到dest 可以是 寄存器 内存地址</td>
+</tr>
+<tr>
+<td>控制流</td>
+<td></td>
+</tr>
+<tr>
+<td>call label</td>
+<td>无条件跳转到目标(直接跳转)并将返回地址(当前PC/IP +1)压入堆栈</td>
+</tr>
+<tr>
+<td>call *operand</td>
+<td>无条件跳转到目标(间接跳转)并将返回地址(当前PC/IP +1)压入堆栈</td>
+</tr>
+<tr>
+<td>ret</td>
+<td>将返回地址弹出堆栈 然后无条件跳转到该地址</td>
+</tr>
+<tr>
+<td>jmp label</td>
+<td>无条件跳转到目标(直接跳转)</td>
+</tr>
+<tr>
+<td>jmp *operand</td>
+<td>无条件跳转到目标(间接跳转)</td>
+</tr>
+<tr>
+<td>jg, jge, jl, jle, jne, …</td>
+<td>&gt;, &gt;=, &lt;, &lt;=, !=, …</td>
+</tr>
+<tr>
+<td>算术与逻辑</td>
+<td></td>
+</tr>
+<tr>
+<td>inc dest</td>
+<td>dest+=1</td>
+</tr>
+<tr>
+<td>dec dest</td>
+<td>dest-=1</td>
+</tr>
+<tr>
+<td>neg dest</td>
+<td>dest取负</td>
+</tr>
+<tr>
+<td>not dest</td>
+<td>dest取反</td>
+</tr>
+<tr>
+<td>add src, dest</td>
+<td>dest加上src</td>
+</tr>
+<tr>
+<td>sub src, dest</td>
+<td>dest减去src</td>
+</tr>
+<tr>
+<td>imul src, dest</td>
+<td>dest 乘以src</td>
+</tr>
+<tr>
+<td>idiv divisor</td>
+<td>rdx:rax除以divisor, 将商存在rax 余数存储在rdx</td>
+</tr>
+<tr>
+<td>shr cl, reg</td>
+<td>reg右移cl位</td>
+</tr>
+<tr>
+<td>shl cl, reg</td>
+<td>reg左移cl位</td>
+</tr>
+<tr>
+<td>ror src, dest</td>
+<td>dest逐src 位向左或向右旋转。</td>
+</tr>
+<tr>
+<td>cmp src, dest</td>
+<td>执行sub操作但只设置标志寄存器而不存储结果</td>
+</tr>
+<tr>
+<td>test src, dest</td>
+<td>执行and操作只设置标志寄存器而不存储结果,其中是否为0的判断一般类似 <code>test rax,rax</code></td>
+</tr>
+<tr>
+<td>and src, dest</td>
+<td>执行按位的与操作并保存到dest</td>
+</tr>
+<tr>
+<td>xor src, dest</td>
+<td>执行按位的异或操作并保存到dest</td>
+</tr>
+</tbody></table>
+<h4><span id="0042-操作数格式与寻址">0.0.4.2. 操作数格式与寻址</span></h4><p>M[xx]表示在存储器中xx地址的值<br>R[xx]表示寄存器xx的值<br>这种表示方法将寄存器 内存都看出一个大数组的形式    </p>
+<table>
+<thead>
+<tr>
+<th>格式</th>
+<th>操作数值</th>
+<th>名称</th>
+<th>样例(GAS = C语言)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>%reg</td>
+<td></td>
+<td></td>
+<td>寄存器名字前都加 %</td>
+</tr>
+<tr>
+<td>$Imm</td>
+<td>Imm</td>
+<td>立即数寻址</td>
+<td>$1 = 1</td>
+</tr>
+<tr>
+<td>Ea</td>
+<td>R[Ea]</td>
+<td>寄存器寻址</td>
+<td>%eax = eax</td>
+</tr>
+<tr>
+<td>Imm</td>
+<td>M[Imm]</td>
+<td>绝对寻址</td>
+<td>0x104 = *0x104</td>
+</tr>
+<tr>
+<td>(Ea)</td>
+<td>M[R[Ea]]</td>
+<td>间接寻址</td>
+<td>(%eax)= *eax</td>
+</tr>
+<tr>
+<td>Imm(Ea)</td>
+<td>M[Imm+R[Ea]]</td>
+<td>(基址+偏移量)寻址</td>
+<td>4(%eax) = *(4+eax)</td>
+</tr>
+<tr>
+<td>(Ea,Eb)</td>
+<td>M[R[Ea]+R[Eb]]</td>
+<td>变址</td>
+<td>(%eax,%ebx) = *(eax+ebx)</td>
+</tr>
+<tr>
+<td>Imm(Ea,Eb)</td>
+<td>M[Imm+R[Ea]+R[Eb]]</td>
+<td>寻址</td>
+<td>9(%eax,%ebx)= *(9+eax+ebx)</td>
+</tr>
+<tr>
+<td>(,Ea,s)</td>
+<td>M[R[Ea]*s]</td>
+<td>伸缩化变址寻址</td>
+<td>(,%eax,4)= <em>(eax</em>4)</td>
+</tr>
+<tr>
+<td>Imm(,Ea,s)</td>
+<td>M[Imm+R[Ea]*s]</td>
+<td>伸缩化变址寻址</td>
+<td>0xfc(,%eax,4)= <em>(0xfc+eax</em>4)</td>
+</tr>
+<tr>
+<td>(Ea,Eb,s)</td>
+<td>M(R[Ea]+R[Eb]*s)</td>
+<td>伸缩化变址寻址</td>
+<td>(%eax,%ebx,4) = <em>(eax+ebx</em>4)</td>
+</tr>
+<tr>
+<td>Imm(Ea,Eb,s)</td>
+<td>M(Imm+R[Ea]+R[Eb]*s)</td>
+<td>伸缩化变址寻址</td>
+<td>8(%eax,%ebx,4) = <em>(8+eax+ebx</em>4)</td>
+</tr>
+</tbody></table>
+<h5><span id="00421-内存操作数">0.0.4.2.1. 内存操作数</span></h5><p>操作数语法:    </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">segment:displacement(base register, index register, scale factor)</span><br></pre></td></tr></table></figure>
+<p>等效intel语法   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">segment:[base register + displacement + index register * scale factor]</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>如果segment未指定，则几乎总是假定为ds，除非base register为esp或ebp；否则为。在这种情况下，假定地址是相对于ss  </p>
+</blockquote>
+<blockquote>
+<p>If segment is not specified, as almost always, it is assumed to be ds, unless base register is esp or ebp; in this case, the address is assumed to be relative to ss<br>快速参考  </p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>movq %rax, %rbx</td>
+<td>rbx = rax</td>
+</tr>
+<tr>
+<td>movq $123, %rax</td>
+<td>rax = 123</td>
+</tr>
+<tr>
+<td>movq %rsi, -16（%rbp）</td>
+<td>mem [rbp-16] = rsi</td>
+</tr>
+<tr>
+<td>subq $10, %rbp</td>
+<td>rbp = rbp -10</td>
+</tr>
+<tr>
+<td>cmpl %eax %ebx</td>
+<td>比较然后设置标志。如果eax == ebx, 则设置零标志。</td>
+</tr>
+<tr>
+<td>leal (%ebx),  %eax</td>
+<td>movl %ebx,  %eax</td>
+</tr>
+</tbody></table>
+<h5><span id="00422-寻址模式">0.0.4.2.2. 寻址模式</span></h5><blockquote>
+<p>References to both code and data on x64 are done with instruction-relative (RIP-relative in x64 parlance) addressing modes. The offset from RIP in these instructions is limited to 32 bits.<br>X64体系下的寻址是建立在相对寻址(RIP-RELATIVE)之上的, RIP的偏移大小最大为32bits  </p>
+</blockquote>
+<p><a href="https://eli.thegreenplace.net/2012/01/03/understanding-the-x64-code-models" target="_blank" rel="noopener">x64 code mode</a>    </p>
+<blockquote>
+<p>Default operand size in 64-bit mode is still 32-bit and 64-bit immediates are allowed only with mov instruction.<br>movabs is just AT&amp;T syntax for a mov with a 64-bit immediate operand.<br>只有mov操作可以填写8字节的立即数  movabs是AT&amp;T语法中mov的(别名)    </p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>同义名</th>
+<th>跳转条件</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>jmp</td>
+<td>Label</td>
+<td>1</td>
+<td>直接跳转</td>
+</tr>
+<tr>
+<td>jmp</td>
+<td>*Operand</td>
+<td>1</td>
+<td>间接跳转</td>
+</tr>
+</tbody></table>
+<p>绝对寻址/直接寻址(Absolute or direct):  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jump    address</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>(有效PC地址=address)<br>Effective PC address = address  </p>
+</blockquote>
+<p>相对寻址(PC-relative):  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jump    offset</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>(有效PC地址=rip+offset = 下一个指令的地址 + offset)<br>Effective PC address = next instruction address + offset, offset may be negative  </p>
+</blockquote>
+<p>快速分析:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">00000000000007e0 &lt;.plt&gt;:</span><br><span class="line"> 7e0:   ff 35 22 08 20 00       pushq  0x200822(%rip)        # 201008 &lt;_GLOBAL_OFFSET_TABLE_+0x8&gt;</span><br><span class="line"> 7e6:   ff 25 24 08 20 00       jmpq   *0x200824(%rip)        # 201010 &lt;_GLOBAL_OFFSET_TABLE_+0x10&gt;</span><br><span class="line"> 7ec:   0f 1f 40 00             nopl   0x0(%rax)</span><br><span class="line">0000000000000810 &lt;_Z12so_func_baseii@plt&gt;:</span><br><span class="line"> 810:   ff 25 12 08 20 00       jmpq   *0x200812(%rip)        # 201028 &lt;_Z12so_func_baseii&gt;</span><br><span class="line"> 816:   68 02 00 00 00          pushq  $0x2</span><br><span class="line"> 81b:   e9 c0 ff ff ff          jmpq   7e0 &lt;.plt&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><code>jmpq   7e0</code>  跳转到 CS:7e0 这个位置  </p>
+<blockquote>
+<p>实际上二进制的内容仍然是相对寻址(81b+5 + -40) ==  7e0  等同 jumpq * -0x40(%rip) 但省了一个字节的指令   </p>
+</blockquote>
+</li>
+<li><p><code>jmpq   *0x200812(%rip)</code>  跳转到 816 + 0x200812 这个位置 (rip是一个指针 需要解引用获得目标地址)   </p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a84:   74 20                   je     aa6 &lt;__libc_csu_init+0x56&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>这里跳转指令则只用了两个字节  </li>
+</ul>
+<h5><span id="00423-large-code-mode">0.0.4.2.3. large code mode:</span></h5><blockquote>
+<p>In the small code model all addresses (including GOT entries) are accessible via the IP-relative addressing provided by the AMD64 architecture. Hence there is no need for an explicit GOT pointer and therefore no function prologue for setting it up is necessary. In the medium and large code models a register has to be allocated to hold the address of the GOT in position-independent objects, because the AMD64 ISA does not support an immediate displacement larger than 32 bits.<br>在一个小型代码模型中, 所有的地址(包括GOT入口地址) 都是可以通过IP-RELATIVE访问到.  因此不需要显示声明额外的GOT指针 也不需要设置函数的开始语.  但在一个中型或者大型代码模型中, 必须分配一个寄存器去持有位置无关对象在GOT的地址  (AMD64不支持大于32位的立即跳转)  </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++-6 -O0 so.so main.cpp lib.cpp -pie -fPIE  -mcmodel&#x3D;large</span><br></pre></td></tr></table></figure>
+
+<p> 举例一个通过.GOT表访问的全局变量代码如下:<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">a40:   48 8d 1d f9 ff ff ff    lea    -0x7(%rip),%rbx        # a40 &lt;main+0xb&gt;</span><br><span class="line">a47:   49 bb c0 05 20 00 00    movabs $0x2005c0,%r11</span><br><span class="line">a4e:   00 00 00 </span><br><span class="line">a51:   4c 01 db                add    %r11,%rbx</span><br><span class="line">a54:   89 7d dc                mov    %edi,-0x24(%rbp)</span><br><span class="line">a57:   48 89 75 d0             mov    %rsi,-0x30(%rbp)</span><br><span class="line">a5b:   c7 45 ec 00 00 00 00    movl   $0x0,-0x14(%rbp)</span><br><span class="line">a62:   48 b8 d0 ff ff ff ff    movabs $0xffffffffffffffd0,%rax</span><br><span class="line">a69:   ff ff ff </span><br><span class="line">a6c:   48 8b 04 03             mov    (%rbx,%rax,1),%rax</span><br><span class="line">a70:   c7 00 e8 03 00 00       movl   $0x3e8,(%rax)</span><br></pre></td></tr></table></figure></p>
+<p>a4e为8字节的操作数剩余部分</p>
+<p>a40行取得当前行的地址<br>a51行通过偏移量获得.got表的end 地址 =  a40 + 0x2005c0 =   201000   =.plt.got   (.got表在本测试中大小是0x40)<br>a6c行把RBX + 0xffffffffffffffd0 (= -0x30) 得到GOT表中存放全局变量的地址 <code>*(.plt.got -0x30) = got[g_static_so_data]</code><br>a70赋值立即数0x3e8 给全局变量 <code>g_static_so_data = *(got[g_static_so_data])</code>  </p>
+<p>节点偏移和大小如下    </p>
+<table>
+<thead>
+<tr>
+<th>[号]</th>
+<th>名称</th>
+<th>类型</th>
+<th>地址</th>
+<th>偏移量</th>
+<th>大小</th>
+<th>全体大小</th>
+<th>旗标</th>
+<th>链接</th>
+<th>信息</th>
+<th>对齐</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>[23]</td>
+<td>.got</td>
+<td>PROGBITS</td>
+<td>00200fc0</td>
+<td>000fc0</td>
+<td>00040</td>
+<td>0008</td>
+<td>WA</td>
+<td>0</td>
+<td>0</td>
+<td>8</td>
+</tr>
+<tr>
+<td>[24]</td>
+<td>.got.plt</td>
+<td>PROGBITS</td>
+<td>00201000</td>
+<td>001000</td>
+<td>00030</td>
+<td>0008</td>
+<td>WA</td>
+<td>0</td>
+<td>0</td>
+<td>8</td>
+</tr>
+<tr>
+<td>[25]</td>
+<td>.data</td>
+<td>PROGBITS</td>
+<td>00201030</td>
+<td>001030</td>
+<td>00014</td>
+<td>0000</td>
+<td>WA</td>
+<td>0</td>
+<td>0</td>
+<td>8</td>
+</tr>
+<tr>
+<td>[26]</td>
+<td>.bss</td>
+<td>NOBITS</td>
+<td>00201044</td>
+<td>001044</td>
+<td>0000c</td>
+<td>0000</td>
+<td>WA</td>
+<td>0</td>
+<td>0</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<p>程序声明如下:   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">extern int g_static_so_bss;</span><br><span class="line">extern int g_static_so_data;</span><br><span class="line">extern int errno;</span><br></pre></td></tr></table></figure>
+<p>当前汇编访问的是:g_static_so_data<br>.dyn global data如下  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">000000200fc0  000100000006 R_X86_64_GLOB_DAT 0000000000000000 __cxa_finalize@GLIBC_2.2.5 + 0</span><br><span class="line">000000200fc8  000300000006 R_X86_64_GLOB_DAT 0000000000000000 _Jv_RegisterClasses + 0</span><br><span class="line">000000200fd0  000400000006 R_X86_64_GLOB_DAT 0000000000000000 g_static_so_data + 0</span><br><span class="line">000000200fd8  000500000006 R_X86_64_GLOB_DAT 0000000000000000 g_static_so_bss + 0</span><br><span class="line">000000200fe0  000800000006 R_X86_64_GLOB_DAT 0000000000000000 _ITM_deregisterTMClone + 0</span><br><span class="line">000000200fe8  000900000006 R_X86_64_GLOB_DAT 0000000000000000 __libc_start_main@GLIBC_2.2.5 + 0</span><br><span class="line">000000200ff0  000a00000006 R_X86_64_GLOB_DAT 0000000000000000 __gmon_start__ + 0</span><br><span class="line">000000200ff8  000b00000006 R_X86_64_GLOB_DAT 0000000000000000 _ITM_registerTMCloneTa + 0</span><br></pre></td></tr></table></figure>
+
+<h5><span id="00424-共享库中对g_static_so_data的访问">0.0.4.2.4. 共享库中对g_static_so_data的访问</span></h5><p>如果代码模型为大型 则和可执行程序中的代码段一致 如果是small或者median 共享库仍然会对全局变量走GOT表<br>汇编如下:    </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">894:   48 8b 05 45 07 20 00    mov    0x200745(%rip),%rax        # 200fe0 &lt;g_static_so_bss@@Base-0x60&gt;</span><br><span class="line">89b:   48 8b 00                mov    (%rax),%rax</span><br><span class="line">89e:   01 c2                   add    %eax,%edx</span><br></pre></td></tr></table></figure>
+<p>894: 取GOT中存储 g_static_so_bss 的项地址 并把内容(g_static_so_bss的地址)存放到%rax中<br>89b: 取 g_static_so_bss 的内容<br>89e: 加到%edx上  </p>
+<h5><span id="00425-small-code-mode">0.0.4.2.5. small code mode:</span></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++-6 -O0 so.so main.cpp lib.cpp -pie -fPIE  -mcmodel&#x3D;small</span><br></pre></td></tr></table></figure>
+
+<p>假设了全局变量的存储位置在低端内存, 因此该全局变量直接定义在主程序的data段, 在so文件中仍然通过.got找到真实地址.<br>其类型R_X86_64_COPY<br>在主程序的汇编代码只有一行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">9f0:   c7 05 4e 06 20 00 e8    movl   $0x3e8,0x20064e(%rip)        # 201048 &lt;g_static_so_data&gt;</span><br></pre></td></tr></table></figure>
+<p>.dyn global</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">偏移量          信息           类型           符号值        符号名称 + 加数</span><br><span class="line">000000201048  001200000005 R_X86_64_COPY     0000000000201048 g_static_so_data + 0</span><br><span class="line">000000201050  001000000005 R_X86_64_COPY     0000000000201050 g_static_so_bss + 0</span><br></pre></td></tr></table></figure>
+
+<p>.dyn so </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">000000200fd8  001300000006 R_X86_64_GLOB_DAT 0000000000201030 g_static_so_data + 0</span><br><span class="line">000000200fe0  001000000006 R_X86_64_GLOB_DAT 0000000000201040 g_static_so_bss + 0</span><br></pre></td></tr></table></figure>
+
+<p>.symver指令</p>
+<blockquote>
+<p>g_static_so_data@@Base-0x58  的意思是: g_static_so_data的符号值-0x58 也就是g_static_so_data的偏移量  </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0000000000201030 - 000000200fd8 &#x3D; 0x58</span><br></pre></td></tr></table></figure>
+
+
+<h5><span id="00426-备注说明">0.0.4.2.6. 备注说明</span></h5><p>共享库中 无论是large还是small, 都会走so的got表, 区别在于会不会使用movabs进行64位的偏移计算<br>got表的位置可能紧接着.text并且设置为只读<br><a href="https://systemoverlord.com/2017/03/19/got-and-plt-for-pwning.html" target="_blank" rel="noopener">RELRO</a>   </p>
+<p>通过got表访问全局变量:  </p>
+<ol>
+<li>通过RIP-R找到GOT表的位置.   相对于.text固定的偏移量 (large不假定大小)     </li>
+<li>通过项索引偏移找到存储该变量地址的地址并解引用得到 变量地址  <ol>
+<li>(large不假定大小, medium会区分把&lt;64k的数据链接到低内存中 多个数据段.ldata(largedata))  </li>
+</ol>
+</li>
+<li>解引用并使用  </li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mov  (%rbx,%rax,1),%rax</span><br></pre></td></tr></table></figure>
+<p>这行代码可以优化为一个立即数偏移寻址  即</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mov    0x200745(%rip),%rax</span><br></pre></td></tr></table></figure>
+
+<p>当前代码段到GOT表的偏移</p>
+<p>但是在large模型中 </p>
+<p>通过rip寻址的指令中 偏移量不是64位的  因此需要先算一个小的偏移量 再通过支持64bit的 movabs(mov) 添加上一个64bit的偏移</p>
+<h5><span id="00427-relro-relocation-read-only">0.0.4.2.7. RELRO  Relocation Read Only</span></h5><p>重定位只读技术<br>动态链接器在处理完GOT表后将其设为只读以提高安全性.  </p>
+<p>本文测试环境中只读. (实际上这是一个可以成为较为古老的技术了)  </p>
+<blockquote>
+<p>Linux version 4.9.0-4-amd64 (<a href="mailto:debian-kernel@lists.debian.org">debian-kernel@lists.debian.org</a>)<br>(gcc version 6.3.0 20170516 (Debian 6.3.0-18) )<br>#1 SMP Debian 4.9.65-3+deb9u1 (2017-12-23)<br>.zsummer  </p>
+</blockquote>
+<p>GOT表为R  只读段.<br>.got.plt存储plt的got仍然是读写段 (惰性加载机制决定, 可以选择非惰性+ro来完成全只读化)  </p>
+<h3><span id="005-调用惯例calling-conventions">0.0.5. 调用惯例Calling Conventions</span></h3><p>计算机中Corotine分两种 Coroutine和Subroutine 前者对应协程 后者对应函数  </p>
+<ul>
+<li>call a routine (trasfer control to procedure)  跳转到目标routine  </li>
+<li>pass arguments  传递参数  <ul>
+<li>fixed length</li>
+<li>variable length</li>
+<li>recursively  </li>
+</ul>
+</li>
+<li>return to the caller  返回调用者地址  <ul>
+<li>putting results in a place where caller an find them  </li>
+</ul>
+</li>
+<li>manage register  管理寄存器 </li>
+</ul>
+<h5><span id="00508-参数压栈顺序">0.0.5.0.8. 参数压栈顺序</span></h5><p>标准的linux ABI调用约定中<br><a href="">System V Application Binary Interface—AMD64 Architecture Processor Supplement</a>   </p>
+<h6><span id="005081-caller-save和callee-save">0.0.5.0.8.1. Caller Save和Callee Save</span></h6><p>当产生函数调用时 子函数内通常也会使用到通用寄存器 那么这些寄存器中之前保存的调用者(父函数)的值就会被覆盖<br>为了避免数据覆盖而导致从子函数返回时寄存器中的数据不可恢复 CPU 体系结构中就规定了通用寄存器的保存方式   </p>
+<ul>
+<li><p>Casller Save ‘调用者保存’ 在发起一个调用前需要保存(子例程直接覆盖使用) </p>
+<ul>
+<li>在进入子函数调用前, 调用者需要保存这些寄存器的值.   <ul>
+<li>一般做法是进入子函数调用前把这些寄存器压入栈中    </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Callee Save ‘被调用者保存’ (子例程使用前需要先保存)   </p>
+<ul>
+<li>在进入子函数调用后, 在使用这些寄存器前, 被调用者会保存这些寄存器的内容,并在使用后恢复  </li>
+<li>这种比较特殊也比较麻烦, 因为一旦接受这个设定, 那么所有subroutine都要进行合适的push并保证pop恢复.     </li>
+<li></li>
+</ul>
+</li>
+<li><p>cross</p>
+</li>
+</ul>
+<h3><span id="006-工具">0.0.6. 工具</span></h3><ul>
+<li>objdump -S 查看汇编指令  </li>
+<li>gdb  <ul>
+<li>gdb 通过<code>layout regs</code>打开寄存器显示, 通过<code>set disassemble-next-line on</code>打开汇编  </li>
+<li>gdb 通过peda插件字节显示汇编和寄存器  和上面的原生方式选择一个即可, peda默认显示是intex语法    </li>
+<li>disas反汇编命令,直接disas是反汇编当前函数<ul>
+<li>disas /r (显示汇编指令对应十六进制值)   </li>
+<li>disas /m (如果有源码,显示对应行源码)   </li>
+</ul>
+</li>
+<li>intel语法<ul>
+<li>set disassembly-flavor intel</li>
+<li>set disassembly-flavor att</li>
+</ul>
+</li>
+<li>gdb关闭ASLR：<ul>
+<li>set disable-randomization on</li>
+</ul>
+</li>
+<li>开启ASLR：<ul>
+<li>set disable-randomization off</li>
+</ul>
+</li>
+<li>查看ASLR状态：<ul>
+<li>show disable-randomization</li>
+</ul>
+</li>
+<li>查看二进制  <ul>
+<li><code>x /1ag addr</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4><span id="0061-peda插件">0.0.6.1. PEDA插件</span></h4><p>peda默认设置的是intel的语法风格</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;longld&#x2F;peda.git ~&#x2F;peda</span><br><span class="line">echo &quot;source ~&#x2F;peda&#x2F;peda.py&quot; &gt;&gt; ~&#x2F;.gdbinit</span><br><span class="line">echo &quot;DONE! debug your program with gdb and enjoy&quot;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>aslr – Show/set ASLR setting of GDB</li>
+<li>checksec – Check for various security options of binary</li>
+<li>dumpargs – Display arguments passed to a function when stopped at a call instruction</li>
+<li>dumprop – Dump all ROP gadgets in specific memory range</li>
+<li>elfheader – Get headers information from debugged ELF file</li>
+<li>elfsymbol – Get non-debugging symbol information from an ELF file</li>
+<li>lookup – Search for all addresses/references to addresses which belong to a memory range</li>
+<li>patch – Patch memory start at an address with string/hexstring/int</li>
+<li>pattern – Generate, search, or write a cyclic pattern to memory</li>
+<li>procinfo – Display various info from /proc/pid/</li>
+<li>pshow – Show various PEDA options and other settings</li>
+<li>pset – Set various PEDA options and other settings</li>
+<li>readelf – Get headers information from an ELF file</li>
+<li>ropgadget – Get common ROP gadgets of binary or library</li>
+<li>ropsearch – Search for ROP gadgets in memory</li>
+<li>searchmem|find – Search for a pattern in memory; support regex search</li>
+<li>shellcode – Generate or download common shellcodes.</li>
+<li>skeleton – Generate python exploit code template</li>
+<li>vmmap – Get virtual mapping address ranges of section(s) in debugged process</li>
+<li>xormem – XOR a memory region with a key</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/29/2019-12-06-is-a-and-has-a/" rel="next" title="AS-A 和 HAS-A 概念">
+                <i class="fa fa-chevron-left"></i> AS-A 和 HAS-A 概念
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/12/16/2019-12-16-elf-link/" rel="prev" title="ELF静态链接过程和动态链接过程中的GOT表的作用">
+                ELF静态链接过程和动态链接过程中的GOT表的作用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="夏天" />
+          <p class="site-author-name" itemprop="name">夏天</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">categories</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">0.0.1. 目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">0.0.2. 基础语法格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">3.</span> <span class="nav-text">0.0.3. 常见寄存器以及作用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">3.1.</span> <span class="nav-text">0.0.3.1. 通用寄存器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">3.1.1.</span> <span class="nav-text">0.0.3.1.1. 寄存器使用惯例 原文</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">3.1.2.</span> <span class="nav-text">0.0.3.1.2. 中文对照</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">3.2.</span> <span class="nav-text">0.0.3.2. 专用寄存器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">3.2.1.</span> <span class="nav-text">0.0.3.2.1. 标志寄存器 RFLAGS</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">3.2.2.</span> <span class="nav-text">0.0.3.2.2. 程序计数器(PC)(Relative Instruction-Pointer)(IP)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">3.2.3.</span> <span class="nav-text">0.0.3.2.3. 指令寄存器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">4.</span> <span class="nav-text">0.0.4. 汇编语法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.1.</span> <span class="nav-text">0.0.4.1. 汇编指令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.2.</span> <span class="nav-text">0.0.4.2. 操作数格式与寻址</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">4.2.1.</span> <span class="nav-text">0.0.4.2.1. 内存操作数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">4.2.2.</span> <span class="nav-text">0.0.4.2.2. 寻址模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">4.2.3.</span> <span class="nav-text">0.0.4.2.3. large code mode:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">4.2.4.</span> <span class="nav-text">0.0.4.2.4. 共享库中对g_static_so_data的访问</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">4.2.5.</span> <span class="nav-text">0.0.4.2.5. small code mode:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">4.2.6.</span> <span class="nav-text">0.0.4.2.6. 备注说明</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">4.2.7.</span> <span class="nav-text">0.0.4.2.7. RELRO  Relocation Read Only</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">5.</span> <span class="nav-text">0.0.5. 调用惯例Calling Conventions</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">5.0.1.</span> <span class="nav-text">0.0.5.0.8. 参数压栈顺序</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#"><span class="nav-number">5.0.1.1.</span> <span class="nav-text">0.0.5.0.8.1. Caller Save和Callee Save</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">6.</span> <span class="nav-text">0.0.6. 工具</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">6.1.</span> <span class="nav-text">0.0.6.1. PEDA插件</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">夏天</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+    NexT.Gemini
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="..1. 目录    ..1. 目录 ELF HASH- [使用elf hash获取符号所在的偏移地址](#使用elf-hash获取符号所在的偏移地址) - [结论](#结论) ELF HASH源码    ELF HASHELF的哈希表提供了对符号表的访问组织结构如下:         labels    nbucket   nchain   bucket[0]   …   bucket[nbuc">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ELF的hash算法">
+<meta property="og:url" content="https://zsummer.github.io/2019/11/23/2019-11-23-elf-hash/index.html">
+<meta property="og:site_name" content="关于夏天的一切">
+<meta property="og:description" content="..1. 目录    ..1. 目录 ELF HASH- [使用elf hash获取符号所在的偏移地址](#使用elf-hash获取符号所在的偏移地址) - [结论](#结论) ELF HASH源码    ELF HASHELF的哈希表提供了对符号表的访问组织结构如下:         labels    nbucket   nchain   bucket[0]   …   bucket[nbuc">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-11-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2019-11-25T08:49:18.952Z">
+<meta property="article:author" content="夏天">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zsummer.github.io/2019/11/23/2019-11-23-elf-hash/"/>
+
+
+
+
+
+  <title>ELF的hash算法 | 关于夏天的一切</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">关于夏天的一切</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我总觉得对你的爱很美</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/23/2019-11-23-elf-hash/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ELF的hash算法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-23T00:00:00+08:00">
+                2019-11-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3><span id="1-目录">..1. 目录</span></h3><hr>
+<!-- TOC -->
+
+<ul>
+<li><a href="#1-目录">..1. 目录</a></li>
+<li><a href="#elf-hash">ELF HASH</a><pre><code>- [使用elf hash获取符号所在的偏移地址](#使用elf-hash获取符号所在的偏移地址)
+- [结论](#结论)</code></pre></li>
+<li><a href="#elf-hash源码">ELF HASH源码</a></li>
+</ul>
+<!-- /TOC -->
+
+<h3><span id="elf-hash">ELF HASH</span></h3><p>ELF的哈希表提供了对符号表的访问<br>组织结构如下:     </p>
+<table>
+<thead>
+<tr>
+<th>labels</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>nbucket</td>
+</tr>
+<tr>
+<td>nchain</td>
+</tr>
+<tr>
+<td>bucket[0]</td>
+</tr>
+<tr>
+<td>…</td>
+</tr>
+<tr>
+<td>bucket[nbucket-1]</td>
+</tr>
+<tr>
+<td>chain[0]</td>
+</tr>
+<tr>
+<td>…</td>
+</tr>
+<tr>
+<td>chain[nchain-1]</td>
+</tr>
+</tbody></table>
+<h6><span id="说明">说明</span></h6><ul>
+<li>bucket和chain的数量是相等的  </li>
+<li>每个符号值对应一个字符串  </li>
+<li>基本查找流程 <ul>
+<li>使用elf_hash得到hash值   </li>
+<li>对hash值取模计算存放的符号值的桶  </li>
+<li>如果该桶内没有数据则结束</li>
+<li>如果桶内内有数据不匹配   <ul>
+<li>以该符号值为下标的 chain 中存在下一个符号值 </li>
+<li>重复该步骤直到找到和目标字符串匹配   </li>
+</ul>
+</li>
+<li>找到符号值对应的字符串以及符号加载时的偏移信息和符号地址信息   </li>
+</ul>
+</li>
+</ul>
+<h6><span id="结论">结论</span></h6><ul>
+<li>chain 的数量必然大于符号的数量  </li>
+<li>不考虑性能, 桶的数量可以小于符号的数量 也可以同时小于chain的数量   </li>
+<li>遇到冲突后从 chain 表中查找以出现冲突的符号值为下标位置的chain, 如果该chain无内容则从符号表中查找匹配的符号的值填充该chain  <ul>
+<li>如果有内容并且符号值依然冲突, 则用该冲突的符号值为索引继续查找下一个 </li>
+<li>最差情况则相当于直接遍历符号表   </li>
+</ul>
+</li>
+</ul>
+<a id="more"></a>
+
+<h3><span id="elf-hash源码">ELF HASH源码</span></h3><p>linux 2.4.0 -&gt; irqueue.c<br><a href="https://www.unix.com/man-page/osx/3ELF/elf_hash/" target="_blank" rel="noopener">linux main</a>  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;*</span><br><span class="line"> *    This function hash the input string &#39;&#39;name&#39;&#39; using the ELF hash</span><br><span class="line"> *    function for strings.</span><br><span class="line"> *&#x2F;</span><br><span class="line">static unsigned int hash(char* name)</span><br><span class="line">&#123;</span><br><span class="line">    unsigned int h &#x3D; 0;</span><br><span class="line">    unsigned int g;</span><br><span class="line"></span><br><span class="line">    while(*name) &#123;</span><br><span class="line">        h &#x3D; (h&lt;&lt;4) + *name++;</span><br><span class="line">        if ((g &#x3D; (h &amp; 0xf0000000)))</span><br><span class="line">            h ^&#x3D;g&gt;&gt;24;</span><br><span class="line">        h &amp;&#x3D;~g;</span><br><span class="line">    &#125;</span><br><span class="line">    return h;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p><a href="https://elixir.bootlin.com/linux/v3.16/source/Documentation/vDSO/parse_vdso.c#L222" target="_blank" rel="noopener">vDSO/parse_vdso.c</a><br>使用elf hash获取符号所在的偏移地址   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">void *vdso_sym(const char *version, const char *name)</span><br><span class="line">&#123;</span><br><span class="line">	unsigned long ver_hash;</span><br><span class="line">	if (!vdso_info.valid)</span><br><span class="line">		return 0;</span><br><span class="line"></span><br><span class="line">	ver_hash &#x3D; elf_hash(version);</span><br><span class="line">	ELF(Word) chain &#x3D; vdso_info.bucket[elf_hash(name) % vdso_info.nbucket];</span><br><span class="line"></span><br><span class="line">	for (; chain !&#x3D; STN_UNDEF; chain &#x3D; vdso_info.chain[chain]) &#123;</span><br><span class="line">		ELF(Sym) *sym &#x3D; &amp;vdso_info.symtab[chain];</span><br><span class="line"></span><br><span class="line">		&#x2F;* Check for a defined global or weak function w&#x2F; right name. *&#x2F;</span><br><span class="line">		if (ELF64_ST_TYPE(sym-&gt;st_info) !&#x3D; STT_FUNC)</span><br><span class="line">			continue;</span><br><span class="line">		if (ELF64_ST_BIND(sym-&gt;st_info) !&#x3D; STB_GLOBAL &amp;&amp;</span><br><span class="line">		    ELF64_ST_BIND(sym-&gt;st_info) !&#x3D; STB_WEAK)</span><br><span class="line">			continue;</span><br><span class="line">		if (sym-&gt;st_shndx &#x3D;&#x3D; SHN_UNDEF)</span><br><span class="line">			continue;</span><br><span class="line">		if (strcmp(name, vdso_info.symstrings + sym-&gt;st_name))</span><br><span class="line">			continue;</span><br><span class="line"></span><br><span class="line">		&#x2F;* Check symbol version. *&#x2F;</span><br><span class="line">		if (vdso_info.versym</span><br><span class="line">		    &amp;&amp; !vdso_match_version(vdso_info.versym[chain],</span><br><span class="line">					   version, ver_hash))</span><br><span class="line">			continue;</span><br><span class="line"></span><br><span class="line">		return (void *)(vdso_info.load_offset + sym-&gt;st_value);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/09/2019-11-12-elf-section-symbol/" rel="next" title="ELF文件的SECTIO分析">
+                <i class="fa fa-chevron-left"></i> ELF文件的SECTIO分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/11/28/2019-11-28-pie-pic-linker-option/" rel="prev" title="位置无关代码生成(重定位)选项和说明 GCC">
+                位置无关代码生成(重定位)选项和说明 GCC <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="夏天" />
+          <p class="site-author-name" itemprop="name">夏天</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">categories</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">..1. 目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">ELF HASH</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#"><span class="nav-number">2.0.0.1.</span> <span class="nav-text">说明</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#"><span class="nav-number">2.0.0.2.</span> <span class="nav-text">结论</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">3.</span> <span class="nav-text">ELF HASH源码</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">夏天</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+    NexT.Gemini
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

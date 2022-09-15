@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="走廊空间: DetourPathCorridor.h :   class dtPathCorridor;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="detour_crowd-path_corridor">
+<meta property="og:url" content="https://zsummer.github.io/2022/03/07/2022-03-07-detour_crowd-path_corridor/index.html">
+<meta property="og:site_name" content="关于夏天的一切">
+<meta property="og:description" content="走廊空间: DetourPathCorridor.h :   class dtPathCorridor;">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-03-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-09-15T18:35:07.188Z">
+<meta property="article:author" content="夏天">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zsummer.github.io/2022/03/07/2022-03-07-detour_crowd-path_corridor/"/>
+
+
+
+
+
+  <title>detour_crowd-path_corridor | 关于夏天的一切</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">关于夏天的一切</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我总觉得对你的爱很美</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2022/03/07/2022-03-07-detour_crowd-path_corridor/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">detour_crowd-path_corridor</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2022-03-07T00:00:00+08:00">
+                2022-03-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2><span id="走廊空间-detourpathcorridorh-class-dtpathcorridor">走廊空间: DetourPathCorridor.h :   class dtPathCorridor;</span></h2><a id="more"></a>
+
+<h3><span id="基本术语参考">基本术语参考</span></h3><ul>
+<li>vertex: 多边形顶点</li>
+<li>Corridor : 多边形组成的连通区域 : 走廊,  对于更上层的pathfinding而言, poly被被抽象为点与点的连通关系. 这里展开后则为走廊.    </li>
+<li>poly: 多边形: 一个多边形包含基础的顶点信息和link信息和基础类型数据等.     </li>
+<li>Surface:  表面(行走面), 概念上为行走面, 在这里的实现则为poly组成的mesh表面   </li>
+<li>mesh: 网, 概念上指的是指的由poly组成行走面的数据结构方式, 即mesh;  连通图.   </li>
+<li>Corners: 挂点, 概念上是指的corridor走廊中的边上的顶点  通常为墙角(pathfinding近似最优解, 也是期望, 但未必总是 例如tile带来的边界)   </li>
+<li>moveAlongSurface: 约束在行走面上的位置移动处理  </li>
+<li>neis,eighbour: 邻居, 避让中的邻居为agent; corridor中的邻居则是poly  </li>
+<li>node: 一般为脚手架, 即用于临时性的list的节点.  navigation的实现封装层次较低, 不同结构中的node意义不同.   </li>
+<li>edge: 概念上的边, 是link最主要的类型之一, 第一个边一般是指的下标0的顶点连向下一个顶点的边, 这里要注意 link是一个分离实现的链表, 一个当前poly的边可能有多个link标记属于当前边   </li>
+<li>visited: 可认为是爬过(访问过)     </li>
+<li>Off-mesh connections: 概念上是连线, 实现是poly: 只有两个边两个顶点的poly, 可双向连通;  即第一个link指向第一个边(顶点0)且该link指向的poly不是出发点点poly的的时候为连出, 否则为连入.   处于off-mesh移动的agent无法进行避让处理(不做避让处理).     DT_OFFMESH_CON_BIDIR 标记为双向的offlink会同时添加在目标poly和源poly的link中.  而off-mesh poly本身没有双向还是单向的标记. 也不需要.   </li>
+</ul>
+<p>数据结构   </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">dtPathCorridor</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">float</span> m_pos[<span class="number">3</span>];  <span class="comment">//该坐标位于'm_path[0]'中   </span></span><br><span class="line">    <span class="keyword">float</span> m_target[<span class="number">3</span>]; <span class="comment">//目标点应位于'm_path[m_npath-1]'中  </span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//初始化时候一次性预分配好poly数组所需要的内存;     </span></span><br><span class="line">    dtPolyRef* m_path;  <span class="comment">//这里存储的是poly id数组组成的路径id   在这里概念上叫做corridor 即从起始点到目标点有效的走廊空间 </span></span><br><span class="line">    <span class="keyword">int</span> m_npath;</span><br><span class="line">    <span class="keyword">int</span> m_maxPath;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">/// The current corridor position is expected to be within the first polygon in the path. The target </span></span><br><span class="line"><span class="comment">/// is expected to be in the last polygon.</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line">@class dtPathCorridor</span><br><span class="line">@par</span><br><span class="line"></span><br><span class="line">The corridor is loaded with a path, usually obtained from a #dtNavMeshQuery::findPath() query. The corridor</span><br><span class="line">is then used to plan local movement, with the corridor automatically updating as needed to deal with inaccurate </span><br><span class="line">agent locomotion.</span><br><span class="line"></span><br><span class="line">Example of a common use case:</span><br><span class="line"></span><br><span class="line">-# Construct the corridor object and call #init() to allocate its path buffer.</span><br><span class="line">-# Obtain a path from a #dtNavMeshQuery object.</span><br><span class="line">-# Use #reset() to set the agent&#39;s current position. (At the beginning of the path.)</span><br><span class="line">-# Use #setCorridor() to load the path and target.</span><br><span class="line">-# Use #findCorners() to plan movement. (This handles dynamic path straightening.)</span><br><span class="line">-# Use #movePosition() to feed agent movement back into the corridor. (The corridor will automatically adjust as needed.)</span><br><span class="line">-# If the target is moving, use #moveTargetPosition() to update the end of the corridor. </span><br><span class="line">   (The corridor will automatically adjust as needed.)</span><br><span class="line">-# Repeat the previous 3 steps to continue to move the agent.</span><br><span class="line"></span><br><span class="line">The corridor position and target are always constrained to the navigation mesh.</span><br><span class="line"></span><br><span class="line">One of the difficulties in maintaining a path is that floating point errors, locomotion inaccuracies, and&#x2F;or local </span><br><span class="line">steering can result in the agent crossing the boundary of the path corridor, temporarily invalidating the path. </span><br><span class="line">This class uses local mesh queries to detect and update the corridor as needed to handle these types of issues. </span><br><span class="line"></span><br><span class="line">The fact that local mesh queries are used to move the position and target locations results in two beahviors that </span><br><span class="line">need to be considered:</span><br><span class="line"></span><br><span class="line">Every time a move function is used there is a chance that the path will become non-optimial. Basically, the further </span><br><span class="line">the target is moved from its original location, and the further the position is moved outside the original corridor, </span><br><span class="line">the more likely the path will become non-optimal. This issue can be addressed by periodically running the </span><br><span class="line">#optimizePathTopology() and #optimizePathVisibility() methods.</span><br><span class="line"></span><br><span class="line">All local mesh queries have distance limitations. (Review the #dtNavMeshQuery methods for details.) So the most accurate </span><br><span class="line">use case is to move the position and target in small increments. If a large increment is used, then the corridor </span><br><span class="line">may not be able to accurately find the new location.  Because of this limiation, if a position is moved in a large</span><br><span class="line">increment, then compare the desired and resulting polygon references. If the two do not match, then path replanning </span><br><span class="line">may be needed.  E.g. If you move the target, check #getLastPoly() to see if it is the expected polygon.</span><br><span class="line"></span><br><span class="line">*&#x2F;</span><br></pre></td></tr></table></figure>
+
+
+<p>dtPathCorridor简述:<br>通过pathfinding给出来的poly path, 在pathfinding看来是一系列连通的点, 但是解开成poly后,  则是一系列相邻的poly组成的走廊空间.<br>corridor则是在走廊空间中进行局部移动规划(pathfinding是高级路径规划), 包括如何从一个poly走向另外一个poly, 移动转向,  避让带来的局部更新等.    比喻的话, pathfinding相当于导航地图给出来的路线,   而corridor则是通过雷达&amp;摄像头等实时扫描绘制出来用于驾驶决策的现场交通环境.   </p>
+<h3><span id="dtpathcorridor">dtPathCorridor</span></h3><p>该函数设置新的路径和目标坐标点位置  但未处理起始点坐标.  </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// The current corridor position is expected to be within the first polygon in the path. The target </span></span><br><span class="line"><span class="comment">/// is expected to be in the last polygon. </span></span><br><span class="line"><span class="comment">/// @warning The size of the path must not exceed the size of corridor's path buffer set during #init().</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dtPathCorridor::setCorridor</span><span class="params">(<span class="keyword">const</span> <span class="keyword">float</span>* target, <span class="keyword">const</span> dtPolyRef* path, <span class="keyword">const</span> <span class="keyword">int</span> npath)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    dtVcopy(m_target, target);</span><br><span class="line">    <span class="built_in">memcpy</span>(m_path, path, <span class="keyword">sizeof</span>(dtPolyRef)*npath);</span><br><span class="line">    m_npath = npath;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3><span id="fixpathstart">fixPathStart</span></h3><p>修复起始点坐标,<br>这里将会覆盖路径点中的第一个和第二个.    但是如果当前路径个数为1或者2  则会保留最后一个<br>0的作用略过.  </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">dtPathCorridor::fixPathStart</span><span class="params">(dtPolyRef safeRef, <span class="keyword">const</span> <span class="keyword">float</span>* safePos)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    dtVcopy(m_pos, safePos);</span><br><span class="line">    <span class="keyword">if</span> (m_npath &lt; <span class="number">3</span> &amp;&amp; m_npath &gt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        m_path[<span class="number">2</span>] = m_path[m_npath<span class="number">-1</span>];</span><br><span class="line">        m_path[<span class="number">0</span>] = safeRef;</span><br><span class="line">        m_path[<span class="number">1</span>] = <span class="number">0</span>;</span><br><span class="line">        m_npath = <span class="number">3</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        m_path[<span class="number">0</span>] = safeRef;</span><br><span class="line">        m_path[<span class="number">1</span>] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3><span id="moveposition">movePosition</span></h3><p>基于(约束于)navmesh行走面的内的位置变化(移动)处理, 新的位置仍然位于m_path[0]中.    </p>
+<ul>
+<li>这种移动可能导致组成走廊空间的拓扑非最优 以及 移动的路径非最优.  </li>
+<li>从旧的位置往新的位置沿着poly mesh行走面去找, 如果不在同一个poly则往相邻的poly去找,  如果不可达或者位置无效, 则得到的坐标和传入的期望位置可能会不同   </li>
+<li>找到新的有效位置后合并路径: 先通过moveAlongSurface找到从当前点到移动目标点的poly visited 路径, 然后用这个路径和现有路径进行合并. <ul>
+<li>例如如果新路径为已有路径的下个poly, 则减去当前poly(预期情况1);  </li>
+<li>例如当前移动仍然在m_path[0]的poly内, 则合并去重(预期情况2) (这里其实发生不必要的拷贝请求(memmove对相同地址和长度的请求应该不会执行));</li>
+<li>如果避让跑偏了走到了新的poly, 则把当前path整体后移, 把当前移动带来的新的走廊path拼接起来, 拼接过程会尽可能的优化掉重复的的路径, 但是按照这个拼接  从走廊上来说是增加了新的走廊长度 因此需要通过局部visted重新优化局部路径.   <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">dtPathCorridor::movePosition</span><span class="params">(<span class="keyword">const</span> <span class="keyword">float</span>* npos, dtNavMeshQuery* navquery, <span class="keyword">const</span> dtQueryFilter* filter)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Move along navmesh and update new position.</span></span><br><span class="line">    <span class="keyword">float</span> result[<span class="number">3</span>];</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">int</span> MAX_VISITED = <span class="number">16</span>;</span><br><span class="line">    dtPolyRef visited[MAX_VISITED];</span><br><span class="line">    <span class="keyword">int</span> nvisited = <span class="number">0</span>;</span><br><span class="line">    dtStatus status = navquery-&gt;moveAlongSurface(m_path[<span class="number">0</span>], m_pos, npos, filter,</span><br><span class="line">                                                 result, visited, &amp;nvisited, MAX_VISITED);</span><br><span class="line">    <span class="keyword">if</span> (dtStatusSucceed(status)) &#123;</span><br><span class="line">        m_npath = dtMergeCorridorStartMoved(m_path, m_npath, m_maxPath, visited, nvisited);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// Adjust the position to stay on top of the navmesh.</span></span><br><span class="line">        <span class="keyword">float</span> h = m_pos[<span class="number">1</span>];</span><br><span class="line">        navquery-&gt;getPolyHeight(m_path[<span class="number">0</span>], result, &amp;h);</span><br><span class="line">        result[<span class="number">1</span>] = h;</span><br><span class="line">        dtVcopy(m_pos, result);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<h3><span id="dtnavmeshquerymovealongsurface">dtNavMeshQuery::moveAlongSurface</span></h3><p>DT_VERTS_PER_POLYGON = 6;  navigation中最大单个poly有6个顶点<br>沿着navmesh表面移动时, 最多stack <code>MAX_STACK = 48</code> 个poly节点, 超过后会丢弃.<br>每次移除当前poly并检查是否为目标点所在poly时, 如果没找到, 则添加所有符合条件的邻居到stack中,<br>每次stack邻居时, 这些邻居都通过pidx指向该poly(node) :  反向树结构 父节点不知道只节点, 但子节点知道父节点.   起始点所在poly为root node.<br>当我们找到目标点的所在的poly时候, 通过node-&gt;pidx 可以反向串起来完整的走廊空间.  逆序保存为 visited poly数组<br>每次visit一个poly时 会stack这个poly的所有邻居(过滤后)  </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">dtStatus <span class="title">dtNavMeshQuery::moveAlongSurface</span><span class="params">(dtPolyRef startRef, <span class="keyword">const</span> <span class="keyword">float</span>* startPos, <span class="keyword">const</span> <span class="keyword">float</span>* endPos,</span></span></span><br><span class="line"><span class="function"><span class="params">                                          <span class="keyword">const</span> dtQueryFilter* filter,</span></span></span><br><span class="line"><span class="function"><span class="params">                                          <span class="keyword">float</span>* resultPos, dtPolyRef* visited, <span class="keyword">int</span>* visitedCount, <span class="keyword">const</span> <span class="keyword">int</span> maxVisitedSize)</span> <span class="keyword">const</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//....   </span></span><br><span class="line">    dtNode* startNode = m_tinyNodePool-&gt;getNode(startRef);</span><br><span class="line">    startNode-&gt;pidx = <span class="number">0</span>;</span><br><span class="line">    startNode-&gt;cost = <span class="number">0</span>;</span><br><span class="line">    startNode-&gt;total = <span class="number">0</span>;</span><br><span class="line">    startNode-&gt;id = startRef;</span><br><span class="line">    startNode-&gt;flags = DT_NODE_CLOSED;</span><br><span class="line">    <span class="built_in">stack</span>[nstack++] = startNode;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">//....   </span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (nstack)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Pop front.</span></span><br><span class="line">        dtNode* curNode = <span class="built_in">stack</span>[<span class="number">0</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nstack<span class="number">-1</span>; ++i)</span><br><span class="line">            <span class="built_in">stack</span>[i] = <span class="built_in">stack</span>[i+<span class="number">1</span>];</span><br><span class="line">        nstack--;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//....   </span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// If target is inside the poly, stop search.</span></span><br><span class="line">        <span class="keyword">if</span> (dtPointInPolygon(endPos, verts, nverts))</span><br><span class="line">        &#123;</span><br><span class="line">            bestNode = curNode;</span><br><span class="line">            dtVcopy(bestPos, endPos);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//....   </span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>, j = (<span class="keyword">int</span>)curPoly-&gt;vertCount<span class="number">-1</span>; i &lt; (<span class="keyword">int</span>)curPoly-&gt;vertCount; j = i++)</span><br><span class="line">        &#123;</span><br><span class="line">             <span class="comment">//....   </span></span><br><span class="line">            <span class="keyword">if</span> (filter-&gt;passFilter(link-&gt;ref, neiTile, neiPoly))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span> (nneis &lt; MAX_NEIS)</span><br><span class="line">                    neis[nneis++] = link-&gt;ref;</span><br><span class="line">            &#125;</span><br><span class="line">             <span class="comment">//....   </span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">0</span>; k &lt; nneis; ++k)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//....   </span></span><br><span class="line">            <span class="keyword">if</span> (nstack &lt; MAX_STACK)</span><br><span class="line">            &#123;</span><br><span class="line">                neighbourNode-&gt;pidx = m_tinyNodePool-&gt;getNodeIdx(curNode);</span><br><span class="line">                neighbourNode-&gt;flags |= DT_NODE_CLOSED;</span><br><span class="line">                <span class="built_in">stack</span>[nstack++] = neighbourNode;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//....   </span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> n = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (bestNode)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Reverse the path.</span></span><br><span class="line">        dtNode* prev = <span class="number">0</span>;</span><br><span class="line">        dtNode* node = bestNode;</span><br><span class="line">        <span class="keyword">do</span></span><br><span class="line">        &#123;</span><br><span class="line">            dtNode* next = m_tinyNodePool-&gt;getNodeAtIdx(node-&gt;pidx);</span><br><span class="line">            node-&gt;pidx = m_tinyNodePool-&gt;getNodeIdx(prev);</span><br><span class="line">            prev = node;</span><br><span class="line">            node = next;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span> (node);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// Store result</span></span><br><span class="line">        node = prev;</span><br><span class="line">        <span class="keyword">do</span></span><br><span class="line">        &#123;</span><br><span class="line">            visited[n++] = node-&gt;id;</span><br><span class="line">            <span class="keyword">if</span> (n &gt;= maxVisitedSize)</span><br><span class="line">            &#123;</span><br><span class="line">                status |= DT_BUFFER_TOO_SMALL;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            node = m_tinyNodePool-&gt;getNodeAtIdx(node-&gt;pidx);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span> (node);</span><br><span class="line">    &#125;</span><br><span class="line">    dtVcopy(resultPos, bestPos);</span><br><span class="line">    *visitedCount = n;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3><span id="dtmergecorridorstartmoved">dtMergeCorridorStartMoved</span></h3><p>合并path路径和visted路径.  见movePosition说明  </p>
+ <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">dtMergeCorridorStartMoved</span><span class="params">(dtPolyRef* path, <span class="keyword">const</span> <span class="keyword">int</span> npath, <span class="keyword">const</span> <span class="keyword">int</span> maxPath,</span></span></span><br><span class="line"><span class="function"><span class="params">							  <span class="keyword">const</span> dtPolyRef* visited, <span class="keyword">const</span> <span class="keyword">int</span> nvisited)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> furthestPath = <span class="number">-1</span>;</span><br><span class="line">	<span class="keyword">int</span> furthestVisited = <span class="number">-1</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// Find furthest common polygon.</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = npath<span class="number">-1</span>; i &gt;= <span class="number">0</span>; --i)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">bool</span> found = <span class="literal">false</span>;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> j = nvisited<span class="number">-1</span>; j &gt;= <span class="number">0</span>; --j)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">if</span> (path[i] == visited[j])</span><br><span class="line">			&#123;</span><br><span class="line">				furthestPath = i;</span><br><span class="line">				furthestVisited = j;</span><br><span class="line">				found = <span class="literal">true</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (found)</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// If no intersection found just return current path. </span></span><br><span class="line">	<span class="keyword">if</span> (furthestPath == <span class="number">-1</span> || furthestVisited == <span class="number">-1</span>)</span><br><span class="line">		<span class="keyword">return</span> npath;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// Concatenate paths.	</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// Adjust beginning of the buffer to include the visited.</span></span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">int</span> req = nvisited - furthestVisited;</span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">int</span> orig = dtMin(furthestPath+<span class="number">1</span>, npath);</span><br><span class="line">	<span class="keyword">int</span> <span class="built_in">size</span> = dtMax(<span class="number">0</span>, npath-orig);</span><br><span class="line">	<span class="keyword">if</span> (req+<span class="built_in">size</span> &gt; maxPath)</span><br><span class="line">		<span class="built_in">size</span> = maxPath-req;</span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">size</span>)</span><br><span class="line">		memmove(path+req, path+orig, <span class="built_in">size</span>*<span class="keyword">sizeof</span>(dtPolyRef));</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// Store visited</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; req; ++i)</span><br><span class="line">		path[i] = visited[(nvisited<span class="number">-1</span>)-i];				</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> req+<span class="built_in">size</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2><span id="dtpathcorridorfindcorners">dtPathCorridor::findCorners</span></h2><p>走廊的关键实现之一 其核心是findStraightPath, 即查找直线路径上的拐点.   是agent移动能力的核心支持.<br>该函数从起点到终点查找拐点数量 失败或超过最大数量或者遇到off-link poly后停止    </p>
+<h2><span id="optimizepathvisibility">optimizePathVisibility</span></h2><p><code>g-&gt;params.updateFlags &amp; DT_CROWD_OPTIMIZE_VIS</code><br>该函数通过局部可视化优化agent在走廊中的移动路线<br>    其核心实现为朝目标点打一个射线, 如果可达则以可达走廊覆盖当前走廊<br>通常使用方式是, 从当前点打一个  跳过当前corner 到下一个corner的射线, 成功则拉直移动路径.  </p>
+<h2><span id="optimizepathtopology">optimizePathTopology</span></h2><p>DT_CROWD_OPTIMIZE_TOPO<br>和可视化不同, 这个是通过局部寻路进行修正和确认当前走廊是否为最优.   </p>
+<h2><span id="movetargetposition">moveTargetPosition</span></h2><p>和movePosition相似, 因目标发生变化而进行走廊调整 .   </p>
+<h2><span id="dt_crowd_separation">DT_CROWD_SEPARATION</span></h2><h2><span id="dt_crowd_anticipate_turns">DT_CROWD_ANTICIPATE_TURNS</span></h2>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/11/15/2022-02-09-mmap-overcommit-oom/" rel="next" title="MEMORY OVERCOMMIT">
+                <i class="fa fa-chevron-left"></i> MEMORY OVERCOMMIT
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/09/14/2022-09-14-digital-twin/" rel="prev" title="数字孪生空间">
+                数字孪生空间 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="夏天" />
+          <p class="site-author-name" itemprop="name">夏天</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">categories</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">走廊空间: DetourPathCorridor.h :   class dtPathCorridor;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">1.1.</span> <span class="nav-text">基本术语参考</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">1.2.</span> <span class="nav-text">dtPathCorridor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">1.3.</span> <span class="nav-text">fixPathStart</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">1.4.</span> <span class="nav-text">movePosition</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">1.5.</span> <span class="nav-text">dtNavMeshQuery::moveAlongSurface</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">1.6.</span> <span class="nav-text">dtMergeCorridorStartMoved</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">dtPathCorridor::findCorners</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">3.</span> <span class="nav-text">optimizePathVisibility</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">4.</span> <span class="nav-text">optimizePathTopology</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">5.</span> <span class="nav-text">moveTargetPosition</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">6.</span> <span class="nav-text">DT_CROWD_SEPARATION</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">7.</span> <span class="nav-text">DT_CROWD_ANTICIPATE_TURNS</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">夏天</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+    NexT.Gemini
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

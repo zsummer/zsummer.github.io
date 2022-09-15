@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="目录    目录 词的关系概括 polysemy 词汇蕴含规则 linear polysemy 线性多义 non-linear polysemy 非线性多义 一词多义   hyperonym–hyponym 上下义关系 autonymy 反义关系 synonymy 同义关系   语义聚合关系 上下义词 总分词 类义词(狭义)   面向对象中的关系 类型和实例关系 hyperonym–hyponym">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AS-A 和 HAS-A 概念">
+<meta property="og:url" content="https://zsummer.github.io/2019/11/29/2019-12-06-is-a-and-has-a/index.html">
+<meta property="og:site_name" content="关于夏天的一切">
+<meta property="og:description" content="目录    目录 词的关系概括 polysemy 词汇蕴含规则 linear polysemy 线性多义 non-linear polysemy 非线性多义 一词多义   hyperonym–hyponym 上下义关系 autonymy 反义关系 synonymy 同义关系   语义聚合关系 上下义词 总分词 类义词(狭义)   面向对象中的关系 类型和实例关系 hyperonym–hyponym">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-11-28T16:00:00.000Z">
+<meta property="article:modified_time" content="2019-12-10T07:09:03.899Z">
+<meta property="article:author" content="夏天">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zsummer.github.io/2019/11/29/2019-12-06-is-a-and-has-a/"/>
+
+
+
+
+
+  <title>AS-A 和 HAS-A 概念 | 关于夏天的一切</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">关于夏天的一切</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我总觉得对你的爱很美</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2019/11/29/2019-12-06-is-a-and-has-a/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">AS-A 和 HAS-A 概念</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-29T00:00:00+08:00">
+                2019-11-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3><span id="目录">目录</span></h3><hr>
+<!-- TOC -->
+
+<ul>
+<li><a href="#目录">目录</a></li>
+<li><a href="#词的关系概括">词的关系概括</a><ul>
+<li><a href="#polysemy-词汇蕴含规则">polysemy 词汇蕴含规则</a><ul>
+<li><a href="#linear-polysemy-线性多义">linear polysemy 线性多义</a></li>
+<li><a href="#non-linear-polysemy-非线性多义">non-linear polysemy 非线性多义</a></li>
+<li><a href="#一词多义">一词多义</a></li>
+</ul>
+</li>
+<li><a href="#hyperonymhyponym-上下义关系">hyperonym–hyponym 上下义关系</a></li>
+<li><a href="#autonymy-反义关系">autonymy 反义关系</a></li>
+<li><a href="#synonymy-同义关系">synonymy 同义关系</a></li>
+</ul>
+</li>
+<li><a href="#语义聚合关系">语义聚合关系</a><ul>
+<li><a href="#上下义词">上下义词</a></li>
+<li><a href="#总分词">总分词</a></li>
+<li><a href="#类义词狭义">类义词(狭义)</a></li>
+</ul>
+</li>
+<li><a href="#面向对象中的关系">面向对象中的关系</a><ul>
+<li><a href="#类型和实例关系">类型和实例关系</a></li>
+<li><a href="#hyperonymhyponym-supertypesubtype-上下义关系-超类子类关系--is-a-关系-继承泛化关系">hyperonym–hyponym (supertype–subtype) 上下义关系, 超类子类关系  IS-A 关系 继承/泛化关系</a></li>
+<li><a href="#holonymmeronym--整体部分关系-has-a-关系">holonym–meronym  整体部分关系 HAS-A 关系</a></li>
+</ul>
+</li>
+<li><a href="#集合关系">集合关系</a></li>
+</ul>
+<!-- /TOC -->
+<h3><span id="词的关系概括">词的关系概括</span></h3><h4><span id="polysemy-词汇蕴含规则">polysemy 词汇蕴含规则</span></h4><h5><span id="linear-polysemy-线性多义">linear polysemy 线性多义</span></h5><ul>
+<li>autohyponymy, where the basic sense leads to a specialised sense  基本意义-&gt;特殊意义  </li>
+<li>automeronymy, where the basic sense leads to a subpart sense 基本意义-&gt;部分意义  整体-&gt;局部  </li>
+<li>autohyperonymy or autosuperordination, where the basic sense leads to a wider sense   基本意义-&gt;宽泛意义  下位-&gt;上位意义  </li>
+<li>autoholonymy, where the basic sense leads to a larger sense  基本意义-&gt;更多意义 <h5><span id="non-linear-polysemy-非线性多义">non-linear polysemy 非线性多义</span></h5></li>
+<li>metonymy  转喻 借喻    </li>
+<li>metaphor 隐喻  <h5><span id="一词多义">一词多义</span></h5></li>
+<li>原始意义与衍生意义(派生)   </li>
+<li>普通意义与特殊意义  </li>
+<li>抽象意义与具体意义  </li>
+<li>字面意义与比喻意义  <h4><span id="hyperonymhyponym-上下义关系">hyperonym–hyponym 上下义关系</span></h4><h4><span id="autonymy-反义关系">autonymy 反义关系</span></h4><h4><span id="synonymy-同义关系">synonymy 同义关系</span></h4></li>
+</ul>
+<h3><span id="语义聚合关系">语义聚合关系</span></h3><h4><span id="上下义词">上下义词</span></h4><p>上下义关系代表了概念上的蕴含关系, 或者说在类型层级上, 下位类一定带有上位类的所有属性.  可以用 IS A 来表达.  </p>
+<p>例如 上义词 水果  下义词 香蕉.  香蕉 IS A 水果  但是不能反过来说 水果 IS A  香蕉   </p>
+<p>上下义关系也可以进入 ‘A包含B’的格式,  比如说香蕉包含水果的属性  </p>
+<h4><span id="总分词">总分词</span></h4><p>整体部分关系   用HAS A来表达  </p>
+<p>例如 门  和  门套/门板    可以进入’A包含B’的格式 但是不能用  ‘B是A’的格式   </p>
+<h4><span id="类义词狭义">类义词(狭义)</span></h4><p>多元关系中的同级词语  例如门下的 门套和门板的关系  </p>
+<h3><span id="面向对象中的关系">面向对象中的关系</span></h3><h4><span id="类型和实例关系">类型和实例关系</span></h4><ul>
+<li>Type–token distinction  例如一个语句中  rose is a rose 中有三个type 4个token   <ul>
+<li>type == classes  </li>
+<li>object == instances ==token  </li>
+</ul>
+</li>
+<li>type of    <ul>
+<li>(实例)的类型     </li>
+</ul>
+</li>
+<li>instance of   <ul>
+<li>(类型) 的实例  </li>
+</ul>
+</li>
+</ul>
+<h4><span id="hyperonymhyponym-supertypesubtype-上下义关系-超类子类关系-is-a-关系-继承泛化关系">hyperonym–hyponym (supertype–subtype) 上下义关系, 超类子类关系  IS-A 关系 继承/泛化关系</span></h4><ul>
+<li>子类包含所有超类的属性/方法 可以用 “子类 IS A 父类” 来进行判定和使用   </li>
+<li>所有可以对超类适用的规范同样也可以适用于其子类   <ul>
+<li>李氏替换原则<ul>
+<li>Functions that use pointers or references to base classes must be able to use objects of derived classes without knowing it.  </li>
+<li>使用基类对象指针或引用的函数必须能够在不了解衍生类的条件下使用衍生类的对象   </li>
+<li>李氏替换原则中 避免重写父类的非抽象方法, 而多态的实现是通过重写抽象方法实现.   </li>
+<li>面向对象中的抽象方法是定义方法的声明规范而不约束其实现因此扔可 概括为上句 “ 所有可以对超类适用的规范同样也可以适用于其子类”   </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4><span id="holonymmeronym-整体部分关系-has-a-关系">holonym–meronym  整体部分关系 HAS-A 关系</span></h4><ul>
+<li><p>aggregation 聚合关系  不存在所属权  HAS-A 关系  </p>
+<ul>
+<li>部分可以脱离/超出整体的生命周期独立存在 比如家庭成员和家庭  玩家和工会  </li>
+</ul>
+</li>
+<li><p>composition 组成关系  存在所属权  PART-OF| HAS-A 关系 </p>
+<ul>
+<li>部分不可以脱离整体的生命周期管理 比如四肢和人体  </li>
+<li>对于编程来讲, 我们实例化玩家对象, 实例化背包对象, 玩家下线需要连带清理背包对象.   </li>
+</ul>
+</li>
+<li><p>containment 包含关系   member-of | contains-a | part-of|HAS-A 关系  </p>
+<ul>
+<li>对成员的访问必须经过整体  成员为内涵状态  </li>
+<li>对于C++来说 privete:下的数据成员必须使用该类的接口访问  </li>
+<li>例如玩家对象和玩家的等级属性  </li>
+</ul>
+</li>
+</ul>
+<h3><span id="集合关系">集合关系</span></h3><p>从更抽象的角度来说<br>IS-A的关系判定为  A 是不是 B的特化 (specialization)<br>从集合关系来讲则为 A ⊃ B   A是不是B的真超集   </p>
+<p>HAS-A的关系判定为 B 是不是 A的组成部分<br>从集合关系来讲则为 B ⊂ A         B 是不是A的的真子集   </p>
+<p>ALIAS-A (没有这个术语) 的关系则是 A = B 即 别名.   </p>
+<p>从集合角度来讲, 如果B是A的特化, 那么A同时也是B的构成,  即:</p>
+<ul>
+<li>B ⊃ A(IS-A) 可以推导出 A ⊂ B (HAS-A)  </li>
+<li>但是IS-A限定了 A ⊂ B(HAS-A) 不可以推导出B ⊃ A (IS-A)     (IS-A限定特化后具有相同的拓扑结构)</li>
+</ul>
+<p>因此</p>
+<p>这IS-A这种关系 是 HAS-A 的特化.  即  IS-A  ⊃ HAS-A </p>
+<p>换成具体到OO语言里,  继承是一种特殊的聚合方式.<br>聚合更具有一般化的性质 更松散  </p>
+<p>因此 IS-A  is a  HAS-A  通过IS-A到HAS-A的转化可获得更好的一般性(泛化)  泛化转关联本身也是一种泛化</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/29/2019-11-29-static-linking/" rel="next" title="静态链接过程">
+                <i class="fa fa-chevron-left"></i> 静态链接过程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/12/11/2019-12-11-asm-syntax/" rel="prev" title="汇编语法/寻址/寄存器/代码模型(GNU assembler)">
+                汇编语法/寻址/寄存器/代码模型(GNU assembler) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="夏天" />
+          <p class="site-author-name" itemprop="name">夏天</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">categories</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">词的关系概括</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">2.1.</span> <span class="nav-text">polysemy 词汇蕴含规则</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">2.1.1.</span> <span class="nav-text">linear polysemy 线性多义</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">2.1.2.</span> <span class="nav-text">non-linear polysemy 非线性多义</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">2.1.3.</span> <span class="nav-text">一词多义</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">2.2.</span> <span class="nav-text">hyperonym–hyponym 上下义关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">2.3.</span> <span class="nav-text">autonymy 反义关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">2.4.</span> <span class="nav-text">synonymy 同义关系</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">3.</span> <span class="nav-text">语义聚合关系</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">3.1.</span> <span class="nav-text">上下义词</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">3.2.</span> <span class="nav-text">总分词</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">3.3.</span> <span class="nav-text">类义词(狭义)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">4.</span> <span class="nav-text">面向对象中的关系</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.1.</span> <span class="nav-text">类型和实例关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.2.</span> <span class="nav-text">hyperonym–hyponym (supertype–subtype) 上下义关系, 超类子类关系  IS-A 关系 继承&#x2F;泛化关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.3.</span> <span class="nav-text">holonym–meronym  整体部分关系 HAS-A 关系</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">5.</span> <span class="nav-text">集合关系</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">夏天</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+    NexT.Gemini
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

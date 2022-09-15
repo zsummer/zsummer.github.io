@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="..1. 目录linux系统的内存管理设计Linux内核内存管理的一项重要工作就是如何在长期频繁申请释放内存的情况下, 避免碎片的产生.Linux采用伙伴系统在极高的分配和回收性能(LGN)上, 最大化的减少了外部碎片(总是合并伙伴内存)的产生.伙伴算法非常简洁并且容易实现, 其一般实现的核心思路为维护一个整块内存, 通过不断的2分把最适配的内存分配给用户, 并且总是优先选择最零碎的空闲内存进行适">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于共享内存的通用内存分配器">
+<meta property="og:url" content="https://zsummer.github.io/2020/02/07/2020-02-07-shared-memory-buddy_system/index.html">
+<meta property="og:site_name" content="关于夏天的一切">
+<meta property="og:description" content="..1. 目录linux系统的内存管理设计Linux内核内存管理的一项重要工作就是如何在长期频繁申请释放内存的情况下, 避免碎片的产生.Linux采用伙伴系统在极高的分配和回收性能(LGN)上, 最大化的减少了外部碎片(总是合并伙伴内存)的产生.伙伴算法非常简洁并且容易实现, 其一般实现的核心思路为维护一个整块内存, 通过不断的2分把最适配的内存分配给用户, 并且总是优先选择最零碎的空闲内存进行适">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://zsummer.github.io/images/system_memory.jpg">
+<meta property="og:image" content="https://zsummer.github.io/images/buddy_system.gif">
+<meta property="article:published_time" content="2020-02-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-03-13T15:06:16.996Z">
+<meta property="article:author" content="夏天">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://zsummer.github.io/images/system_memory.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zsummer.github.io/2020/02/07/2020-02-07-shared-memory-buddy_system/"/>
+
+
+
+
+
+  <title>基于共享内存的通用内存分配器 | 关于夏天的一切</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">关于夏天的一切</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我总觉得对你的爱很美</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2020/02/07/2020-02-07-shared-memory-buddy_system/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">基于共享内存的通用内存分配器</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-02-07T00:00:00+08:00">
+                2020-02-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3><span id="1-目录">..1. 目录</span></h3><h3><span id="linux系统的内存管理设计">linux系统的内存管理设计</span></h3><p><img src="/images/system_memory.jpg" alt="buddy_system"><br>Linux内核内存管理的一项重要工作就是如何在长期频繁申请释放内存的情况下, 避免碎片的产生.<br>Linux采用伙伴系统在极高的分配和回收性能(LGN)上, 最大化的减少了外部碎片(总是合并伙伴内存)的产生.<br>伙伴算法非常简洁并且容易实现, 其一般实现的核心思路为维护一个整块内存, 通过不断的2分把最适配的内存分配给用户, 并且总是优先选择最零碎的空闲内存进行适配, 在回收时候则总是会合并空闲的伙伴内存(左右两个子节点的关系称之为伙伴关系), 以此来尽可能的保证大块的连续内存.<br>但是伙伴算法要求分配的内存必须是2的幂次大小, 因此直接使用会带来大量的内部碎片, 也因此伙伴算法一般都是作为底层内存管理算法不直接提供给用户, 而是通过dlmalloc等slab算法或者衍生算法提供给最终用户.  </p>
+<p>linux采用slab算法来进行更细粒度的内存分配管理, 通过分箱算法, 对于小内存(256字节及以下, 分离存储)可以达到常数的性能, 对于 &gt;256 &amp;&amp; &lt;1m的内存可以做到不大于LGN的分配性能, 并且通过对大块内存的精细切分和分箱算法可以做到几乎没有内部碎片, 通过对空闲内存的合并(没有伙伴关系约束也不存在假碎片问题, 但是因为大小chunk混合切分带来了更多的合并次数) 也有效的控制了外部碎片的产生.  </p>
+<p>linux面对的环境在通用性上要求更高, 考虑到brk/mmap作为系统调用在一些环境下的性能差异表现, 以及小内存的在初始化数据(查找 切分等), slab相关的算法中更倾向于缓存足够多的block来保证小内存在分配上的性能表现, 而操作系统heap苛刻的收缩条件也会导致在项目中的实际表现往往是整个heap的内存总是接近保持在峰值水平上, 换句话说slab算法在实际的实现中其分配策略更接近’内存池’的概念.  </p>
+<p>其分箱算法采用64位的bitmap 也就是64个箱位, 支持单个内存分配请求的大小范围在dlmalloc的实现中为8字节-1M, 又因为内存池的分配策略, 以及外部碎片的有限控制, 所以slab只是一个针对小内存分配优化方案, 对于一个通用分配器来说仍然需要大内存的分配方案.   </p>
+<p>因此包括linux内核, 整体的通用内存分配方案中, 使用buddy算法或者衍生算法来做大块线性地址空间的管理, 保证性能的情况下最小化外部碎片的产生, 通过slab算法或者衍生算法维护一个小内存请求的内存池, 以增加一小部分外部碎片的代价换取更少的内部碎片产生, 并保证向buddy system索要的内存都是满足2的幂次大小,  从而得到一个综合性能最优的方案, 这个方案比喻成[buddy算法负责批发 slab算法负责零售]具有比较形象的参考价值.    </p>
+<h3><span id="伙伴算法">伙伴算法</span></h3><p>因为最终的目的是希望把伙伴算法的管理结构保存在共享内存中,  因此我们在数组结构上以完美二叉树(perfect binary tree)的方式构建了整个伙伴算法,  由于对cpu cache友好的特征, 并且全局几乎只有简单的加减位移操作, 所以整个实现可以在非常简洁的基础上得到了一个比较出色的性能表现.   </p>
+<h4><span id="数据结构和概述">数据结构和概述</span></h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*  perfect binary tree</span></span><br><span class="line"><span class="comment">*                   0        -----------   : reserve</span></span><br><span class="line"><span class="comment">*	                  1        -----------   :  root </span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*          2                 3</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*     4        5         6        7</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*   8   9   10   11   12   13  14   15</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">* ----------------------------------------</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*   0   1   2    3    4    5   6     7     : memory buff</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<p><img src="/images/buddy_system.gif" alt="buddy_system"><br>伙伴算法是一个特殊的分离适配的内存管理器  </p>
+<ul>
+<li><p>能被有效管理的内存大小必须是2的幂次方   </p>
+</li>
+<li><p>分配的内存大小一定是2的幂次大小对齐, 通过逐层向下2分找到最适配请求的大小  </p>
+</li>
+<li><p>回收的内存会逐层向上合并 并且总是幂次大小合并 并且只能对伙伴内存(左右子节点)进行合并     </p>
+</li>
+<li><p>显而易见的内部碎片<br>因为2的幂次对齐分配, 比如我们需要power(2, 12)+1 的内存 实际上就会分配power(2,13)的内存,  内部碎片比例为 (power(2, 12)+1)/power(2,13), 有效负荷只有0.5左右.<br>伙伴系统的分配粒度如果为页框机制, 例如采取页框大小为4k(方便匹配操作系统的页大小), 那么即使请求1个字节也需要一个完整的页框内存,  有效负荷只有1/(4k-1)即4k分之一.  </p>
+</li>
+<li><p>显而易见的假碎片<br>两块相邻的空闲内存因为不属于伙伴关系则无法合并, 换句话说存在一块连续的空闲地址满足需求但是却因为无法在内存管理器中完成合并操作而不能提供服务.<br>比如上面结构中 IDX 9 和 IDX 10皆为空闲,  IDX 9 和 IDX 5皆为空闲等      </p>
+</li>
+<li><p>存在但被有效控制的外部碎片<br>对于动态内存分配策略中, 只要满足通用性目标中”处理任意请求序列” 那么就一定会有外部碎片的产生, 因为其产生不仅仅在于分配器管理结构的设计, 更在于将来时, 外部的请求和释放时机.<br>  如图所示中, 我们并不能保证不会出现索引11和12被分配出去其他内存全部空闲这样的情况, 导致总空闲内存大小为6但是只能最大分配3个连续页框 .<br>但相比其他的分配方案, 合并成一个2倍大小的大块内存, 总是只需要两个空闲小块, 而在分配策略中又总是会分配大小相同且相邻的块, 可以说是所有分配策略在保证LGN性能下控制外部碎片最好的方案.  </p>
+</li>
+</ul>
+<ul>
+<li>较为恒定的分配复杂度<br>分配时会从根节点向下查找直到适配, 回收时从叶子节点向上查找, 并且都会从对应节点向根节点方向进行分配能力的修改.<br>因此一对分配和释放请求总是恒定为LGN  </li>
+</ul>
+<h4><span id="数据结构的定义">数据结构的定义:</span></h4><p>同linux系统的方式类似, 我们按照页框为单位来管理内存, 页框的大小大于等于系统的页框大小, 可结合slab分配器进行调整.<br>根据要管理的内存大小和页框大小, 我们可以算出总得叶子数量,  而在这棵树上, 节点总数为2N(2倍叶子节点)   </p>
+<p>因此数据结构的定义为如下方式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">共享内存管理头部: 所有叶子节点 : 被管理的内存</span><br></pre></td></tr></table></figure>
+
+<p>每个节点用1个字节来记录, 内容为该节点的所对应的空间大小, (这里记录的不是大小, 而是大小的幂, 所以可以用一个字节来存储)<br>该节点对应的空间起始地址这位该节点在该层中的<code>offset* power(2, order)</code></p>
+<h5><span id="初始化">初始化</span></h5><p>所有节点的初始化为为该节点的空间大小.<br>例如index1 对应的则是被管理的所有空间<br>然后每层递减1<br>到叶子节点则为2^0次幂大小, 即一个页框单位.  </p>
+<h5><span id="分配">分配</span></h5><p>如果分配参数是字节数, 则需要先按照页框向上取整<br>如果分配的参数是页框数量, 则需要按照2的幂次取整, 可以用bit search指令获取2的幂数(这个取法是向下取整 所以取完后要进行一次向上取整)<br>如果分配的是order<br>则检查root节点保存的order是否满足需求, 不满足这代表没有足够大的空间<br>如果满足需求则逐层查找, 直到到达对应的order层级, 然后修改该节点的可分配空间为0, 然后逐层向上修改分配能力  </p>
+<p>tips:<br> 这里定义0为已分配, 而不是power(2,0)个空间大小,  因此在这里节点对应空间大小计算是power(2, (order ability)-1)   -1后才是power(2, order) .<br> 这样可以保证这棵树中从叶子节点向上查找时候的可以简单的while循环时候少一次边界判定, 计算方便   </p>
+<p>分配时候永远选择刚好满足需求的路径, 可以减少切分大块, 其次优先左子树,  减少外部碎片的产生以及提高cache命中.  </p>
+<h5><span id="释放">释放</span></h5><p> 通过地址计算页框编号, 然后加上N (树的大小是2N, N为所有非叶子节点的节点总数) 得到叶子节点的索引.<br> 从叶子节点用IDX /2 不断的向上查找, 直到找到节点被标记为0的层级,  修改该节点为该层级对应的空间大小, 然后逐层向上修改每层的新的空间分配能力, 如果左右节点的空间大小为该层级的大小(都空闲)则合并,(每个上层节点的能力均是节点对应的空间大小)   </p>
+<h3><span id="slab内存分配器">SLAB内存分配器</span></h3><p>有了buddy system之后, 移植所有可以基于mmap或者brk批量分配的内存分配器都会变得容易, 常见的现在linux系统使用的ptmalloc属于dlmalloc的分支版本, 而常用的TCMALLOC或者jemalloc都是基于dlmalloc的思想进行了更优更细粒度的实现, 体现在cpu cache更友好的分配策略以及多线程下更少的竞争等来获取更好的分配性能.      </p>
+<p>dlmalloc有着更简洁干净的实现 大约只有5000行代码, 其设计也非常的出色, 可以说是最容易移植的优秀的内存分配器.  </p>
+<h4><span id="基础术语和概念如下">基础术语和概念如下:</span></h4><p>Payload: 有效负载.指的是实际交给应用程序使用的内存大小.  </p>
+<p>Overhead: 负载,开销.本意是为了满足分配需求所消耗的内存量,实际在代码注释中多指除了payload之外的额外开销(有些书中也称之为cookie).  </p>
+<p>Chunk: 区块.是内存分配的基本单位,类似物质世界中的原子不可再分. dlmalloc对内存的管理基本上都是以chunk为单位.一个典型的chunk是由用户程序使用的部分(payload)以及额外的标记信息(overhead)组成.  </p>
+<p>Bin: 分箱.用来管理相同或同一区间大小的chunk.在dlmalloc中分为sbin和tbin两种.  </p>
+<p>Mspace: 分配空间.说白了就是dlmalloc中内存池的叫法.在dlmalloc中可以管理多个mspace.如果不显式声明,将会使用一个全局的匿名空间,或者用户可以自行划分空间交给dlmalloc管理.  </p>
+<p>Segment: 区段.一般情况下,内存分配都是在一片连续区间内开采(exploit).但也会遇到不连续的情况,这就需要分成若干个区段记录.多个区段可以同属一个mspace.  </p>
+<p>Fenceposts: 栅栏.大多数分配器中, fencepost起到非连续内存间的隔离作用.一般这种隔离被用做安全检查.分配器会在fenceposts所在位置写上特殊标记,一旦非连续内存间发生写入溢出(overwrite)就可以通过异常的fenceposts值发出警告.  </p>
+<p>Bookkeeping: 记录信息.不同于每个chunk中的overhead,这里指的是整个mspace控制块的记录信息.往往这部分信息都固定在mspace开始的一段空间,或者干脆就放在地址空间的静态区中.  </p>
+<p>Granularity: 粒度.这个粒度指的是从system heap上获取内存的最小单位.一般来说该值至少为一个page size, 且必须以2为底.  </p>
+<p>Mmap: 本意是类unix系统的文件映射调用.但在dlmalloc中表示的更宽泛,这里指代可以在进程地址空间中开辟非连续内存空间的系统调用.  </p>
+<p>Morecore: 指可以在进程地址空间中开辟连续内存空间的系统调用.在类unix系统下morecore指的是sbrk调用.  </p>
+<p>Program break: 前面提到的sbrk()实际也是一个库函数,真正起作用的是brk()系统调用.这个函数其实就是break的缩写.所谓的break是一个代表进程heap区top-most位置的指针.当我们通过sbrk/brk向系统请求内存时,系统做的仅仅是移动break指针,内存就这样被划拨到heap中了.而当释放内存时,就反方向移动该指针,内存就返回给系统.  </p>
+<p>Footprint: 从系统获得的内存量.指的是当前dlmalloc从system heap获取的内存总和.设立footprint一方面是为了方便统计,另一方面也可以限制dlmalloc从系统获取的最大内存量.   </p>
+<p>Trimming: 裁剪.被dlmalloc管理的内存被free后,并不直接返还给系统,而是当积累到一定程度会通过一些算法判断system heap是否收缩(shrink),这个过程在dlmalloc中称作auto-trimming.   </p>
+<h4><span id="分箱机制">分箱机制</span></h4><p>分箱指的是在内存分配器内部划定一些chunk集合, 每个集合中记录的都是固定大小或区间的free chunk, 当分配时可以直接从中找到最贴近用户要求的那一个.<br>越是想要高效的分配,就越要将分箱划分的更细致,相应的也就浪费更多的内存, 因此, 分箱机制既不能太粗放而影响效率, 也不能太细致而降低利用率.<br>分箱算法通过位移的计算技巧, 可以简单且快速的找到满足请求大小的最小非空箱位索引</p>
+<h4><span id="小内存分配">小内存分配</span></h4><p>dlmalloc定义了最小的分配粒度为8字节, 这样在保存chunk大小的字段中可以多出来3个位作为bit标记<br>然后每8个字节递增, 直到248字节, 总共32个箱子 如下:   </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[bin idx] 8 8 8 8 8 8 8 8 8 </span><br><span class="line">[bin idx] 16 16 16 16 16 16   </span><br><span class="line">[bin idx] 24 24 24 24 24 24   </span><br><span class="line">...</span><br><span class="line">[bin idx] 248 248 248 248 248 248</span><br></pre></td></tr></table></figure>
+
+<p>在64位下需要保证分配给用户的地址是两倍(void*)大小且包含一个8字节的prev_foot 一个8字节的head, 因此实际上使用的箱位不会用满32个.<br>dlmalloc的prev_foot是一个边界标记法的使用技巧, 逻辑上其实是上一个chunk的foot部分, 如果不是空闲状态则会标记”下个chunk的P”为非空闲,  如果是空闲则会填充该字段为空闲chunk的大小.<br>这样就可以完成一个块从分配状态到空闲状态时候 总是能直接向前合并或者向后合并.<br>在非空闲状态没有合并需求, 因此为了充分利用内存, 分配状态的chunk其foot部分总是被’踩’的,  也就是说这里的的箱位使用在实际情况下(64位)<br>是32byte开始, 后面以24字节递增(踩prev_foot) 48byte 64byte 直到240byte  对于调用dlmalloc接口请求的大小在超过232字节后就会走big bin分配[256~384)范围的内存.   </p>
+<p>分配:  </p>
+<p>首先检查对应bin idx是否有空闲chunk 有这分配并返回<br>其次检查更高bin idx中是否有空闲的chunk, 有则切割, 并把剩余大小组合成一个新chunk记录为切割剩余chunk(如果过小则直接丢给用户)<br>其次检查大内存的bin里面是否有内存 有则切割 同上<br>其次检查上次剩余切割的chunk是否满足需要 如果满足则进一步切割 同上<br>其次检查最新从上级分配器(buddy system, 或者对应系统函数mmap brk)得到的大块chunk的剩余是否满足 满足就切割 (brk表现为扩展top)<br>其次则申请一个新的大块chunk进行切割   </p>
+<h4><span id="大内存分配">大内存分配</span></h4><p>大内存的bin idx递增则为2的幂次的半高为区分 总共32个箱子, 箱内是一个特殊实现的bitwise trie tree 如:  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[bin idx] [256~384)  </span><br><span class="line">[bin idx] [384~512)  </span><br><span class="line">[bin idx] [512~768)  </span><br><span class="line">[bin idx] ...  </span><br><span class="line">[bin idx] [4096~6144)  </span><br><span class="line">[bin idx] ...   </span><br><span class="line">[bin idx] [768k~1m)</span><br></pre></td></tr></table></figure>
+
+<p>分配:<br>首先查找对应的bin idx是否存在空闲, 如果空闲则从该bitwise trie tree中查找最佳的chunk节点   </p>
+<p>如果当前bin无空闲内存或者没找到合适空闲内存, 则检查更高bin idx中是否存在空闲, 如果有则拿最小的一个chunk </p>
+<p>如果找到则切分保存剩余内存为剩余chunk并返回合适大小的内存给用户  </p>
+<p>其次检查剩余chunk的大小是否满足, 满足则进一步切割  </p>
+<p>其次检查最近一次向上层管理器申请的内存chunk是否满足需求, 满足则切分     </p>
+<p>其次选择向底层(操作系统)申请满足需求的大块内存 </p>
+<h5><span id="bitwise-trie-tree">bitwise trie tree</span></h5><p>大内存的箱内管理是一个特殊的前缀树, 节点均为0或者1, 和buddy system的结构稍微有点相似 都是做地址空间管理.<br>这个树的的节点是按照chunk的大小(chunk大小在二进制上的0,1顺序作为排序依据)进行构建的<br>并且其节点本身就是chunk,  因此查找时候时候不但要检测叶子节点的大小是否最佳 也要检测其节点路径的chunk大小是否是最佳.<br>添加节点时候会自顶向下查找最佳位置, 如果已经存在大小相同的节点或者叶子节点 则以链表形式附加到该节点的空闲链表中, 如果不存在则直接以叶子节点添加<br>删除(最佳)节点时, 如果该节点有相同大小的其他chunk 则直接替换为相同大小的即可, 如果是叶子节点直接摘除, 否则会从右侧叶子节点提升到该节点位置.   </p>
+<p>这棵树的优点是动态树高, 查找的最坏性能是地址空间的LGN复杂度, 在树不满的情况则是相对树高的LGN复杂度,  在插入和删除时只是简单的查找+一次替换/添加操作, 不会对树进行调整, 因此性能非常好.    </p>
+<h4><span id="内存回收和内存收缩">内存回收和内存收缩</span></h4><p>回收内存时会根据标志检查是否存在前一个空闲块 如果存在则合并.<br>如果是直接mmap的内存 则直接返还给底层分配器<br>检查是否满足收缩条件, 满足收缩条件则向系统/底层分配器返还内存 这里分heap的堆顶收缩检测和非连续mmap segment回收检测<br>未被返还给底层分配器则插入到对应的bin空闲块中.   </p>
+<h4><span id="默认内存分配阈值">默认内存分配阈值</span></h4><p>分配对齐至少8字节 默认为两倍<code>sizeof(void*)</code><br>向系统的索要内存的最小粒度默认为64k, windows下通过api获取到的分配粒度默认也是64k (最小单位)<br>当dlmalloc的请求内存超过阈值256k时 直接向系统索要内存<br>系统的内存分配方式是brk时至少在堆顶缓存一个分配粒度的空闲内存而不是收缩堆顶所有空闲内存<br>系统的内存分配方式是mmap时会通过满足条件一定次数后扫描线性扫描所有segment列表, 对未使用并且完全空闲的segment进行清除(保留堆顶 剩余切分被占用的segment).</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/12/17/2019-12-17-elf-load/" rel="next" title="ELF装载和动态链接过程">
+                <i class="fa fa-chevron-left"></i> ELF装载和动态链接过程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/02/07/2020-02-03-shared-memory-resume-overview/" rel="prev" title="基于共享内存的对象池管理方案">
+                基于共享内存的对象池管理方案 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="夏天" />
+          <p class="site-author-name" itemprop="name">夏天</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">categories</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">..1. 目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">linux系统的内存管理设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">3.</span> <span class="nav-text">伙伴算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">3.1.</span> <span class="nav-text">数据结构和概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">3.2.</span> <span class="nav-text">数据结构的定义:</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">3.2.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">3.2.2.</span> <span class="nav-text">分配</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">3.2.3.</span> <span class="nav-text">释放</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#"><span class="nav-number">4.</span> <span class="nav-text">SLAB内存分配器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.1.</span> <span class="nav-text">基础术语和概念如下:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.2.</span> <span class="nav-text">分箱机制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.3.</span> <span class="nav-text">小内存分配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.4.</span> <span class="nav-text">大内存分配</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#"><span class="nav-number">4.4.1.</span> <span class="nav-text">bitwise trie tree</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.5.</span> <span class="nav-text">内存回收和内存收缩</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#"><span class="nav-number">4.6.</span> <span class="nav-text">默认内存分配阈值</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">夏天</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+    NexT.Gemini
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
