@@ -1,4 +1,12 @@
 
+---
+title: KCP协议栈 
+date: 2022-08-04
+categories: develop 
+author: yawei.zhang 
+mathjax: false
+---
+
 # KCP协议栈  
 
 ## 简介  
@@ -18,7 +26,7 @@ KCP是一个纯粹的ARQ协议 通过重传机制实现UDP数据包的可靠传�
     | LINK        |
     | PHY         |
 
-
+<!--more-->
 
 ## 协议栈基础特性  
 
