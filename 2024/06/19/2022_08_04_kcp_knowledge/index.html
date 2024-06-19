@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="KCP协议栈简介KCP是一个纯粹的ARQ协议 通过重传机制实现UDP数据包的可靠传输     以比 TCP浪费10%-20%的带宽的代价 换取平均延迟降低 30%-40% 且最大延迟降低三倍的传输效果  纯算法实现 并不负责底层协议 (如UDP)的收发   需要使用者自己定义下层数据包的发送方式 以 callback的方式提供给 KCP  连时钟都需要外部传递进来 内部不会有任何一次系统调用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2022_08_04_kcp_knowledge">
+<meta property="og:url" content="https://zsummer.github.io/2024/06/19/2022_08_04_kcp_knowledge/index.html">
+<meta property="og:site_name" content="关于夏天的一切">
+<meta property="og:description" content="KCP协议栈简介KCP是一个纯粹的ARQ协议 通过重传机制实现UDP数据包的可靠传输     以比 TCP浪费10%-20%的带宽的代价 换取平均延迟降低 30%-40% 且最大延迟降低三倍的传输效果  纯算法实现 并不负责底层协议 (如UDP)的收发   需要使用者自己定义下层数据包的发送方式 以 callback的方式提供给 KCP  连时钟都需要外部传递进来 内部不会有任何一次系统调用">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-06-19T03:57:50.052Z">
+<meta property="article:modified_time" content="2022-07-26T12:32:00.413Z">
+<meta property="article:author" content="夏天">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zsummer.github.io/2024/06/19/2022_08_04_kcp_knowledge/"/>
+
+
+
+
+
+  <title>2022_08_04_kcp_knowledge | 关于夏天的一切</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">关于夏天的一切</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我总觉得对你的爱很美</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2024/06/19/2022_08_04_kcp_knowledge/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="夏天">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="关于夏天的一切">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">2022_08_04_kcp_knowledge</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2024-06-19T11:57:50+08:00">
+                2024-06-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1><span id="kcp协议栈">KCP协议栈</span></h1><h2><span id="简介">简介</span></h2><p>KCP是一个纯粹的ARQ协议 通过重传机制实现UDP数据包的可靠传输   </p>
+<ul>
+<li><p>以比 TCP浪费10%-20%的带宽的代价 换取平均延迟降低 30%-40% 且最大延迟降低三倍的传输效果</p>
+</li>
+<li><p>纯算法实现 并不负责底层协议 (如UDP)的收发 </p>
+</li>
+<li><p>需要使用者自己定义下层数据包的发送方式 以 callback的方式提供给 KCP</p>
+</li>
+<li><p>连时钟都需要外部传递进来 内部不会有任何一次系统调用   </p>
+</li>
+<li><p>协议栈位置   </p>
+<table>
+<thead>
+<tr>
+<th>协议栈位置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SESSION</td>
+</tr>
+<tr>
+<td>KCP(ARG)</td>
+</tr>
+<tr>
+<td>UDP(PACKET)</td>
+</tr>
+<tr>
+<td>IP</td>
+</tr>
+<tr>
+<td>LINK</td>
+</tr>
+<tr>
+<td>PHY</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<h2><span id="协议栈基础特性">协议栈基础特性</span></h2><p>TCP是为流量设计的 (每秒内可以传输多少KB的数据) 讲究的是充分利用带宽<br>KCP是为流速设计的 (单个数据包从一端发送到一端需要多少时间) 以10%-20%带宽浪费的代价换取了比 TCP快30%-40%的传输速度 </p>
+<p>TCP信道是一条流速很慢 但每秒流量很大的大运河<br>而KCP是水流湍急的小激流 KCP有正常模式和快速模式两种 通过以下策略达到提高流速的结果:  </p>
+<ul>
+<li><p><strong>RTO翻倍vs不翻倍:</strong>  </p>
+<blockquote>
+<p>TCP超时计算是RTOx2 这样连续丢三次包就变成RTOx8了 十分恐怖 而KCP启动快速模式后不x2 只是x1.5 (实验证明1.5这个值相对比较好) 提高了传输速度  </p>
+</blockquote>
+</li>
+<li><p><strong>选择性重传 vs 全部重传:</strong>  </p>
+<blockquote>
+<p>TCP丢包时会全部重传从丢的那个包开始以后的数据 KCP是选择性重传 只重传真正丢失的数据包  (TCP同样有选择重传SACK 但有区别) </p>
+</blockquote>
+</li>
+<li><p><strong>快速重传:</strong>  </p>
+<blockquote>
+<p>发送端发送了1 2 3 4 5几个包 然后收到远端的ACK: 1 3 4 5 当收到ACK3时 KCP知道2被跳过1次 收到ACK4时 知道2被跳过了2次 此时可以认为2号丢失 不用等超时 直接重传2号包 大大改善了丢包时的传输速度<br>kcp实现是单独发送每个ACK信令 而TCP会合并  </p>
+</blockquote>
+</li>
+<li><p><strong>延迟ACK vs 非延迟ACK:</strong>  </p>
+<blockquote>
+<p>TCP为了充分利用带宽 延迟发送ACK (NODELAY都没用) 这样超时计算会算出较大 RTT时间 延长了丢包时的判断过程 KCP的ACK是否延迟发送可以调节 </p>
+</blockquote>
+</li>
+<li><p><strong>UNA vs ACK+UNA:</strong>  </p>
+<blockquote>
+<p>ARQ模型响应有两种 UNA (此编号前所有包已收到 如TCP)和ACK (该编号包已收到) 光用UNA将导致全部重传 光用ACK则丢失成本太高 以往协议都是二选其一 而 KCP协议中 除去单独的 ACK包外 所有包都有UNA信息 </p>
+</blockquote>
+</li>
+<li><p><strong>非退让流控:</strong>  </p>
+<blockquote>
+<p>KCP正常模式同TCP一样使用公平退让法则 即发送窗口大小由:  发送缓存大小、接收端剩余接收缓存大小、丢包退让及慢启动这四要素决定 但传送及时性要求很高的小数据时 可选择通过配置跳过后两步 仅用前两项来控制发送频率 以牺牲部分公平性及带宽利用率之代价 换取了开着BT都能流畅传输的效果</p>
+</blockquote>
+</li>
+</ul>
+<h2><span id="基础流程">基础流程</span></h2><p>单纯的ARQ在实际使用中并不能满足所有的网络场景 特别是网络拥塞时 大量的重传会导致更多的丢包<br>增加FEC是一个明智的选择 在KCP协议中 也并不排斥在KCP上增加FEC<br>但是需要注意的是 FEC加重传可能导致数据包的时延与抖动 同时 如果FEC解码得到的包经由重传或者网络延迟到达 需要在应用层进行检测 避免大量重复包影响KCP的传输效率  </p>
+<p>流程图见rp文件  </p>
+<p>KCP通过ikcp_create 创建一个KCP对象<br>每个不同的会话将产生不同的对象<br>因为KCP协议本身并没有提供网络部分的代码 所以需要将UDP发送函数的回调设置到KCP中 在有需要时 调用回调函数即可  </p>
+<p>KCP也支持外部的内存分配与日志回调 为用户提供了非常充分的自由度    </p>
+<p>整个KCP协议主要依靠一个循环ikcp_update来驱动整个算法的运转 所有的数据发送 接收 状态变化都依赖于此 所以如果有操作占用每一次update的周期过长 或者设置内部刷新的时间间隔过大 都会导致整个算法的效率降低 在ikcp_update中最终调用的是ikcp_flush 这是协议中的一个核心函数 将数据 确认包 以及窗口探测和应答发送到对端    </p>
+<p>KCP使用 ikcp_send 发送数据 该函数调用ikcp_output发送数据 实际上最终调用事先注册的发送回调发送数据<br>KCP通过 ikcp_recv 将数据接收出来 如果被分片发送 将在此自动重组 数据将与发送前保持一致   </p>
+<h2><span id="数据结构">数据结构</span></h2><p>基本结构如下:  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">0               4   5   6       8 (BYTE)</span><br><span class="line">+---------------+---+---+-------+</span><br><span class="line">|     conv      |cmd|frg|  wnd  |</span><br><span class="line">+---------------+---+---+-------+   8</span><br><span class="line">|     ts        |     sn        |</span><br><span class="line">+---------------+---------------+  16</span><br><span class="line">|     una       |     len       |</span><br><span class="line">+---------------+---------------+  24</span><br><span class="line">|                               |</span><br><span class="line">|        DATA (optional)        |</span><br><span class="line">|                               |</span><br><span class="line">+-------------------------------+</span><br><span class="line">&#96;&#96;&#96;   </span><br><span class="line"></span><br><span class="line">code:   </span><br><span class="line">&#96;&#96;&#96; C++ </span><br><span class="line">struct IKCPSEG</span><br><span class="line">&#123;</span><br><span class="line">	struct IQUEUEHEAD node;</span><br><span class="line">	IUINT32 conv;</span><br><span class="line">	IUINT32 cmd;</span><br><span class="line">	IUINT32 frg;</span><br><span class="line">	IUINT32 wnd;</span><br><span class="line">	IUINT32 ts;</span><br><span class="line">	IUINT32 sn;</span><br><span class="line">	IUINT32 una;</span><br><span class="line">	IUINT32 len;</span><br><span class="line">	IUINT32 resendts;</span><br><span class="line">	IUINT32 rto;</span><br><span class="line">	IUINT32 fastack;</span><br><span class="line">	IUINT32 xmit;</span><br><span class="line">	char data[1];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li><p>Conv: 32bit 4Byte  </p>
+<blockquote>
+<p>为一个表示会话编号的整数 和TCP的 conv 一样 通信双方需保证 conv 相同 相互的数据包才能够被接受<br>conv 唯一标识一个会话 但通信双方可以同时存在多个会话   </p>
+</blockquote>
+</li>
+<li><p>cmd 8bit 1Byte<br> 用来区分分片的作用 </p>
+<ul>
+<li>IKCP_CMD_PUSH: 数据分片 </li>
+<li>IKCP_CMD_ACK: ack分片  </li>
+<li>IKCP_CMD_WASK: 请求告知窗口大小 </li>
+<li>IKCP_CMD_WINS: 告知窗口大小 </li>
+</ul>
+</li>
+<li><p>frag 8bit 1Byte   </p>
+<blockquote>
+<p>用户数据可能会被分成多个KCP包发送 frag标识segment分片ID（在message中的索引 由大到小 0表示最后一个分片） </p>
+</blockquote>
+</li>
+<li><p>wnd 16bit 2Byte   </p>
+<blockquote>
+<p>剩余接收窗口大小（接收窗口大小-接收队列大小） 发送方的发送窗口不能超过接收方给出的数值 </p>
+</blockquote>
+</li>
+<li><p>ts 32bit 4Byte   </p>
+<blockquote>
+<p>message发送时刻的时间戳</p>
+</blockquote>
+</li>
+<li><p>sn 32bit 4Byte   </p>
+<blockquote>
+<p>message分片segment的序号 按1累次递增 </p>
+</blockquote>
+</li>
+<li><p>una 32bit 4Byte   </p>
+<blockquote>
+<p>待接收消息序号(接收滑动窗口左端) 对于未丢包的网络来说 una是下一个可接收的序号 如收到sn=10的包 una为11 </p>
+</blockquote>
+</li>
+<li><p>len 32bit 4Byte   </p>
+<blockquote>
+<p>数据长度 </p>
+</blockquote>
+</li>
+</ul>
+<ul>
+<li><p>resendts   </p>
+<blockquote>
+<p>下次超时重传的时间戳 </p>
+</blockquote>
+</li>
+<li><p>rto  </p>
+<blockquote>
+<p>该分片的超时重传等待时间 其计算方法同TCP </p>
+</blockquote>
+</li>
+<li><p>fastack   </p>
+<blockquote>
+<p>收到ack时计算的该分片被跳过的累计次数 此字段用于快速重传 自定义需要几次确认开始快速重传 </p>
+</blockquote>
+</li>
+<li><p>xmit   </p>
+<blockquote>
+<p>发送分片的次数 每发送一次加一 发送的次数对RTO的计算有影响 但是比TCP来说 影响会小一些 计算思想类似</p>
+</blockquote>
+</li>
+</ul>
+<h2><span id="ikcpcb结构">IKCPCB结构</span></h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">IKCPCB</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	IUINT32 conv, mtu, mss, state;</span><br><span class="line">	IUINT32 snd_una, snd_nxt, rcv_nxt;</span><br><span class="line">	IUINT32 ts_recent, ts_lastack, ssthresh;</span><br><span class="line">	IINT32 rx_rttval, rx_srtt, rx_rto, rx_minrto;</span><br><span class="line">	IUINT32 snd_wnd, rcv_wnd, rmt_wnd, cwnd, probe;</span><br><span class="line">	IUINT32 current, interval, ts_flush, xmit;</span><br><span class="line">	IUINT32 nrcv_buf, nsnd_buf;</span><br><span class="line">	IUINT32 nrcv_que, nsnd_que;</span><br><span class="line">	IUINT32 nodelay, updated;</span><br><span class="line">	IUINT32 ts_probe, probe_wait;</span><br><span class="line">	IUINT32 dead_link, incr;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">IQUEUEHEAD</span> <span class="title">snd_queue</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">IQUEUEHEAD</span> <span class="title">rcv_queue</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">IQUEUEHEAD</span> <span class="title">snd_buf</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">IQUEUEHEAD</span> <span class="title">rcv_buf</span>;</span></span><br><span class="line">	IUINT32 *acklist;</span><br><span class="line">	IUINT32 ackcount;</span><br><span class="line">	IUINT32 ackblock;</span><br><span class="line">	<span class="keyword">void</span> *user;</span><br><span class="line">	<span class="keyword">char</span> *<span class="built_in">buffer</span>;</span><br><span class="line">	<span class="keyword">int</span> fastresend;</span><br><span class="line">	<span class="keyword">int</span> fastlimit;</span><br><span class="line">	<span class="keyword">int</span> nocwnd, stream;</span><br><span class="line">	<span class="keyword">int</span> logmask;</span><br><span class="line">	<span class="keyword">int</span> (*output)(<span class="keyword">const</span> <span class="keyword">char</span> *buf, <span class="keyword">int</span> len, struct IKCPCB *kcp, <span class="keyword">void</span> *user);</span><br><span class="line">	<span class="keyword">void</span> (*writelog)(<span class="keyword">const</span> <span class="keyword">char</span> *<span class="built_in">log</span>, struct IKCPCB *kcp, <span class="keyword">void</span> *user);</span><br><span class="line">&#125;;</span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">IKCPCB是KCP中最重要的结构 也是在会话开始就创建的对象 代表着这次会话  </span><br><span class="line"></span><br><span class="line">* conv: 标识这个会话 </span><br><span class="line">* mtu: 最大传输单元 默认数据为<span class="number">1400</span> 最小为<span class="number">50</span> </span><br><span class="line">* mss: 最大分片大小 不大于mtu </span><br><span class="line">* state: 连接状态（<span class="number">0xFFFFFFFF</span>表示断开连接） </span><br><span class="line">* snd_una: 第一个未确认的包 </span><br><span class="line">* snd_nxt: 下一个待分配的包的序号 </span><br><span class="line">* rcv_nxt: 待接收消息序号 为了保证包的顺序 接收方会维护一个接收窗口 接收窗口有一个起始序号rcv_nxt（待接收消息序号）以及尾序号 * rcv_nxt + rcv_wnd（接收窗口大小） </span><br><span class="line">* ssthresh: 拥塞窗口阈值 以包为单位（TCP以字节为单位） </span><br><span class="line">* rx_rttval: RTT的变化量 代表连接的抖动情况 </span><br><span class="line">* rx_srtt: smoothed round trip time 平滑后的RTT </span><br><span class="line">* rx_rto: 由ACK接收延迟计算出来的重传超时时间 </span><br><span class="line">* rx_minrto: 最小重传超时时间 </span><br><span class="line">* snd_wnd: 发送窗口大小 </span><br><span class="line">* rcv_wnd: 接收窗口大小 </span><br><span class="line">* rmt_wnd: 远端接收窗口大小 </span><br><span class="line">* cwnd: 拥塞窗口大小 </span><br><span class="line">* probe: 探查变量 IKCP_ASK_TELL表示告知远端窗口大小 IKCP_ASK_SEND表示请求远端告知窗口大小 </span><br><span class="line">* interval: 内部<span class="built_in">flush</span>刷新间隔 对系统循环效率有非常重要影响 </span><br><span class="line">* ts_flush: 下次<span class="built_in">flush</span>刷新时间戳 </span><br><span class="line">* xmit: 发送segment的次数 当segment的xmit增加时 xmit增加（第一次或重传除外） </span><br><span class="line">* rcv_buf: 接收消息的缓存 </span><br><span class="line">* nrcv_buf: 接收缓存中消息数量 </span><br><span class="line">* snd_buf: 发送消息的缓存 </span><br><span class="line">* nsnd_buf: 发送缓存中消息数量 </span><br><span class="line">* rcv_queue: 接收消息的队列</span><br><span class="line">* nrcv_que: 接收队列中消息数量 </span><br><span class="line">* snd_queue: 发送消息的队列 </span><br><span class="line">* nsnd_que: 发送队列中消息数量 </span><br><span class="line">* nodelay: 是否启动无延迟模式 无延迟模式rtomin将设置为<span class="number">0</span> 拥塞控制不启动 </span><br><span class="line">* updated: 是否调用过update函数的标识 </span><br><span class="line">* ts_probe: 下次探查窗口的时间戳 </span><br><span class="line">* probe_wait: 探查窗口需要等待的时间     </span><br><span class="line">* dead_link: 最大重传次数 被认为连接中断 </span><br><span class="line">* incr: 可发送的最大数据量 </span><br><span class="line">* acklist: 待发送的ack列表 </span><br><span class="line">* ackcount: acklist中ack的数量 每个ack在acklist中存储ts sn两个量 </span><br><span class="line">* ackblock: <span class="number">2</span>的倍数 标识acklist最大可容纳的ack数量 </span><br><span class="line">* user: 指针 可以任意放置代表用户的数据 也可以设置程序中需要传递的变量 </span><br><span class="line">* <span class="built_in">buffer</span>: 存储消息字节流 </span><br><span class="line">* fastresend: 触发快速重传的重复ACK个数 </span><br><span class="line">* nocwnd: 取消拥塞控制 </span><br><span class="line">* stream: 是否采用流传输模式 </span><br><span class="line">* logmask: 日志的类型 如IKCP_LOG_IN_DATA 方便调试 </span><br><span class="line">* output udp: 发送消息的回调函数 </span><br><span class="line">* writelog: 写日志的回调函数 </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">## 基本使用</span><br><span class="line"></span><br><span class="line"><span class="number">1.</span> 创建 KCP对象：</span><br><span class="line"></span><br><span class="line">   ```cpp</span><br><span class="line">   <span class="comment">// 初始化 kcp对象 conv为一个表示会话编号的整数 和tcp的 conv一样 通信双</span></span><br><span class="line">   <span class="comment">// 方需保证 conv相同 相互的数据包才能够被认可 user是一个给回调函数的指针</span></span><br><span class="line">   ikcpcb *kcp = ikcp_create(conv, user);</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><p>设置回调函数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// KCP的下层协议输出函数 KCP需要发送数据时会调用它</span></span><br><span class="line"><span class="comment">// buf/len 表示缓存和长度</span></span><br><span class="line"><span class="comment">// user指针为 kcp对象创建时传入的值 用于区别多个 KCP对象</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">udp_output</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *buf, <span class="keyword">int</span> len, ikcpcb *kcp, <span class="keyword">void</span> *user)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  ....</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 设置回调函数</span></span><br><span class="line">kcp-&gt;output = udp_output;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>循环调用 update：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 以一定频率调用 ikcp_update来更新 kcp状态 并且传入当前时钟（毫秒单位）</span></span><br><span class="line"><span class="comment">// 如 10ms调用一次 或用 ikcp_check确定下次调用 update的时间不必每次调用</span></span><br><span class="line">ikcp_update(kcp, millisec);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>输入一个下层数据包：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 收到一个下层数据包（比如UDP包）时需要调用：</span></span><br><span class="line">ikcp_input(kcp, received_udp_packet, received_udp_size);</span><br></pre></td></tr></table></figure>
+<p>处理了下层协议的输出/输入后 KCP协议就可以正常工作了<br>使用 ikcp_send 来向远端发送数据<br>另一端使用 ikcp_recv(kcp, ptr, size)来接收数据   </p>
+</li>
+</ol>
+<h2><span id="协议配置">协议配置</span></h2><p>协议默认模式是一个标准的 ARQ 需要通过配置打开各项加速开关：</p>
+<ol>
+<li><p>工作模式：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">ikcp_nodelay</span><span class="params">(ikcpcb *kcp, <span class="keyword">int</span> nodelay, <span class="keyword">int</span> interval, <span class="keyword">int</span> resend, <span class="keyword">int</span> nc)</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>nodelay ：是否启用 nodelay模式 0不启用；1启用 </li>
+<li>interval ：协议内部工作的 interval 单位毫秒 比如 10ms或者 20ms</li>
+<li>resend ：快速重传模式 默认0关闭 可以设置2（2次ACK跨越将会直接重传）</li>
+<li>nc ：是否关闭流控 默认是0代表不关闭 1代表关闭 </li>
+<li>普通模式： ikcp_nodelay(kcp, 0, 40, 0, 0);</li>
+<li>极速模式： ikcp_nodelay(kcp, 1, 10, 2, 1);</li>
+</ul>
+</li>
+<li><p>最大窗口：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">ikcp_wndsize</span><span class="params">(ikcpcb *kcp, <span class="keyword">int</span> sndwnd, <span class="keyword">int</span> rcvwnd)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>该调用将会设置协议的最大发送窗口和最大接收窗口大小 默认为32. 这个可以理解为 TCP的 SND_BUF 和 RCV_BUF 只不过单位不一样 SND/RCV_BUF 单位是字节 这个单位是包 </p>
+</li>
+<li><p>最大传输单元：</p>
+<p>纯算法协议并不负责探测 MTU 默认 mtu是1400字节 可以使用ikcp_setmtu来设置该值 该值将会影响数据包归并及分片时候的最大传输单元 </p>
+</li>
+<li><p>最小RTO：</p>
+<p>不管是 TCP还是 KCP计算 RTO时都有最小 RTO的限制 即便计算出来RTO为40ms 由于默认的 RTO是100ms 协议只有在100ms后才能检测到丢包 快速模式下为30ms 可以手动更改该值：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kcp-&gt;rx_minrto = <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<h2><span id="其他文档索引">其他文档索引</span></h2><p>协议的使用和配置都是很简单的 大部分情况看完上面的内容基本可以使用了 如果你需要进一步进行精细的控制 比如改变 KCP的内存分配器 或者你需要更有效的大规模调度 KCP链接（比如 3500个以上） 或者如何更好的同 TCP结合 那么可以继续延伸阅读：</p>
+<ul>
+<li><a href="https://github.com/skywind3000/kcp/wiki" target="_blank" rel="noopener">Wiki Home</a></li>
+<li><a href="https://github.com/skywind3000/kcp/wiki/KCP-Best-Practice" target="_blank" rel="noopener">KCP 最佳实践</a></li>
+<li><a href="https://github.com/skywind3000/kcp/wiki/Cooperate-With-Tcp-Server" target="_blank" rel="noopener">同现有TCP服务器集成</a></li>
+<li><a href="https://github.com/skywind3000/kcp/wiki/Network-Encryption" target="_blank" rel="noopener">传输数据加密</a></li>
+<li><a href="https://github.com/skywind3000/kcp/wiki/Flow-Control-for-Users" target="_blank" rel="noopener">应用层流量控制</a></li>
+<li><a href="https://github.com/skywind3000/kcp/wiki/KCP-Benchmark" target="_blank" rel="noopener">性能评测</a></li>
+</ul>
+<h1><span id="避免缓存积累延迟">避免缓存积累延迟</span></h1><p>不管使用 TCP 还是 KCP，你都不可能超越信道限制的发送数据。TCP 的发送窗口 SNDBUF 决定了最多可以同时发送多少数据，KCP的也一样。</p>
+<p>当前发送且没有得到 ACK/UNA确认的数据，都会滞留在发送缓存中，一旦滞留数据超过了发送窗口大小限制，则该链接的 tcp send 调用将会<br>被阻塞，或者返回：EAGAIN / EWOULDBLOCK，这时候说明当前 tcp 信道可用带宽已经赶不上你的发送速度了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">可用带宽 &#x3D; min(本地可用发送窗口大小，远端可用接收窗口大小) * (1 - 丢包率) &#x2F; RTT</span><br></pre></td></tr></table></figure>
+
+<p>当你持续调用 ikcp_send，首先会填满kcp的 snd_buf，如果 snd_buf 的大小超过发送窗口 snd_wnd 限制，则会停止向 snd_buf 里追加<br>数据包，只会放在 snd_queue 里面滞留着，等待 snd_buf 有新位置了（因为收到远端 ack/una而将历史包从 snd_buf中移除），才会从<br>snd_queue 转移到 snd_buf，等待发送。</p>
+<p>TCP发送窗口满了不能发送了，会给你阻塞住或者 EAGAIN/EWOULDBLOCK；KCP发送窗口满了，ikcp_send 并不会给你返回 -1，而是让数据滞留<br>在 snd_queue 里等待有能力时再发送。</p>
+<p>因此，千万不要以为 ikcp_send 可以无节制的调用，为什么 KCP在发送窗口满的时候不返回错误呢？这个问题当年设计时权衡过，如果返回希望发送时返回错误的 EAGAIN/EWOULDBLOCK 你势必外层还需要建立一个缓存，等到下次再测试是否可以 send。那么还不如 kcp直接把这一层缓存做了，让上层更简单些，而且具体要如何处理 EAGAIN，可以让上层通过检测 ikcp_waitsnd 函数来判断还有多少包没有发出去，灵活抉择是否向 snd_queue 缓存追加数据包还是其他。</p>
+<h2><span id="重设窗口大小">重设窗口大小</span></h2><p>要解决上面的问题首先对你的使用带宽有一个预计，并根据上面的公式重新设置发送窗口和接收窗口大小，你写后端，想追求tcp的性能，也会需要重新设置tcp的 sndbuf, rcvbuf 的大小，KCP 默认发送窗口和接收窗口大小都比较小而已（默认32个包），你可以朝着 64, 128, 256, 512, 1024 等档次往上调，kcptun默认发送窗口 1024，用来传高清视频已经足够，游戏的话，32-256 应该满足。</p>
+<p>不设置的话，如果默认 snd_wnd 太小，网络不是那么顺畅，你越来越多的数据会滞留在 snd_queue里得不到发送，你的延迟会越来越大。</p>
+<p>设定了 snd_wnd，远端的 rcv_wnd 也需要相应扩大，并且不小于发送端的 snd_wnd 大小，否则设置没意义。</p>
+<p>其次对于成熟的后端业务，不管用 TCP还是 KCP，你都需要实现相关缓存控制策略：</p>
+<h2><span id="缓存控制传送文件">缓存控制：传送文件</span></h2><p>你用 tcp传文件的话，当网络没能力了，你的 send调用要不就是阻塞掉，要不就是 EAGAIN，然后需要通过 epoll 检查 EPOLL_OUT事件来决定下次什么时候可以继续发送。</p>
+<p>KCP 也一样，如果 ikcp_waitsnd 超过阈值，比如2倍 snd_wnd，那么停止调用 ikcp_send，ikcp_waitsnd的值降下来，当然期间要保持 ikcp_update 调用。</p>
+<h2><span id="缓存控制实时视频直播">缓存控制：实时视频直播</span></h2><p>视频点播和传文件一样，而视频直播，一旦 ikcp_waitsnd 超过阈值了，除了不再往 kcp 里发送新的数据包，你的视频应该进入一个 “丢帧” 状态，直到 ikcp_waitsnd 降低到阈值的 1/2，这样你的视频才不会有积累延迟。</p>
+<p>这和使用 TCP推流时碰到 EAGAIN 期间，要主动丢帧的逻辑时一样的。</p>
+<p>同时，如果你能做的更好点，waitsnd 超过阈值了，代表一段时间内网络传输能力下降了，此时你应该动态降低视频质量，减少码率，等网络恢复了你再恢复。</p>
+<h2><span id="缓存控制游戏控制数据">缓存控制：游戏控制数据</span></h2><p>大部分逻辑严密的 TCP游戏服务器，都是使用无阻塞的 tcp链接配套个 epoll之类的东西，当后端业务向用户发送数据时会追加到用户空间的一块发送缓存，比如 ring buffer 之类，当 epoll 到 EPOLL_OUT 事件时（其实也就是tcp发送缓存有空余了，不会EAGAIN/EWOULDBLOCK的时候），再把 ring buffer 里面暂存的数据使用 send 传递给系统的 SNDBUF，直到再次 EAGAIN。</p>
+<p>那么 TCP SERVER的后端业务持续向客户端发送数据，而客户端又迟迟没能力接收怎么办呢？此时 epoll 会长期不返回 EPOLL_OUT事件，数据会堆积再该用户的 ring buffer 之中，如果堆积越来越多，ring buffer 会自增长的话就会把 server 的内存给耗尽。因此成熟的 tcp 游戏服务器的做法是：当客户端应用层发送缓存（非tcp的sndbuf）中待发送数据超过一定阈值，就断开 TCP链接，因为该用户没有接收能力了，无法持续接收游戏数据。</p>
+<p>使用 KCP 发送游戏数据也一样，当 ikcp_waitsnd 返回值超过一定限度时，你应该断开远端链接，因为他们没有能力接收了。</p>
+<p>但是需要注意的是，KCP的默认窗口都是32，比tcp的默认窗口低很多，实际使用时应提前调大窗口，但是为了公平性也不要无止尽放大（不要超过1024）。</p>
+<h2><span id="总结">总结</span></h2><p>缓存积累这个问题，不管是 TCP还是 KCP你都要处理，因为TCP默认窗口比较大，因此可能很多人并没有处理的意识。</p>
+<p>当你碰到缓存延迟时：</p>
+<ol>
+<li>检查 snd_wnd, rcv_wnd 的值是否满足你的要求，根据上面的公式换算，每秒钟要发多少包，当前 snd_wnd满足条件么？</li>
+<li>确认打开了 ikcp_nodelay，让各项加速特性得以运转，并确认 nc参数是否设置，以关闭默认的类 tcp保守流控方式。</li>
+<li>确认 ikcp_update 调用频率是否满足要求（比如10ms一次）。</li>
+</ol>
+<p>如果你还想更激进：</p>
+<ol>
+<li>确认 minrto 是否设置，比如设置成 10ms, nodelay 只是设置成 30ms，更激进可以设置成 10ms 或者 5ms。</li>
+<li>确认 interval是否设置，可以更激进的设置成 5ms，让内部始终循环更快。</li>
+<li>每次发送完数据包后，手动调用 ikcp_flush</li>
+<li>降低 mtu 到 470，同样数据虽然会发更多的包，但是小包在路由层优先级更高。</li>
+</ol>
+<p>如果你还想更快，可以在 KCP下层增加前向纠错协议。详细见：<a href="https://github.com/skywind3000/kcp/wiki/Network-Layer" target="_blank" rel="noopener">协议分层</a>，<a href="https://github.com/skywind3000/kcp/wiki/KCP-Best-Practice" target="_blank" rel="noopener">最佳实践</a>。</p>
+<p>更多见讨论记录：</p>
+<p><a href="https://github.com/skywind3000/kcp/issues/4" target="_blank" rel="noopener">https://github.com/skywind3000/kcp/issues/4</a></p>
+<p><a href="https://github.com/skywind3000/kcp/issues/93" target="_blank" rel="noopener">https://github.com/skywind3000/kcp/issues/93</a></p>
+<h2><span id="部分讨论记录">部分讨论记录:</span></h2><blockquote>
+<p>50%+75%的丢包率实在是太高了，信道几乎不可用了。因为高丢包，RTO会变的很大，这些行为和TCP也都是一致的，tcp在35%丢包时就断线了，没法工作了。其实处理“当前网络无法发送更多数据”这种事情，是上层传输逻辑的一个很重要的逻辑，不管下面是tcp还是kcp，再我们用kcp传送语音和视频，都会碰到网络震荡，这时候，语音或者视频一旦发现ikcp_waitsnd 的数据超过一个阀值就开始跳帧，不再传送新数据出去，直到网络恢复，或者超时不恢复就断线重连了。这是一个参考处理方法。还有一个参考处理方法就是给上层返回 EAGAIN，和TCP的方式一样，让用户去解决去。</p>
+</blockquote>
+<blockquote>
+<p>当你需要发送“超过信道容量”的数据时，由易到烦，有三个处理方法。  </p>
+</blockquote>
+<ol>
+<li><p>int ikcp_wndsize(ikcpcb *kcp, int sndwnd, int rcvwnd);</p>
+<blockquote>
+<p>扩大发送窗口和接收窗口，比如设置为64，相当于tcp的，SNDBUF, RCVBUF   </p>
+</blockquote>
+</li>
+<li><p>连接管理层（即kcp的上一层管理连接，用于衔接用户和kcp的控制类），每次调用kcp_send前检查ikcp_waitsnd是否超过阀值，超过的话，不要调用kcp_send了，直接给用户 EAGAIN，和tcp行为保持一直。  </p>
+</li>
+<li><p>数据传送层（处理kcp-&gt;output, 临近udp的那一层），发现丢包超过20%时，启动FEC，每发送三个包，紧跟一个冗余包（冗余包=P1 xor P2 xor P3），即3:1的冗余，如果丢包率上升，继续调整为2:1的冗余，发现一个包丢失的话，使用同组其他包xor后恢复出来，让传输层来负担一部分减少丢包率的任务。  </p>
+</li>
+</ol>
+<blockquote>
+<p>理论上来讲，方法3在大多数情况下很有效果，但是如果你真的达到了信道的物理带宽上限，那么增加冗余包只会进一步增加丢包率。方法1和3都是缓解，归根结底是需要处理“每秒待发数据超过信道容量”这个问题，不管下层是tcp还是kcp，这个问题都必须要仔细处理。</p>
+</blockquote>
+<h2><span id="丢包率和fec">丢包率和FEC</span></h2><ul>
+<li><p>冗余量考虑:<br>平均所需:<br>$Sum[0.1^i, {i, 1, infinite}]$<br>$\displaystyle \sum^{infty}_{i = 1}{i^k}$     </p>
+<blockquote>
+<p>i=0.1  sum=0.11111111<br>i=0.35 sum=0.538462<br>i=0.5  sum=1<br>i=0.7  sum=2.33333<br>i=0.9  sum=9   </p>
+</blockquote>
+<p>考虑到连续丢包概率 例如丢包率50%, 则至少需要平均1倍的包量</p>
+</li>
+<li><p>恢复能力考虑(延迟):<br>丢失1个包可以在下一个包恢复  * 2<br>丢失1个包可以在收到下N个包全部收到后恢复 * 2<br>丢失1个包可以在任意后续两个包恢复 * 3</p>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2024/04/01/2024-04-01-sleep-checklist/" rel="next" title="睡眠质量Checklist (个体经验值)">
+                <i class="fa fa-chevron-left"></i> 睡眠质量Checklist (个体经验值)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="夏天" />
+          <p class="site-author-name" itemprop="name">夏天</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">59</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">categories</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text">KCP协议栈</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.2.</span> <span class="nav-text">协议栈基础特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.3.</span> <span class="nav-text">基础流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.4.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.5.</span> <span class="nav-text">IKCPCB结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.6.</span> <span class="nav-text">协议配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.7.</span> <span class="nav-text">其他文档索引</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text">避免缓存积累延迟</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">2.1.</span> <span class="nav-text">重设窗口大小</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">2.2.</span> <span class="nav-text">缓存控制：传送文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">2.3.</span> <span class="nav-text">缓存控制：实时视频直播</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">2.4.</span> <span class="nav-text">缓存控制：游戏控制数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">2.5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">2.6.</span> <span class="nav-text">部分讨论记录:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">2.7.</span> <span class="nav-text">丢包率和FEC</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">夏天</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
+    NexT.Gemini
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
