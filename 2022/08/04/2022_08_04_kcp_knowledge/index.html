@@ -96,13 +96,13 @@
 
 <meta name="description" content="KCP协议栈简介KCP是一个纯粹的ARQ协议 通过重传机制实现UDP数据包的可靠传输     以比 TCP浪费10%-20%的带宽的代价 换取平均延迟降低 30%-40% 且最大延迟降低三倍的传输效果  纯算法实现 并不负责底层协议 (如UDP)的收发   需要使用者自己定义下层数据包的发送方式 以 callback的方式提供给 KCP  连时钟都需要外部传递进来 内部不会有任何一次系统调用">
 <meta property="og:type" content="article">
-<meta property="og:title" content="2022_08_04_kcp_knowledge">
-<meta property="og:url" content="https://zsummer.github.io/2024/06/19/2022_08_04_kcp_knowledge/index.html">
+<meta property="og:title" content="KCP协议栈">
+<meta property="og:url" content="https://zsummer.github.io/2022/08/04/2022_08_04_kcp_knowledge/index.html">
 <meta property="og:site_name" content="关于夏天的一切">
 <meta property="og:description" content="KCP协议栈简介KCP是一个纯粹的ARQ协议 通过重传机制实现UDP数据包的可靠传输     以比 TCP浪费10%-20%的带宽的代价 换取平均延迟降低 30%-40% 且最大延迟降低三倍的传输效果  纯算法实现 并不负责底层协议 (如UDP)的收发   需要使用者自己定义下层数据包的发送方式 以 callback的方式提供给 KCP  连时钟都需要外部传递进来 内部不会有任何一次系统调用">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2024-06-19T03:57:50.052Z">
-<meta property="article:modified_time" content="2022-07-26T12:32:00.413Z">
+<meta property="article:published_time" content="2022-08-03T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-06-19T10:53:06.565Z">
 <meta property="article:author" content="夏天">
 <meta name="twitter:card" content="summary">
 
@@ -133,13 +133,13 @@
 
 
 
-  <link rel="canonical" href="https://zsummer.github.io/2024/06/19/2022_08_04_kcp_knowledge/"/>
+  <link rel="canonical" href="https://zsummer.github.io/2022/08/04/2022_08_04_kcp_knowledge/"/>
 
 
 
 
 
-  <title>2022_08_04_kcp_knowledge | 关于夏天的一切</title>
+  <title>KCP协议栈 | 关于夏天的一切</title>
   
 
 
@@ -252,7 +252,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2024/06/19/2022_08_04_kcp_knowledge/">
+    <link itemprop="mainEntityOfPage" href="https://zsummer.github.io/2022/08/04/2022_08_04_kcp_knowledge/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="夏天">
@@ -269,7 +269,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">2022_08_04_kcp_knowledge</h1>
+          <h1 class="post-title" itemprop="name headline">KCP协议栈</h1>
         
 
         <div class="post-meta">
@@ -281,8 +281,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2024-06-19T11:57:50+08:00">
-                2024-06-19
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2022-08-04T00:00:00+08:00">
+                2022-08-04
               </time>
             
 
@@ -291,6 +291,28 @@
             
           </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/develop/" itemprop="url" rel="index">
+                    <span itemprop="name">develop</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -357,6 +379,8 @@
 </tbody></table>
 </li>
 </ul>
+<a id="more"></a>
+
 <h2><span id="协议栈基础特性">协议栈基础特性</span></h2><p>TCP是为流量设计的 (每秒内可以传输多少KB的数据) 讲究的是充分利用带宽<br>KCP是为流速设计的 (单个数据包从一端发送到一端需要多少时间) 以10%-20%带宽浪费的代价换取了比 TCP快30%-40%的传输速度 </p>
 <p>TCP信道是一条流速很慢 但每秒流量很大的大运河<br>而KCP是水流湍急的小激流 KCP有正常模式和快速模式两种 通过以下策略达到提高流速的结果:  </p>
 <ul>
@@ -612,8 +636,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2024/04/01/2024-04-01-sleep-checklist/" rel="next" title="睡眠质量Checklist (个体经验值)">
-                <i class="fa fa-chevron-left"></i> 睡眠质量Checklist (个体经验值)
+              <a href="/2022/03/07/2022-03-07-detour_crowd-path_corridor/" rel="next" title="detour_crowd-path_corridor">
+                <i class="fa fa-chevron-left"></i> detour_crowd-path_corridor
               </a>
             
           </div>
@@ -621,6 +645,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/09/14/2022-09-14-digital-twin/" rel="prev" title="数字孪生空间">
+                数字孪生空间 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
